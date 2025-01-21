@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRIDHAYAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        header{
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">HRIDHAYAM</div>
+        <nav>
+            <ul id="menu" class="nav-links">
+                <li><a href="#">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#">ALL COLLECTIONS</a>
+                    <div class="dropdown-content">
+                        <a href="collection_page.html">Uncut Polki</a>
+                        <a href="#">Antique nakshi kundan</a>
+                        <a href="#">Diamond finish jewellery</a>
+                        <a href="#">Haaram</a>
+                        <a href="#">Necklace</a>
+                        <a href="#">Chokers</a>
+                        <a href="#">Pendant sets</a>
+                        <a href="#">Statement earrings</a>
+                        <a href="#">Bangles</a>
+                        <a href="#">Waistbelts</a>
+                    </div>
+                </li>
+                <li><a href="#">SALE</a></li>
+                <li><a href="#">CUSTOMIZE DESIGN</a></li>
+                <li><a href="#">CART</a></li>
+                <li class="dropdown">
+                    <a href="#">ACCOUNT</a>
+                    <div class="dropdown-content">
+                        <h3>USERNAME</h3>
+                        <a href="#">Profile</a>
+                        <a href="#">Help</a>
+                        <a href="#">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="container" onclick="menutoggle();myFunction(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+          </div>
+    </header>
+        <div class="cart-page">
+            <div class="center"><img src="images/frame-6.png" alt="">
+            </div>
+            <div class="center">
+                <div class="h2">Product Name</div>
+                <div class="corner"><h3>Rs. 10000</h3><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat ducimus excepturi numquam architecto, id deserunt laudantium iusto hic esse ullam nisi voluptatum nam ex vel itaque inventore provident, enim facilis.</p></div>          
+                <div>
+                    <div class="explore">ADD TO CART</div>
+                    <div class="explore2">BUY NOW</div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="cart-page"></div>
+    <footer>
+        <div class="footer-section">
+            <h1>HRIDHAYAM</h1>
+        </div>
+        <div class="footer2">
+            <div class="footer-section">
+                <h3>ABOUT</h3>
+                <p>Information about the company.</p>
+            </div>
+            <div class="footer-section">
+                <h3>SOCIAL</h3>
+                <p>Facebook</p>
+                <p>Instagram</p>
+            </div>
+            <div class="footer-section">
+                <h3>CONTACT</h3>
+                <p>hridhayam@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        var menu = document.getElementById("menu");
+        menu.style.maxHeight="0vh";
+        function myFunction(x) {
+          x.classList.toggle("change");
+        }
+        function menutoggle(){
+            if(menu.style.maxHeight=="0vh"){
+                menu.style.maxHeight="30vh";
+            }
+            else{
+                menu.style.maxHeight="0vh";
+            }
+        }
+        </script>
+</body>
+</html>

@@ -3,9 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>HRIDHAYAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
+    <header>
+        <div class="logo">HRIDHAYAM</div>
+        <nav>
+            <ul id="menu" class="nav-links">
+                <li><a href="#">HOME</a></li>
+                <li class="dropdown">
+                    <a href="#">ALL COLLECTIONS</a>
+                    <div class="dropdown-content">
+                        <a href="collection_page.html">Uncut Polki</a>
+                        <a href="#">Antique nakshi kundan</a>
+                        <a href="#">Diamond finish jewellery</a>
+                        <a href="#">Haaram</a>
+                        <a href="#">Necklace</a>
+                        <a href="#">Chokers</a>
+                        <a href="#">Pendant sets</a>
+                        <a href="#">Statement earrings</a>
+                        <a href="#">Bangles</a>
+                        <a href="#">Waistbelts</a>
+                    </div>
+                </li>
+                <li><a href="#">SALE</a></li>
+                <li><a href="#">CUSTOMIZE DESIGN</a></li>
+                <li><a href="#">CART</a></li>
+                <li class="dropdown">
+                    <a href="#">ACCOUNT</a>
+                    <div class="dropdown-content">
+                        <h3>USERNAME</h3>
+                        <a href="#">Profile</a>
+                        <a href="#">Help</a>
+                        <a href="#">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="container" onclick="menutoggle();myFunction(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+          </div>
+    </header>
+
+    <section class="section section1">
+        <div class="explore-close">
+            <div class="home">SIMPLY STUNNING</div>
+            <div class="flex">
+                <div class="frame">
+                    <div class="text-wrapper"><a href="www.google.com">EXPLORE</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="inbetween">
+        <div class="home-9">CRAFTING AT IT’S FINEST</div>
+    </section>
+    <section class="section section2">
+        <div class="explore-close-center">
+            <div class="home">PREMIUM & ANTIQUE</div>
+            <div class="flex">
+                <div class="frame">
+                    <div class="text-wrapper"><a href="www.google.com">EXPLORE</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section3">
+        <div class="home-3">SPECIAL COLLECTION</div>
+        <div class="carousel-wrapper">
+            <div class="carousel">
+                <img src="images/rectangle.jpeg">
+                <img src="images/earrings.png">
+                <img src="images/neck.png">
+                <img src="images/necklace.jpeg">
+                <img src="images/ring.jpeg">
+                <img src="images/neck.png">
+                <img src="images/necklace.jpeg">
+                <img src="images/ring.jpeg">
+            </div>
+        </div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </section>
+
+    <section class="section section4">
+        <div class="explore-close-center">
+            <div class="home">ART OF CRAFTMANSHIP</div>
+            <div class="flex">
+                <div class="frame">
+                    <div class="text-wrapper"><a href="www.google.com">EXPLORE</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section5">
+        <div class="home-5">BEST OF HRIDHAYAM</div>
+        <div class="best-carousal-wrapper">
+            <div class="best-carousal">
+                <img src="images/rectangle.jpeg">
+                <img src="images/earrings.png">
+                <img src="images/neck.png">
+                <img src="images/necklace.jpeg">
+            </div>
+        </div>
+        <div class="frame2">
+            <div class="text-wrapper2"><a href="www.google.com">EXPLORE</a></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-section">
+            <h1>HRIDHAYAM</h1>
+        </div>
+        <div class="footer2">
+            <div class="footer-section">
+                <h3>ABOUT</h3>
+                <p>Information about the company.</p>
+            </div>
+            <div class="footer-section">
+                <h3>SOCIAL</h3>
+                <p>Facebook</p>
+                <p>Instagram</p>
+            </div>
+            <div class="footer-section">
+                <h3>CONTACT</h3>
+                <p>hridhayam@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        var menu = document.getElementById("menu");
+        menu.style.maxHeight="0vh";
+        function myFunction(x) {
+          x.classList.toggle("change");
+        }
+        function menutoggle(){
+            if(menu.style.maxHeight=="0vh"){
+                menu.style.maxHeight="30vh";
+            }
+            else{
+                menu.style.maxHeight="0vh";
+            }
+        }
+        </script>
 </body>
 </html>
