@@ -5,11 +5,58 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hridhayam</title>
+    <link rel="stylesheet" href="./src/index.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+      const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+      dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', function (e) {
+              e.preventDefault();
+
+              // Check screen width to differentiate between mobile and desktop
+              if (window.innerWidth <= 768) {
+                  // Close other open dropdowns
+                  document.querySelectorAll('.dropdown').forEach(dropdown => {
+                      if (dropdown !== this.parentElement) {
+                          dropdown.classList.remove('active');
+                      }
+                  });
+
+                  // Toggle the active class on the current dropdown
+                  this.parentElement.classList.toggle('active');
+              }
+          });
+      });
+
+      // Optional: Close dropdown when clicking outside
+      document.addEventListener('click', function (e) {
+          if (window.innerWidth <= 768 && !e.target.closest('.dropdown')) {
+              document.querySelectorAll('.dropdown').forEach(dropdown => {
+                  dropdown.classList.remove('active');
+              });
+          }
+      });
+      });
+      var menu = document.getElementById("menu");
+        menu.style.maxHeight="0vh";
+        function myFunction(x) {
+          x.classList.toggle("change");
+        }
+        function menutoggle(){
+            if(menu.style.maxHeight=="0vh"){
+                menu.style.maxHeight="70vh";
+            }
+            else{
+                menu.style.maxHeight="0vh";
+            }
+        }
+      </script>
   </body>
 </html>
