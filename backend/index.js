@@ -1,35 +1,43 @@
 import cors from 'cors'
 import express from "express";
+import 'dotenv/config'
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path'
+import connectDB from './config/mongoose.js';
+import connectCloudinary from './config/cloudinary.js';
+import { UserController } from './controller/userController.js';
 
-import client from './db/db.js';
-
-
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
-
-
-const port = process.env.PORT;
 const server = express();
+const port = process.env.PORT || 3000;
 
-
-server.use(cors());
 server.use(express.json());
+server.use(cors());
 
 
+
+
+connectDB()
+connectCloudinary()
+
+server.post("/register" , UserController.registerUser )
+server.post("/login" , UserController.loginUser)
+
+// const storage  = multer.diskStorage({
+//   destination : './upload/images',
+//   filename:(req , file ,cb) => {
+//     return cb(null , `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
+//   }
+// })
+
+// const upload = multer({storage : storage})
+
+// server.use("/images",express.static('upload/images'))
+// server.post("/upload",upload.single('product') , (req , res) => {
+//   res.json({
+//     success : 1,
+//     image : `http://localhost:${port}/images/${req.file.fieldname}`
+//   })
+// })
 server.listen(port, (req, res) => {
   console.log("Server running on port " + port);
 });
