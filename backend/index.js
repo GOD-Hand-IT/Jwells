@@ -2,25 +2,24 @@ import cors from 'cors'
 import express from "express";
 import 'dotenv/config'
 import mongoose from 'mongoose';
-import path from 'path'
 import connectDB from './config/mongoose.js';
 import connectCloudinary from './config/cloudinary.js';
-import { UserController } from './controller/userController.js';
+import userRouter from './routes/userRoute.js'
+import productRouter from './routes/productRoute.js'
 
 const server = express();
 const port = process.env.PORT || 3000;
 
 server.use(express.json());
 server.use(cors());
-
-
-
-
 connectDB()
 connectCloudinary()
 
-server.post("/register" , UserController.registerUser )
-server.post("/login" , UserController.loginUser)
+
+server.use("/user" , userRouter)
+server.use("/product", productRouter)
+
+
 
 // const storage  = multer.diskStorage({
 //   destination : './upload/images',

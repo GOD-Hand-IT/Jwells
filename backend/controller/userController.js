@@ -6,7 +6,7 @@ import userModal from '../model/userModal.js'
 const createToken = (id) => {
    return  jwt.sign({ id }, process.env.secret_key)
 }
-export class UserController {
+export default class UserController {
 
     static registerUser = async (req, res) => {
         try {

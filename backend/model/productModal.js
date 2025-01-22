@@ -5,7 +5,6 @@ const productSchema = new mongoose.Schema({
     description:{type : String , required : true},
     price : {type : Number , required : true},
     image : {type : Array , required : true},
-    date : {type : Number , required : true}
 })
 
 const productModal = mongoose.models.product || mongoose.model("product",productSchema)
