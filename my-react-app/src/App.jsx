@@ -1,14 +1,46 @@
 import { useState } from 'react'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
+import Section from './components/section.jsx'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+    const sections = [
+        {
+          className: 'section1',
+          title: 'SIMPLY STUNNING',
+          image: 'https://c4.wallpaperflare.com/wallpaper/338/279/754/models-model-brown-eyes-earrings-girl-hd-wallpaper-thumb.jpg',
+          link: 'https://example.com/section-one',
+        },
+        {
+          className: 'section2',
+          title: 'Section Two',
+          image: 'https://via.placeholder.com/300',
+          link: 'https://example.com/section-two',
+        },
+        {
+          className: 'section4',
+          title: 'Section Three',
+          image: 'https://via.placeholder.com/300',
+          link: 'https://example.com/section-three',
+        },
+      ];
 
   return (
     <div>
       <Header/>
+      <div>
+      {/* Dynamically render the Section components */}
+      {sections.map((section, index) => (
+        <Section
+          key={index} // Use a unique key for each child
+          className={section.className}
+          title={section.title}
+          image={section.image}
+          link={section.link}
+        />
+      ))}
+    </div>
       <div>
         <section class="section section1">
             <div class="explore-close-center">

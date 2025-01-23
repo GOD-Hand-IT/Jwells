@@ -458,7 +458,8 @@ footer {
   }
   .dropdown-content{
     display: none;
-    
+    line-height: 20px;
+    top: -190%;
   }
   .dropdown.active .dropdown-content {
     display: block; /* Mobile click behavior */
