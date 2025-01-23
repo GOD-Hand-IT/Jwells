@@ -8,15 +8,14 @@ import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
 
 const server = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 server.use(express.json());
 server.use(cors());
-connectDB()
-connectCloudinary()
 
 
-server.use("/user" , userRouter)
+
+server.use("/user", userRouter)
 server.use("/product", productRouter)
 
 
@@ -37,8 +36,14 @@ server.use("/product", productRouter)
 //     image : `http://localhost:${port}/images/${req.file.fieldname}`
 //   })
 // })
-server.listen(port, (req, res) => {
-  console.log("Server running on port " + port);
+connectDB().then(() => {
+  console.log("Connected to cloudinary")
+  connectCloudinary()
+}).then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
 
-mongoose.connect
+
+
