@@ -1,5 +1,5 @@
 import React from 'react';
-import './Header.css';
+import DropdownMenu from './DropdownMenu';
 
 function Header() {
   const toggleMenu = () => {
@@ -8,7 +8,7 @@ function Header() {
   };
 
   return (
-    <header>
+    <div className="Header">
       <div className="logo">HRIDHAYAM</div>
       <nav>
         <ul id="menu" className="nav-links">
@@ -19,7 +19,15 @@ function Header() {
               <a href="#">Uncut Polki</a>
               <a href="#">Antique Nakshi Kundan</a>
               <a href="#">Diamond Finish Jewellery</a>
-              {/* Add more links here */}
+              <a href="#">Antique nakshi kundan</a>
+              <a href="#">Diamond finish jewellery</a>
+              <a href="#">Haaram</a>
+              <a href="#">Necklace</a>
+              <a href="#">Chokers</a>
+              <a href="#">Pendant sets</a>
+              <a href="#">Statement earrings</a>
+              <a href="#">Bangles</a>
+              <a href="#">Waistbelts</a>
             </div>
           </li>
           <li><a href="#sale">SALE</a></li>
@@ -41,7 +49,7 @@ function Header() {
         <div className="bar2"></div>
         <div className="bar3"></div>
       </div>
-    </header>
+    </div>
   );
 }
 
