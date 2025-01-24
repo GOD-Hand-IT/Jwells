@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import { useEffect, useRef } from 'react';
 
-const DropdownMenu = ({ title, items, header }) => {
+const DropdownMenu = ({ title, items, header,up}) => {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const DropdownMenu = ({ title, items, header }) => {
   return (
     <li className="dropdown" ref={menuRef}>
       <a href="#" className="dropdown-toggle">{title}</a>
-      <div className="dropdown-content">
+      <div className= {`dropdown-content ${up}`}>
         {header && <h3>{header}</h3>}
         {items.map((item, index) => (
           <a href="#" key={index}>{item}</a>

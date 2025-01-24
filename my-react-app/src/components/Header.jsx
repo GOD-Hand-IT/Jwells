@@ -45,7 +45,7 @@ function Header() {
           <li><a href="#sale">SALE</a></li>
           <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
           <li><a href="#cart">CART</a></li>
-          <DropdownMenu title="ACCOUNT" items={accountItems} header="USERNAME" />
+          <DropdownMenu title="ACCOUNT" items={accountItems} header="USERNAME" up="up"/>
         </ul>
       </nav>
       <div

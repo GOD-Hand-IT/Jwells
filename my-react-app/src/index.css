@@ -70,10 +70,13 @@ html, body {
   left: -10px;
   background-color: #ffffff;
   line-height: 20px;
-  min-width: 200px;
+  width: 270px;
   padding-left:5px ;
   padding-top: 50px;
   z-index: 1;
+}
+.up{
+  width: 100px;
 }
 .dropdown-content h3 {
   margin: 0 0 10px;
@@ -142,7 +145,7 @@ html, body {
   height: 70px;
   align-items: center;
   justify-content: center;
-  font-family: "Lora-Regular", Helvetica;
+  font-family: Lora;
   margin-bottom: 40px;
   border: 2px solid;
   border-color: #ffffff;
@@ -156,7 +159,7 @@ html, body {
   height: 70px;
   align-items: center;
   justify-content: center;
-  font-family: "Lora-Regular", Helvetica;
+  font-family: Lora;
   margin-bottom: 40px;
   border: 2px solid;
   border-color: #000000;
@@ -269,7 +272,7 @@ html, body {
 }
 .text-wrapper a{
   color: #FFF;
-  font-family: "Lora-Regular";
+  font-family: Lora;
   font-size: 32px;
   font-style: normal;
   font-weight: 100;
@@ -278,7 +281,7 @@ html, body {
 }
 .text-wrapper2 a{
   color: #000000;
-  font-family: "Lora-Regular";
+  font-family: Lora;
   font-size: 32px;
   font-style: normal;
   font-weight: 100;
