@@ -1,10 +1,27 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import DropdownMenu from './DropdownMenu';
 
 function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Tracks menu state
+
+  useEffect(() => {
+    // Set the initial height of the menu to 0vh when the page loads
+    const menu = document.getElementById('menu');
+    if (menu) {
+      menu.style.maxHeight = '0vh';
+    }
+  }, []);
+
   const toggleMenu = () => {
     const menu = document.getElementById('menu');
-    menu.style.maxHeight = menu.style.maxHeight === '0vh' ? '70vh' : '0vh';
+    if (menu.style.maxHeight === '70vh') {
+      menu.style.maxHeight = '0vh';
+      setIsMenuOpen(false); // Remove "change" class
+    } else {
+      menu.style.maxHeight = '70vh';
+      setIsMenuOpen(true); // Add "change" class
+    }
   };
 
   return (
@@ -44,7 +61,10 @@ function Header() {
           </li>
         </ul>
       </nav>
-      <div className="container" onClick={(e) => { toggleMenu(); myFunction(e); }}>
+      <div
+        className={`container ${isMenuOpen ? "change" : ""}`}
+        onClick={toggleMenu}
+      >
         <div className="bar1"></div>
         <div className="bar2"></div>
         <div className="bar3"></div>

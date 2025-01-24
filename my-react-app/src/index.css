@@ -456,17 +456,20 @@ footer {
   transition: 0.4s;
 }
 
-.change .bar1 {
+.container.change .bar1 {
   transform: translate(0, 11px) rotate(-45deg);
 }
 
-.change .bar2 {opacity: 0;}
+.container.change .bar2 {opacity: 0;}
 
-.change .bar3 {
+.container.change .bar3 {
   transform: translate(0, -11px) rotate(45deg);
 }
 /*--------media_query_for_menu--------*/
 @media only screen and (max-width: 800px){
+  html{
+    -webkit-tap-highlight-color: transparent;
+  }
   .container{
     display: inline-block;
   }

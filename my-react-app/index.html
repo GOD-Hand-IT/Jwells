@@ -12,51 +12,6 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-      const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-
-      dropdownToggles.forEach(toggle => {
-          toggle.addEventListener('click', function (e) {
-              e.preventDefault();
-
-              // Check screen width to differentiate between mobile and desktop
-              if (window.innerWidth <= 768) {
-                  // Close other open dropdowns
-                  document.querySelectorAll('.dropdown').forEach(dropdown => {
-                      if (dropdown !== this.parentElement) {
-                          dropdown.classList.remove('active');
-                      }
-                  });
-
-                  // Toggle the active class on the current dropdown
-                  this.parentElement.classList.toggle('active');
-              }
-          });
-      });
-
-      // Optional: Close dropdown when clicking outside
-      document.addEventListener('click', function (e) {
-          if (window.innerWidth <= 768 && !e.target.closest('.dropdown')) {
-              document.querySelectorAll('.dropdown').forEach(dropdown => {
-                  dropdown.classList.remove('active');
-              });
-          }
-      });
-      });
-      var menu = document.getElementById("menu");
-        menu.style.maxHeight="0vh";
-        function myFunction(x) {
-          x.classList.toggle("change");
-        }
-        function menutoggle(){
-            if(menu.style.maxHeight=="0vh"){
-                menu.style.maxHeight="70vh";
-            }
-            else{
-                menu.style.maxHeight="0vh";
-            }
-        }
-      </script>
+   
   </body>
 </html>
