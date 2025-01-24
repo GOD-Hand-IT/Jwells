@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import DropdownMenu from './DropdownMenu';
-import SummaryApi from '../api/apiConfig'; // Import the SummaryApi configuration
+import SummaryApi from '../common/apiConfig'; // Import the SummaryApi configuration
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Tracks menu state
