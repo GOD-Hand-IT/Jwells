@@ -17,8 +17,8 @@ function Header() {
     // Fetch data from API
     async function getData() {
       try {
-        const response = await fetch(SummaryApi.categoryProduct.url, {
-          method: SummaryApi.categoryProduct.method
+        const response = await fetch(SummaryApi.category.url, {
+          method: SummaryApi.category.method
         });
         const data = await response.json();
         if (Array.isArray(data.data)) {
