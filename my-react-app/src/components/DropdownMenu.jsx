@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const DropdownMenu = ({ children }) => {
+const DropdownMenu = ({ title, items, header }) => {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -34,27 +34,24 @@ const DropdownMenu = ({ children }) => {
       // Dropdown toggles
       const dropdownToggles = menuElement.querySelectorAll('.dropdown-toggle');
 
-      if (isMobile) {
-        // Add click functionality
-        dropdownToggles.forEach((toggle) =>
-          toggle.addEventListener('click', handleDropdownClick)
-        );
+      dropdownToggles.forEach((toggle) => {
+        if (toggle.textContent === 'ALL COLLECTIONS') {
+          // Disable hover functionality for "ALL COLLECTIONS"
+          toggle.parentElement.classList.remove('hover-enabled');
+        } else if (isMobile) {
+          // Add click functionality
+          toggle.addEventListener('click', handleDropdownClick);
 
-        // Remove hover functionality
-        dropdownToggles.forEach((toggle) =>
-          toggle.parentElement.classList.remove('hover-enabled')
-        );
-      } else {
-        // Enable hover functionality for desktop
-        dropdownToggles.forEach((toggle) =>
-          toggle.parentElement.classList.add('hover-enabled')
-        );
+          // Remove hover functionality
+          toggle.parentElement.classList.remove('hover-enabled');
+        } else {
+          // Enable hover functionality for desktop
+          toggle.parentElement.classList.add('hover-enabled');
 
-        // Remove click functionality for hover-enabled dropdowns
-        dropdownToggles.forEach((toggle) =>
-          toggle.removeEventListener('click', handleDropdownClick)
-        );
-      }
+          // Remove click functionality for hover-enabled dropdowns
+          toggle.removeEventListener('click', handleDropdownClick);
+        }
+      });
     };
 
     // Add event listeners for resize and initial hover management
@@ -78,7 +75,17 @@ const DropdownMenu = ({ children }) => {
     };
   }, []);
 
-  return <div ref={menuRef}>{children}</div>;
+  return (
+    <li className="dropdown" ref={menuRef}>
+      <a href="#" className="dropdown-toggle">{title}</a>
+      <div className="dropdown-content">
+        {header && <h3>{header}</h3>}
+        {items.map((item, index) => (
+          <a href="#" key={index}>{item}</a>
+        ))}
+      </div>
+    </li>
+  );
 };
 
 export default DropdownMenu;
