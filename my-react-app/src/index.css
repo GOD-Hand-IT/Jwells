@@ -15,6 +15,7 @@
 
 html, body {
   margin: 0;
+  background-color: #fff;
   overflow-x: hidden;
 }
 
@@ -68,6 +69,7 @@ html, body {
   top: 100%; /* Adjust to position the dropdown below the link */
   left: -10px;
   background-color: #ffffff;
+  line-height: 20px;
   min-width: 200px;
   padding-left:5px ;
   padding-top: 50px;
@@ -401,8 +403,39 @@ footer {
 .best-carousal{
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  flex-wrap: nowrap;
+  scrollbar-width: none; 
   gap: 5%;
+}
+.best-carousal::-webkit-scrollbar {
+  display: none; /* Hide scrollbar on Chrome, Edge, Safari */
+}
+.carousel-arrow {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+.carousel-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 .footer2{
   display: flex;
@@ -458,7 +491,6 @@ footer {
   }
   .dropdown-content{
     display: none;
-    line-height: 20px;
     top: -190%;
   }
   .dropdown.active .dropdown-content {
