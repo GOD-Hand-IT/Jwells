@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
+
 import "../App.css";
-import { useParams } from "react-router-dom";
 import SummaryApi from "../common/apiConfig";
 
 const products = [
@@ -20,17 +21,20 @@ const products = [
 
 const itemsPerPage = 9;
 
-const collection = () => {
+const Collection = () => { // Accept collectionName as a prop
+  const location = useLocation()
+  const { collectionName } = location.state;
+  console.log(collectionName);
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [sortedProducts, setSortedProducts] = useState([...products]);
-  const params = useParams();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch(SummaryApi.categoryProduct.url + params.collectionName);
+        const response = await fetch(SummaryApi.categoryProduct.url + collectionName);
         const data = await response.json();
-        console.log(data.data);
         if (Array.isArray(data.data)) {
           setSortedProducts(data.data);
         } else {
@@ -41,7 +45,7 @@ const collection = () => {
       }
     }
     fetchData();
-  }, [params.collectionName]); // Dependency array with collectionName
+  }, [collectionName]); // Dependency array with collectionName
 
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
 
@@ -118,4 +122,4 @@ const collection = () => {
   );
 };
 
-export default collection;
+export default Collection;

@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import DropdownMenu from './DropdownMenu';
 import SummaryApi from '../common/apiConfig'; // Import the SummaryApi configuration
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Tracks menu state
@@ -65,11 +65,36 @@ function Header() {
       <nav>
         <ul id="menu" className="nav-links">
           <li><NavLink to='/'><a href="#home">HOME</a></NavLink></li>
-          <DropdownMenu title="ALL COLLECTIONS" items={apiData} endpoints={'collection'} />
+          <DropdownMenu 
+            title="ALL COLLECTIONS" 
+            items={apiData} 
+            endpoints={'collection'} 
+            renderItem={(item, index) => (
+              <Link to="/collection" state={{ collectionName : item }}>
+                {item}
+              </Link>
+            )}
+          />
           <li><NavLink to='/product' ><a href="#sale">SALE</a></NavLink></li>
           <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
           <li><a href="#cart">CART</a></li>
-          <DropdownMenu title="ACCOUNT" items={accountItems} header="USERNAME" up="up" />
+          <DropdownMenu 
+            title="ACCOUNT" 
+            items={accountItems} 
+            header="USERNAME" 
+            up="up" 
+            renderItem={(item, index) => (
+              <Link
+                to={{
+                  pathname: '/account',
+                  state: { accountItem: item }
+                }}
+                key={index}
+              >
+                {item}
+              </Link>
+            )}
+          />
         </ul>
       </nav>
       <div
@@ -80,7 +105,7 @@ function Header() {
         <div className="bar2"></div>
         <div className="bar3"></div>
       </div>
-    </div>
+    </div >
   );
 }
 

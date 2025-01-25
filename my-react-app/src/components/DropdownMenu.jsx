@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 
-const DropdownMenu = ({ title, items, header, up , endpoints }) => {
+const DropdownMenu = ({ title, items, header, up, renderItem }) => {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -59,9 +58,7 @@ const DropdownMenu = ({ title, items, header, up , endpoints }) => {
       <div className={`dropdown-content ${up}`}>
         {header && <h3>{header}</h3>}
         {items.map((item, index) => (
-          <Link to={`/${endpoints ? `${endpoints}/${item}` : item}`} key={index}>
-            {item}
-          </Link>
+          renderItem(item, index)
         ))}
       </div>
     </li>
