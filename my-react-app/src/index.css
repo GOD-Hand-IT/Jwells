@@ -514,6 +514,8 @@ footer {
     transition: max-height 0.5s;
 }
   .up{
+    font-family: Cinzel;
+    color: #41444B;
     height: 70vh;
     line-height: 35px;
     top: -300px;

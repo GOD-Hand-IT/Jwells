@@ -1,80 +1,24 @@
 import { useState } from 'react'
-import Header from './components/Header.jsx'
-import Footer from './components/Footer.jsx'
-import { Section, InbetweenSection, CarouselSection } from './components/Section.jsx';
-import BestOfHridhayamSection from './components/BestOfHridhayamSection';
-import bgImage from '/src/assets/frame-6.png';
-import bgImage2 from '/src/assets/section-2.jpeg';
-import bgImage3 from '/src/assets/section-4.jpeg';
+import React from 'react';
+import {Routes,Route, Router} from 'react-router-dom';
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
+import Home from './pages/home';
+import Collection from './pages/collection.jsx'
+import Product from './pages/product.jsx'
 import './App.css'
 
-function App() {
+const App = () => {
   const [count, setCount] = useState(0)
 
   return (
     <div>
       <Header/>
-      <div>
-      {/* Section 1 */}
-      <Section
-        className="section1"
-        title="SIMPLY STUNNING"
-        link="https://www.google.com"
-        image={bgImage}
-      />
-
-      {/* Section 2 - In-between */}
-      <InbetweenSection
-        className="inbetween"
-        content="CRAFTING AT IT’S FINEST"
-      />
-
-      {/* Section 3 */}
-      <Section
-        className="section2"
-        title="PREMIUM & ANTIQUE"
-        link="https://www.google.com"
-        image={bgImage2}
-      />
-
-      {/* Section 4 - Special Carousel */}
-      <CarouselSection
-        className="section3"
-        title="SPECIAL COLLECTION"
-        images={[
-          '/src/assets/rectangle.jpeg',
-          '/src/assets/earrings.png',
-          '/src/assets/neck.png',
-          '/src/assets/necklace.jpeg',
-          '/src/assets/ring.jpeg',
-          '/src/assets/neck.png',
-          '/src/assets/necklace.jpeg',
-          '/src/assets/ring.jpeg',
-        ]}
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      />
-
-      {/* Section 5 */}
-      <Section
-        className="section4"
-        title="ART OF CRAFTMANSHIP"
-        link="https://www.google.com"
-        image={bgImage3}
-      />
-
-      {/* Section 6 - Best Collection */}
-      <BestOfHridhayamSection
-        className="section5"
-        title="BEST OF HRIDHAYAM"
-        images={[
-          '/src/assets/rectangle.jpeg',
-          '/src/assets/earrings.png',
-          '/src/assets/neck.png',
-          '/src/assets/necklace.jpeg'
-        ]}
-        link="https://www.google.com"
-      />
-    </div>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/collection' element={<Collection/>}/>
+        <Route path='/product' element={<Product/>}/>
+      </Routes>
       <Footer/>
     </div>
   )
