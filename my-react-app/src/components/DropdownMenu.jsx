@@ -58,7 +58,9 @@ const DropdownMenu = ({ title, items, header, up, renderItem }) => {
       <div className={`dropdown-content ${up}`}>
         {header && <h3>{header}</h3>}
         {items.map((item, index) => (
-          renderItem(item, index)
+          <div key={index}>
+            {renderItem(item, index)}
+          </div>
         ))}
       </div>
     </li>

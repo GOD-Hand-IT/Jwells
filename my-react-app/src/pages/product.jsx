@@ -1,27 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
 import ProductDetails from "../components/productdetails";
-import bgImage from '../assets/frame-6.png';
-// Product data
-const featuredProduct = {
-    image: bgImage,
-    productName: "Product Name",
-    price:10000,
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat ducimus excepturi numquam architecto, id deserunt laudantium iusto hic esse ullam nisi voluptatum nam ex vel itaque inventore provident, enim facilis.",
-  };
-  
-  const product = () => {
-    return (
-      <div>
-        <ProductDetails
-          image={featuredProduct.image}
-          productName={featuredProduct.productName}
-          price={featuredProduct.price}
-          description={featuredProduct.description}
-        />
-      </div>
-    );
-  };
+import { useLocation } from 'react-router-dom';
+import SummaryApi from "../common/apiConfig";
+
+const product = () => {
+  const [product, setProductData] = useState({});
+  const location = useLocation();
+  const { productId } = location.state;
+  console.log(productId);
+  // Fetch data from your backend here
+  // Use the productId to fetch the product details
+  async function fetchProductData(productId) {
+    try {
+      const response = await fetch(SummaryApi.productDetails.url + productId);
+      const productData = await response.json();
+      setProductData(productData.data);
+      console.log("Product data fetched successfully:", productData.data);
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    }
+  }
+  useEffect(() => {
+    fetchProductData(productId);
+  }, [productId]);
+
+
+  return (
+    <div>
+      <ProductDetails
+        image={product.image}
+        productName={product.name}
+        price={product.price}
+        description={product.description}
+      />
+    </div>
+  );
+};
 
 export default product;

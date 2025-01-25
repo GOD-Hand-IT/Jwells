@@ -99,6 +99,7 @@ export default class ProductController {
         try {
             const category  = req.params.category
             const products = (await productModal.find({ category })).map(product => ({
+                id: product._id,
                 name: product.name,
                 price: product.price,
                 image: product.image[0]

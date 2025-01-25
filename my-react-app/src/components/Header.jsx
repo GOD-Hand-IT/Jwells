@@ -64,7 +64,7 @@ function Header() {
       <div className="logo">HRIDHAYAM</div>
       <nav>
         <ul id="menu" className="nav-links">
-          <li><NavLink to='/'><a href="#home">HOME</a></NavLink></li>
+          <li><Link to='/'>HOME</Link></li>
           <DropdownMenu 
             title="ALL COLLECTIONS" 
             items={apiData} 
@@ -75,7 +75,7 @@ function Header() {
               </Link>
             )}
           />
-          <li><NavLink to='/product' ><a href="#sale">SALE</a></NavLink></li>
+          <li><Link to={"Sales"}>SALE</Link></li>
           <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
           <li><a href="#cart">CART</a></li>
           <DropdownMenu 

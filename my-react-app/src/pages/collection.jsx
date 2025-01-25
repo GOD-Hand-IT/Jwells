@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProductCard from '../components/productCard'
 import { useLocation } from 'react-router-dom';
 
 import "../App.css";
@@ -95,16 +96,9 @@ const Collection = () => { // Accept collectionName as a prop
           </select>
         </div>
       </div>
-      <div id="product-grid" className="product-grid">
+      <div className="py-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
         {getPaginatedProducts().map((product, index) => (
-          <div key={index} className="product-item">
-            <img src={product.image} alt={product.name} />
-            <h2>{product.name}</h2>
-            <p>Rs. {product.price}</p>
-            <button onClick={() => alert(`${product.name} added to cart!`)}>
-              Add to Cart
-            </button>
-          </div>
+          <ProductCard key={index} product={product} />
         ))}
       </div>
       <div className="pagination">

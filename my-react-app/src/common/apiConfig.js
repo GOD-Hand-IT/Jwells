@@ -9,6 +9,10 @@ const SummaryApi = {
     url: `${backendDomain}/product/`,
     method: "get"
   },
+  productDetails: {
+    url: `${backendDomain}/product/info/`,
+    method: "get"
+  },
 };
 
 export default SummaryApi;
