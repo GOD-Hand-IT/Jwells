@@ -21,14 +21,17 @@ server.use("/product", productRouter)
 
 
 // const storage  = multer.diskStorage({
-connectDB().then(() => {
-  console.log("Connected to cloudinary")
-  connectCloudinary()
-}).then(() => {
-  server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+Promise.all([connectDB(), connectCloudinary()])
+  .then(() => {
+    console.log("Connected to MongoDB and Cloudinary");
+    server.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch(error => {
+    console.error('Connection error:', error);
+    process.exit(1);
   });
-});
 
 
 
