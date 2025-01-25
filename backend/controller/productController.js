@@ -2,35 +2,35 @@ import { v2 as cloudinary } from 'cloudinary'
 import productModal from '../model/productModal.js'
 
 
-export default class ProductController  {
-   static getCategories = async(req,res)=>{
-        try{
+export default class ProductController {
+    static getCategories = async (req, res) => {
+        try {
             const categories = await productModal.distinct("category")
-    
-    
+
+
             //array to store one product from each category
-    
-    
-    
+
+
+
             res.json({
-                message : "category product",
-                data : categories,
-                success : true,
-                error : false
+                message: "category product",
+                data: categories,
+                success: true,
+                error: false
             })
-    
-    
-        }catch(err){
+
+
+        } catch (err) {
             res.status(400).json({
-                message : err.message || err,
-                error : true,
-                success : false
+                message: err.message || err,
+                error: true,
+                success: false
             })
         }
     }
     static addProduct = async (req, res) => {
         try {
-            const { name, price, description , category } = req.body
+            const { name, price, description, category } = req.body
             console.log(category)
 
             const image = req.files.image && req.files.image[0]
@@ -49,7 +49,7 @@ export default class ProductController  {
                 })
                 console.log(image1.secure_url)
                 await product.save()
-               return res.json({ success: true, message: "Product added successfully" })
+                return res.json({ success: true, message: "Product added successfully" })
             }
 
         } catch (err) {
@@ -57,8 +57,54 @@ export default class ProductController  {
             res.status(500).json({ success: false, message: "Server error" })
         }
     }
-    static removeProduct = async (req, res) => { }
-    static listAllProduct = async (req, res) => { }
-    static productInfo = async (req, res) => { }
+    static removeProduct = async (req, res) => {
+        try {
+            const { id } = req.body
+            const product = await productModal.findById(id)
+            if (!product) {
+                return res.status(404).json({ success: false, message: "Product not found" })
+            }
+            await product.remove()
+            res.json({ success: true, message: "Product removed successfully" })
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+     }
+    static listAllProduct = async (req, res) => { 
+        try {
+            const products = await productModal.find()
+            res.json({ success: true, data: products })
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+    static productInfo = async (req, res) => {
+        try {
+            const id  = req.params.id
+            const product = await productModal.findById(id)
+            if (!product) {
+                return res.status(404).json({ success: false, message: "Product not found" })
+            }
+            res.json({ success: true, data: product })
+
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+
+    static getProductsOnCategory = async (req, res) => {
+        try {
+            const category  = req.params.category
+            const product = await productModal.find({ category })
+            return res.json({ success: true, data: product })
+
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
 
 }
