@@ -18,8 +18,8 @@ function Header() {
     // Fetch data from API
     async function getData() {
       try {
-        const response = await fetch(SummaryApi.categoryProduct.url, {
-          method: SummaryApi.categoryProduct.method
+        const response = await fetch(SummaryApi.category.url, {
+          method: SummaryApi.category.method
         });
         const data = await response.json();
         if (Array.isArray(data.data)) {
@@ -80,14 +80,6 @@ function Header() {
         <div className="bar2"></div>
         <div className="bar3"></div>
       </div>
-      {/* Render API data if available */}
-      {apiData.length > 0 && (
-        <div className="api-data">
-          {apiData.map((item, index) => (
-            <div key={index}>{item}</div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
