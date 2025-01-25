@@ -98,8 +98,12 @@ export default class ProductController {
     static getProductsOnCategory = async (req, res) => {
         try {
             const category  = req.params.category
-            const product = await productModal.find({ category })
-            return res.json({ success: true, data: product })
+            const products = (await productModal.find({ category })).map(product => ({
+                name: product.name,
+                price: product.price,
+                image: product.image[0]
+            }))
+            return res.json({ success: true, data: products })
 
         } catch (err) {
             console.error(err)

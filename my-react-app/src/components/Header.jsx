@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Tracks menu state
   const [apiData, setApiData] = useState([""]); // State to store API data as string[]
-  
+
   useEffect(() => {
     // Set the initial height of the menu to 0vh when the page loads
     const menu = document.getElementById('menu');
@@ -27,7 +27,7 @@ function Header() {
         } else {
           console.error("API data is not an array of strings:", data);
         }
-        console.log("API data fetched successfully:", data);
+        console.log("API data fetched successfully:", data.data);
       } catch (error) {
         console.error("Error fetching API data:", error);
       }
@@ -65,7 +65,7 @@ function Header() {
       <nav>
         <ul id="menu" className="nav-links">
           <li><NavLink to='/'><a href="#home">HOME</a></NavLink></li>
-          <NavLink to='/collection'><DropdownMenu title="ALL COLLECTIONS" items={apiData} /></NavLink>
+          <DropdownMenu title="ALL COLLECTIONS" items={apiData} endpoints={'collection'} />
           <li><NavLink to='/product' ><a href="#sale">SALE</a></NavLink></li>
           <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
           <li><a href="#cart">CART</a></li>
