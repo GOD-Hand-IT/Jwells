@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "../App.css"; 
 
 const products = [
-  { name: "Product 1", price: 50, image: "assets/image-1.jpg" },
-  { name: "Product 2", price: 30, image: "assets/image-2.jpg" },
+  { name: "Product 1", price: 50, image: "..assets/image-1.jpg" },
+  { name: "Product 2", price: 30, image: "..assets/image-2.jpg" },
   { name: "Product 3", price: 20, image: "assets/image-3.png" },
   { name: "Product 4", price: 10, image: "assets/image-4.jpg" },
   { name: "Product 5", price: 55, image: "assets/image-5.png" },
