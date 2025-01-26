@@ -65,24 +65,24 @@ function Header() {
       <nav>
         <ul id="menu" className="nav-links">
           <li><Link to='/'>HOME</Link></li>
-          <DropdownMenu 
-            title="ALL COLLECTIONS" 
-            items={apiData} 
-            endpoints={'collection'} 
+          <DropdownMenu
+            title="ALL COLLECTIONS"
+            items={apiData}
+            endpoints={'collection'}
             renderItem={(item, index) => (
-              <Link to="/collection" state={{ collectionName : item }}>
+              <Link to="/collection" state={{ collectionName: item }}>
                 {item}
               </Link>
             )}
           />
           <li><Link to={"Sales"}>SALE</Link></li>
           <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
-          <li><a href="#cart">CART</a></li>
-          <DropdownMenu 
-            title="ACCOUNT" 
-            items={accountItems} 
-            header="USERNAME" 
-            up="up" 
+          <li><Link to='/cart'>CART</Link></li>
+          <DropdownMenu
+            title="ACCOUNT"
+            items={accountItems}
+            header="USERNAME"
+            up="up"
             renderItem={(item, index) => (
               <Link
                 to={{

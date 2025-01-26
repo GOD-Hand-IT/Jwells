@@ -1,29 +1,24 @@
-import { useState } from 'react'
 import React from 'react';
-import {Routes, Route} from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import Home from './pages/home';
-import Collection from './pages/collection.jsx'
-import Product from './pages/product.jsx'
-import './App.css'
-
-
+import './App.css';
+import Context from './context/index.js';
 
 const App = () => {
-  const [count, setCount] = useState(0)
-
   return (
-    <div>
-      <Header/>
-      <Routes>
-        <Route path='/' element={<Home/>}/>
-        <Route path='/collection' element={<Collection/>}/>
-        <Route path='/:name' element={<Product/>}/>
-      </Routes>
-      <Footer/>
-    </div>
-  )
-}
+    <>
+      <Context.Provider value={{
 
-export default App
+      }} />
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+
+    </>
+  );
+};
+
+export default App;
