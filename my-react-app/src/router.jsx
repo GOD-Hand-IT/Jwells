@@ -6,26 +6,26 @@ import Product from './pages/product.jsx';
 import Cart from './pages/cart.jsx';
 
 export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    children: [
-      {
-        path: '',
-        element: <Home />
-      },
-      {
-        path: '/collection',
-        element: <Collection />
-      },
-      {
+    {
+        path: '/',
+        element: <App />,
+        children: [
+            {
+                path: '',
+                element: <Home />
+            },
+            {
+                path: '/collection',
+                element: <Collection />
+            }
+        ]
+    },
+    {
+        path: 'cart',
+        element: <Cart />
+    },
+    {
         path: '/:name',
         element: <Product />
-      }
-    ]
-  },
-  {
-    path: 'cart',
-    element: <Cart />
-  }
+    }
 ]);

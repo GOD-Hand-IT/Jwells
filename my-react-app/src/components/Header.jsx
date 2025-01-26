@@ -1,6 +1,8 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import DropdownMenu from './DropdownMenu';
+import { toast } from 'react-toastify';
+
 import SummaryApi from '../common/apiConfig'; // Import the SummaryApi configuration
 import { NavLink, Link } from 'react-router-dom';
 
@@ -24,6 +26,7 @@ function Header() {
         const data = await response.json();
         if (Array.isArray(data.data)) {
           setApiData(data.data);
+          toast.success("API data fetched successfully");
         } else {
           console.error("API data is not an array of strings:", data);
         }
