@@ -38,7 +38,8 @@ const Login = () => {
 
     try {
       const loadingToastId = toast.loading("Please wait...");
-
+      const endpoint = getEndpoint();
+      
       const data = authMode === "signin"
         ? { email: formData.email, password: formData.password }
         : authMode === "signup"
@@ -50,9 +51,6 @@ const Login = () => {
           }
           : { email: formData.email };
 
-      const endpoint = getEndpoint();
-
-      // Modified fetch configuration
       const response = await fetch(endpoint.url, {
         method: endpoint.method,
         headers: {
@@ -60,7 +58,7 @@ const Login = () => {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        mode: 'cors', // Explicitly set CORS mode
+        mode: 'cors',
         body: JSON.stringify(data)
       });
 
@@ -68,15 +66,13 @@ const Login = () => {
       toast.dismiss(loadingToastId);
 
       if (response.ok) {
-        if (authMode === 'signin') {
-          if (result.user) {
-            // Store just the user ID
-            localStorage.setItem('userId', result.user.id);
-            await new Promise(resolve => setTimeout(resolve, 100));
-            setTimeout(() => navigate('/'), 1000);
-          } else {
-            toast.error('Invalid email or password');
-          }
+        if (authMode === 'signin' && result.user) {
+          localStorage.setItem('userId', result.user.id);
+          navigate('/');
+          toast.success('Login successful!');
+        } else if (authMode === 'signup') {
+          toast.success('Registration successful! Please login.');
+          toggleAuthMode('signin');
         }
       } else {
         toast.error(result.message || 'Authentication failed');
