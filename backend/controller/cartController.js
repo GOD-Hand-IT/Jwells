@@ -8,14 +8,14 @@ import addToCartModel from '../model/cartProduct.js';
 export default class CartController {
     static async addToCart(req, res) {
         try {
-            // Check if user is logged in
-            if (!req.session.userId) {
-                return res.sendStatus(401);
+            const { productId, quantity, userId } = req.body;
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
             }
 
-            const { productId, quantity } = req.body;
-            const userId = req.session.userId;
-            console.log(quantity)
             // Validate quantity is a valid number
             const parsedQuantity = parseInt(quantity);
             if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
@@ -60,12 +60,14 @@ export default class CartController {
 
     static async removeFromCart(req, res) {
         try {
-            // Check if user is logged in
-            if (!req.session.userId) {
-                return res.sendStatus(401);
+            const { cartItemId, userId } = req.body;
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
             }
 
-            const { cartItemId } = req.body;
             await addToCartModel.findByIdAndDelete(cartItemId);
             return res.status(200).json({ 
                 success: true, 
@@ -78,12 +80,14 @@ export default class CartController {
 
     static async showCart(req, res) {
         try {
-            // Check if user is logged in
-            if (!req.session.userId) {
-                return res.sendStatus(401);
+            const { userId } = req.body;
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
             }
 
-            const userId = req.session.userId;
             const cartItems = await addToCartModel.find({ userId })
                 .populate('productId')
                 .populate('userId', 'name email');

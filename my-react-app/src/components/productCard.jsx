@@ -13,6 +13,12 @@ function ProductCard({ product }) {
 
   const handleAddToCart = async (e) => {
     e.preventDefault(); // Prevent navigation when clicking cart button
+    const userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+      toast.error('Please login to add items to cart');
+      return;
+    }
     
     try {
       const response = await fetch(SummaryApi.addToCart.url, {
@@ -23,7 +29,8 @@ function ProductCard({ product }) {
         credentials: 'include', // For handling cookies
         body: JSON.stringify({
           productId: id,
-          quantity: 1
+          quantity: 1,
+          userId: userId
         })
       });
 
