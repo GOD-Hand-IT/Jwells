@@ -90,7 +90,7 @@ function Header() {
             renderItem={(item, index) => (
               <Link
                 to={{
-                  pathname: '/account',
+                  pathname: '/login',
                   state: { accountItem: item }
                 }}
                 key={index}
