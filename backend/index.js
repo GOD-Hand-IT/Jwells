@@ -14,12 +14,13 @@ import adminRouter from './routes/adminRoute.js'
 const server = express();
 const PORT = process.env.PORT || 3000;
 server.use(cookieParser());
-
-
 server.use(express.json());
-server.use(cors());
-
-
+server.use(cors({
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 server.use("/user", userRouter)
 server.use("/product", productRouter)

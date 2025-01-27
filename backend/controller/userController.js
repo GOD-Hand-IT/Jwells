@@ -2,10 +2,9 @@ import validator from 'validator'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import userModal from '../model/userModal.js'
+import { createToken, setAuthCookie } from '../middleware/authMiddleware.js'
 
-const createToken = (id) => {
-   return  jwt.sign({ id }, process.env.secret_key)
-}
+
 export default class UserController {
 
     static registerUser = async (req, res) => {
@@ -36,10 +35,19 @@ export default class UserController {
 
             const user = await newUser.save()
             const token = createToken(user.id)
-            return res.json({ success: true, token: token })
+            setAuthCookie(res, token)
+            return res.status(201).json({ 
+                success: true, 
+                message: "Registration successful",
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            })
         } catch (error) {
             console.log(error)
-            res.json({ success: false, message: error.message })
+            res.status(400).json({ error: error.message })
         }
     }
 
@@ -56,10 +64,19 @@ export default class UserController {
             }
             else {
                 const token = createToken(user.id)
-                res.json({ success: true, token: token })
+                setAuthCookie(res, token)
+                res.status(200).json({ 
+                    success: true, 
+                    message: "Login successful",
+                    user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email
+                    }
+                })
             }
         } catch (error) {
-
+            res.status(400).json({ error: error.message })
         }
     }
 }

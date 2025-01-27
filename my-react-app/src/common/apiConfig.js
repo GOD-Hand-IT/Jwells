@@ -20,7 +20,11 @@ const SummaryApi = {
   register: {
     url: `${backendDomain}/user/register`,
     method: "post"
-  }
+  },
+  addToCart: {
+    url: `${backendDomain}/cart/add`,
+    method: "post"
+  },
 };
 
 export default SummaryApi;

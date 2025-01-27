@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import SummaryApi from "../common/apiConfig";
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [authMode, setAuthMode] = useState("signin"); // Modes: 'signin', 'signup', 'forgot'
   const [formData, setFormData] = useState({
     email: "",
@@ -17,35 +20,102 @@ const Login = () => {
     });
   };
 
+  const getEndpoint = () => {
+    switch (authMode) {
+      case 'signin':
+        return SummaryApi.login;
+      case 'signup':
+        return SummaryApi.register;
+      case 'forgot':
+        return SummaryApi.forgotPassword;
+      default:
+        return SummaryApi.login;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const data = authMode === "signin" 
-        ? { 
-            email: formData.email, 
-            password: formData.password 
-          }
-        : formData;
 
-      console.log('Submitting data:', data);
-      
-      // Example API call
-      const response = await fetch(SummaryApi.login.url, {
-        method: SummaryApi.login.method,
+    try {
+      const loadingToastId = toast.loading("Please wait...");
+
+      const data = authMode === "signin"
+        ? { email: formData.email, password: formData.password }
+        : authMode === "signup"
+          ? {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            password: formData.password
+          }
+          : { email: formData.email };
+
+      const endpoint = getEndpoint();
+
+      // Modified fetch configuration
+      const response = await fetch(endpoint.url, {
+        method: endpoint.method,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
+        mode: 'cors', // Explicitly set CORS mode
         body: JSON.stringify(data)
       });
 
+      // Log response headers for debugging
+      console.log('Response headers:', {
+        'set-cookie': response.headers.get('set-cookie'),
+        'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
+        'access-control-allow-origin': response.headers.get('access-control-allow-origin')
+      });
+
       const result = await response.json();
-      console.log('Success:', result);
-      // Handle successful login/signup here
-      
+      toast.dismiss(loadingToastId);
+
+      if (response.ok) {
+        // Check if cookie was set
+        const cookies = document.cookie;
+        console.log('Cookies after login:', 'hello');
+
+        toast.success(`${authMode === 'signin' ? 'Login' : authMode === 'signup' ? 'Registration' : 'Password reset'} successful!`);
+
+        if (authMode === 'signin') {
+          if (result.user) {
+            console.log("success");
+            localStorage.setItem('user', JSON.stringify(result.user));
+          }
+          // Add delay to ensure cookie is set
+          await new Promise(resolve => setTimeout(resolve, 100));
+          setTimeout(() => navigate('/'), 1000);
+        }
+      } else {
+        console.error('Login failed:', result);
+        toast.error(result.message || 'Authentication failed');
+      }
     } catch (error) {
-      console.error('Error:', error);
-      // Handle error here
+      console.error('Network or parsing error:', error);
+      toast.error('Network error or server unavailable');
+    }
+  };
+
+  // Update logout helper to work with HTTP-only cookies
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(SummaryApi.logout.url, {
+        method: SummaryApi.logout.method,
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        localStorage.removeItem('user');
+        navigate('/login');
+        toast.success('Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Error logging out');
     }
   };
 
@@ -59,8 +129,8 @@ const Login = () => {
           {authMode === "signin"
             ? "Sign In"
             : authMode === "signup"
-            ? "Sign Up"
-            : "Forgot Password"}
+              ? "Sign Up"
+              : "Forgot Password"}
         </h1>
 
         {/* Authentication Form */}
@@ -251,8 +321,8 @@ const Login = () => {
             </p>
           )}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
