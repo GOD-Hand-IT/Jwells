@@ -1,41 +1,45 @@
 import jwt from 'jsonwebtoken'
 
+/**
+ * @workspace Jwells/backend
+ * @middleware authToken
+ * @description Authenticates JWT token and sets userId in request
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ */
 async function authToken(req, res, next) {
     try {
-        const token = req.cookies?.token
-        console.log("token", req.cookies?.token)
+        const token = req.cookies?.token;
 
         if (!token) {
             return res.status(401).json({
-                message: "No token provided",
-                error: true,
                 success: false,
+                message: "Authentication required",
                 redirect: '/login'
-            })
+            });
         }
 
-        jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(401).json({
-                    message: "Invalid or expired token",
-                    error: true,
                     success: false,
+                    message: "Invalid or expired token",
                     redirect: '/login'
-                })
+                });
             }
 
-            req.userId = decoded?._id
-            next()
+            req.userId = decoded.userId;
+            next();
         });
 
     } catch (err) {
-        res.status(401).json({
-            message: err.message || "Authentication failed",
-            error: true,
+        return res.status(500).json({
             success: false,
+            message: "Server error",
             redirect: '/login'
-        })
+        });
     }
 }
 
-export default authToken
+export default authToken;

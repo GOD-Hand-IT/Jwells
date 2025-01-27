@@ -1,3 +1,8 @@
+/**
+ * @workspace Jwells/backend
+ * @controller UserController
+ * @description Handles user authentication and management
+ */
 import validator from 'validator'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -7,21 +12,25 @@ import { createToken, setAuthCookie } from '../middleware/authMiddleware.js'
 
 export default class UserController {
 
+    /**
+     * @controller registerUser
+     * @description Register new user
+     */
     static registerUser = async (req, res) => {
         try {
             const { name, email, password } = req.body
             const exists = await userModal.findOne({ email })
 
             if (exists) {
-                return res.json({ success: false, message: "User already exists" })
+                return res.status(409).json({ success: false, message: "User already exists" })
             }
 
             if (!validator.isEmail(email)) {
-                return res.json({ success: false, message: "Enter valid email address" })
+                return res.status(400).json({ success: false, message: "Enter valid email address" })
             }
 
             if (password.length < 6) {
-                return res.json({ success: false, message: "Password must be minimum 6 characters" })
+                return res.status(400).json({ success: false, message: "Password must be minimum 6 characters" })
             }
 
             const salt = await bcrypt.genSalt(10)
@@ -47,36 +56,39 @@ export default class UserController {
             })
         } catch (error) {
             console.log(error)
-            res.status(400).json({ error: error.message })
+            res.status(500).json({ success: false, message: "Server error" })
         }
     }
 
+    /**
+     * @controller loginUser
+     * @description Authenticate user login
+     */
     static loginUser = async (req, res) => {
         try {
             const { email, password } = req.body
             const user = await userModal.findOne({ email })
             if (!user) {
-                return res.json({ success: false, message: "User doesn't exists!" })
+                return res.status(404).json({ success: false, message: "User doesn't exist" })
             }
             const isMatch = await bcrypt.compare(password, user.password)
             if (!isMatch) {
-                res.json({ success: false, message: "Invalid credentials" })
+                return res.status(401).json({ success: false, message: "Invalid credentials" })
             }
-            else {
-                const token = createToken(user.id)
-                setAuthCookie(res, token)
-                res.status(200).json({ 
-                    success: true, 
-                    message: "Login successful",
-                    user: {
-                        id: user._id,
-                        name: user.name,
-                        email: user.email
-                    }
-                })
-            }
+            
+            const token = createToken(user.id)
+            setAuthCookie(res, token)
+            return res.status(200).json({ 
+                success: true, 
+                message: "Login successful",
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            })
         } catch (error) {
-            res.status(400).json({ error: error.message })
+            res.status(500).json({ success: false, message: "Server error" })
         }
     }
 }

@@ -1,3 +1,8 @@
+/**
+ * @workspace Jwells/backend
+ * @middleware corsHandler
+ * @description Handles CORS configuration and whitelisting
+ */
 import  cors from "cors";
 
 const whiteList = ["https://www.google.com"];
