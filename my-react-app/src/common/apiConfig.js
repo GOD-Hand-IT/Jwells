@@ -13,7 +13,7 @@ const SummaryApi = {
     url: `${backendDomain}/product/info/`,
     method: "get"
   },
-  login : {
+  login: {
     url: `${backendDomain}/user/login`,
     method: "post"
   },
@@ -24,6 +24,10 @@ const SummaryApi = {
   addToCart: {
     url: `${backendDomain}/cart/add`,
     method: "post"
+  },
+  showCart: {
+    url: `${backendDomain}/cart/show`,
+    method: "get"
   },
 };
 

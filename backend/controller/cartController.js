@@ -89,8 +89,7 @@ export default class CartController {
             }
 
             const cartItems = await addToCartModel.find({ userId })
-                .populate('productId')
-                .populate('userId', 'name email');
+                .populate('productId');
             return res.status(200).json({ 
                 success: true, 
                 message: 'Cart retrieved successfully',
