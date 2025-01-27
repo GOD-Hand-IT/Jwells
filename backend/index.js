@@ -6,9 +6,15 @@ import connectDB from './config/mongoose.js';
 import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
+import cookieParser from 'cookie-parser';
+
+import cartRouter from './routes/cartRoutes.js'
+import adminRouter from './routes/adminRoute.js'
 
 const server = express();
 const PORT = process.env.PORT || 3000;
+server.use(cookieParser());
+
 
 server.use(express.json());
 server.use(cors());
@@ -17,6 +23,8 @@ server.use(cors());
 
 server.use("/user", userRouter)
 server.use("/product", productRouter)
+server.use("/cart", cartRouter)
+server.use('/admin', adminRouter)
 
 
 

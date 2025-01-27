@@ -1,7 +1,53 @@
 import React, { useState } from "react";
+import SummaryApi from "../common/apiConfig";
 
 const Login = () => {
   const [authMode, setAuthMode] = useState("signin"); // Modes: 'signin', 'signup', 'forgot'
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: ""
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const data = authMode === "signin" 
+        ? { 
+            email: formData.email, 
+            password: formData.password 
+          }
+        : formData;
+
+      console.log('Submitting data:', data);
+      
+      // Example API call
+      const response = await fetch(SummaryApi.login.url, {
+        method: SummaryApi.login.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      console.log('Success:', result);
+      // Handle successful login/signup here
+      
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error here
+    }
+  };
 
   const toggleAuthMode = (mode) => setAuthMode(mode);
 
@@ -19,12 +65,15 @@ const Login = () => {
 
         {/* Authentication Form */}
         {authMode === "signin" && (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Email</label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 placeholder="Enter your email"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -36,6 +85,9 @@ const Login = () => {
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Password</label>
               <input
                 type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
                 placeholder="Enter your password"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -53,12 +105,15 @@ const Login = () => {
         )}
 
         {authMode === "signup" && (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* First Name */}
             <div>
               <label className="block mb-2 text-sm font-[cinzel] font-medium">First Name</label>
               <input
                 type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
                 placeholder="Enter your first name"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -70,6 +125,9 @@ const Login = () => {
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Last Name</label>
               <input
                 type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
                 placeholder="Enter your last name"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -81,6 +139,9 @@ const Login = () => {
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Email</label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 placeholder="Enter your email"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -92,6 +153,9 @@ const Login = () => {
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Password</label>
               <input
                 type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
                 placeholder="Enter your password"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
@@ -109,12 +173,15 @@ const Login = () => {
         )}
 
         {authMode === "forgot" && (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
               <label className="block mb-2 text-sm font-[cinzel] font-medium">Email</label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 placeholder="Enter your registered email"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required

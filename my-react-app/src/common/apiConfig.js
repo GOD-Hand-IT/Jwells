@@ -13,6 +13,14 @@ const SummaryApi = {
     url: `${backendDomain}/product/info/`,
     method: "get"
   },
+  login : {
+    url: `${backendDomain}/user/login`,
+    method: "post"
+  },
+  register: {
+    url: `${backendDomain}/user/register`,
+    method: "post"
+  }
 };
 
 export default SummaryApi;

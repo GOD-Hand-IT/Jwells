@@ -3,39 +3,39 @@ import jwt from 'jsonwebtoken'
 async function authToken(req, res, next) {
     try {
         const token = req.cookies?.token
+        console.log("token", req.cookies?.token)
 
-        console.log("token", token)
         if (!token) {
-            return res.status(200).json({
-                message: "Please Login...!",
+            return res.status(401).json({
+                message: "No token provided",
                 error: true,
-                success: false
+                success: false,
+                redirect: '/login'
             })
         }
 
-        jwt.verify(token, process.env.TOKEN_SECRET_KEY, function (err, decoded) {
-            console.log(err)
-            console.log("decoded", decoded)
-
+        jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
             if (err) {
-                console.log("error auth", err)
+                return res.status(401).json({
+                    message: "Invalid or expired token",
+                    error: true,
+                    success: false,
+                    redirect: '/login'
+                })
             }
 
             req.userId = decoded?._id
-
             next()
         });
 
-
     } catch (err) {
-        res.status(400).json({
-            message: err.message || err,
-            data: [],
+        res.status(401).json({
+            message: err.message || "Authentication failed",
             error: true,
-            success: false
+            success: false,
+            redirect: '/login'
         })
     }
 }
 
-
-module.exports = authToken
+export default authToken
