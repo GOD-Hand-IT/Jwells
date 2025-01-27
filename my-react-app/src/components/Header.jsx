@@ -78,6 +78,7 @@ function Header() {
               </Link>
             )}
           />
+          <li><Link to='/admin' >Admin</Link></li>
           <li><Link to={"Sales"}>SALE</Link></li>
           <li><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
           <li><Link to='/cart'>CART</Link></li>
@@ -89,7 +90,7 @@ function Header() {
             renderItem={(item, index) => (
               <Link
                 to={{
-                  pathname: '/login',
+                  pathname: '/account',
                   state: { accountItem: item }
                 }}
                 key={index}

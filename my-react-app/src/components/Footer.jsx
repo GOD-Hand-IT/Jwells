@@ -46,7 +46,7 @@ function Footer() {
           © {new Date().getFullYear()} <span className="font-semibold">HRIDHAYAM</span>. All rights reserved.
         </p>
         <p className="text-sm mt-1">
-          Designed and Developed by <span className="font-semibold cursor-pointer">NERV</span>.
+          Designed and Developed by <span className="font-semibold cursor-pointer"></span>.
         </p>
       </div>
     </footer>
