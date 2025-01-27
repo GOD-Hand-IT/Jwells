@@ -7,18 +7,7 @@ import "../App.css";
 import SummaryApi from "../common/apiConfig";
 
 const products = [
-  { name: "Product 1", price: 50, image: "assets/image-1.jpg" },
-  { name: "Product 2", price: 30, image: "assets/image-2.jpg" },
-  { name: "Product 3", price: 20, image: "assets/image-3.png" },
-  { name: "Product 4", price: 10, image: "assets/image-4.jpg" },
-  { name: "Product 5", price: 55, image: "assets/image-5.png" },
-  { name: "Product 6", price: 33, image: "assets/image-6.png" },
-  { name: "Product 7", price: 52, image: "assets/image-7.png" },
-  { name: "Product 8", price: 31, image: "assets/image-8.jpg" },
-  { name: "Product 9", price: 23, image: "assets/image-9.jpg" },
-  { name: "Product 10", price: 36, image: "assets/image-10.png" },
-  { name: "Product 11", price: 50, image: "assets/image-11.jpg" },
-  { name: "Product 12", price: 30, image: "assets/image-12.jpeg" },
+
 ];
 
 const itemsPerPage = 9;

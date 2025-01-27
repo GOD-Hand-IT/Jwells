@@ -4,6 +4,8 @@ import Home from './pages/home';
 import Collection from './pages/collection.jsx';
 import Product from './pages/product.jsx';
 import Cart from './pages/cart.jsx';
+import FormPage from './pages/customizedesign.jsx';
+import Login from './components/Login.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -17,6 +19,14 @@ export const router = createBrowserRouter([
             {
                 path: '/collection',
                 element: <Collection />
+            },
+            {
+                path: '/customize-design',
+                element:<FormPage/>
+            },
+            {
+                path: '/login',
+                element:<Login/>
             }
         ]
     },

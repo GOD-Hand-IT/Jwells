@@ -2,24 +2,52 @@ import React from 'react';
 
 function Footer() {
   return (
-    <footer>
-      <div className="footer-section">
-        <h1>HRIDHAYAM</h1>
+    <footer className="flex flex-col bg-gray-800 text-black py-8">
+      {/* Main Flex Container */}
+      <div className="flex flex-wrap justify-start pb-20 items-start w-full">
+  {/* Left Column */}
+  <div className="w-full lg:w-1/2 flex justify-center lg:justify-center">
+    <h1 className="text-6xl font-light font-[cinzel]">HRIDHAYAM</h1>
+  </div>
+
+  {/* Right Column */}
+  <div className="w-full lg:w-1/2 flex flex-column font-[lato] gap-8">
+    {/* About Section */}
+    <div className="flex-1 items-start text-left">
+      <h3 className="text-lg font-medium mb-4">ABOUT</h3>
+      <div className="space-y-2">
+        <p className="text-sm">Information about the company.</p>
+        <p className="text-sm">Additional details if needed.</p>
       </div>
-      <div className="footer2">
-        <div className="footer-section">
-          <h3>ABOUT</h3>
-          <p>Information about the company.</p>
-        </div>
-        <div className="footer-section">
-          <h3>SOCIAL</h3>
-          <p>Facebook</p>
-          <p>Instagram</p>
-        </div>
-        <div className="footer-section">
-          <h3>CONTACT</h3>
-          <p>hridhayam@gmail.com</p>
-        </div>
+    </div>
+
+    {/* Social Section */}
+    <div className="flex-1 items-start text-left">
+      <h3 className="text-lg font-medium mb-4">SOCIAL</h3>   
+      <div>Facebook</div>
+      <div>Instagram</div>  
+    </div>
+
+    {/* Contact Section */}
+    <div className="flex-1 items-start text-left">
+      <h3 className="text-lg font-medium mb-4">CONTACT</h3>
+      <div className="space-y-2">
+        <p className="text-sm">hridhayam@gmail.com</p>
+        <p className="text-sm">+91 123456789</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      {/* Footer Bottom Section */}
+      <div className="mt-12 w-full font-[lato] text-center border-t border-gray-700 pt-6">
+        <p className="text-sm">
+          © {new Date().getFullYear()} <span className="font-semibold">HRIDHAYAM</span>. All rights reserved.
+        </p>
+        <p className="text-sm mt-1">
+          Designed and Developed by <span className="font-semibold cursor-pointer">NERV</span>.
+        </p>
       </div>
     </footer>
   );

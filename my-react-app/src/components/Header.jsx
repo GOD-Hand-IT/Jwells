@@ -79,7 +79,7 @@ function Header() {
             )}
           />
           <li><Link to={"Sales"}>SALE</Link></li>
-          <li><a href="#custom">CUSTOMIZE DESIGN</a></li>
+          <li><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
           <li><Link to='/cart'>CART</Link></li>
           <DropdownMenu
             title="ACCOUNT"
@@ -89,7 +89,7 @@ function Header() {
             renderItem={(item, index) => (
               <Link
                 to={{
-                  pathname: '/account',
+                  pathname: '/login',
                   state: { accountItem: item }
                 }}
                 key={index}
