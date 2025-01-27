@@ -1,3 +1,8 @@
+/**
+ * @workspace Jwells/backend
+ * @controller AdminController
+ * @description Handles admin-specific operations
+ */
 import { v2 as cloudinary } from 'cloudinary'
 import productModal from '../model/productModal.js'
 
@@ -6,8 +11,9 @@ export default class AdminController {
         try {
             const { name, price, description, category } = req.body
             const image = req.files.image && req.files.image[0]
+            
             if (!image) {
-                return res.status(400).json({ success: false, message: "Image is required" })
+                return res.sendStatus(400)
             }
             
             const image1 = await cloudinary.uploader.upload(image.path, { resource_type: 'image' })
@@ -19,10 +25,14 @@ export default class AdminController {
                 category
             })
             await product.save()
-            return res.json({ success: true, message: "Product added successfully" })
+            return res.status(201).json({ 
+                success: true, 
+                message: "Product added successfully",
+                data: product
+            })
         } catch (err) {
             console.error(err)
-            res.status(500).json({ success: false, message: "Server error" })
+            return res.sendStatus(500)
         }
     }
 
@@ -31,13 +41,16 @@ export default class AdminController {
             const { id } = req.body
             const product = await productModal.findById(id)
             if (!product) {
-                return res.status(404).json({ success: false, message: "Product not found" })
+                return res.sendStatus(404)
             }
             await product.remove()
-            res.json({ success: true, message: "Product removed successfully" })
+            return res.status(200).json({ 
+                success: true, 
+                message: "Product removed successfully" 
+            })
         } catch (err) {
             console.error(err)
-            res.status(500).json({ success: false, message: "Server error" })
+            return res.sendStatus(500)
         }
     }
 
@@ -47,7 +60,7 @@ export default class AdminController {
             res.json({ success: true, data: products })
         } catch (err) {
             console.error(err)
-            res.status(500).json({ success: false, message: "Server error" })
+            res.sendStatus(500)
         }
     }
 }

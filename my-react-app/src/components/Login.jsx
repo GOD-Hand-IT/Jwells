@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SummaryApi from "../common/apiConfig";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -64,38 +64,24 @@ const Login = () => {
         body: JSON.stringify(data)
       });
 
-      // Log response headers for debugging
-      console.log('Response headers:', {
-        'set-cookie': response.headers.get('set-cookie'),
-        'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
-        'access-control-allow-origin': response.headers.get('access-control-allow-origin')
-      });
-
       const result = await response.json();
       toast.dismiss(loadingToastId);
 
       if (response.ok) {
-        // Check if cookie was set
-        const cookies = document.cookie;
-        console.log('Cookies after login:', 'hello');
-
-        toast.success(`${authMode === 'signin' ? 'Login' : authMode === 'signup' ? 'Registration' : 'Password reset'} successful!`);
-
         if (authMode === 'signin') {
           if (result.user) {
-            console.log("success");
-            localStorage.setItem('user', JSON.stringify(result.user));
+            // Store just the user ID
+            localStorage.setItem('userId', result.user.id);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            setTimeout(() => navigate('/'), 1000);
+          } else {
+            toast.error('Invalid email or password');
           }
-          // Add delay to ensure cookie is set
-          await new Promise(resolve => setTimeout(resolve, 100));
-          setTimeout(() => navigate('/'), 1000);
         }
       } else {
-        console.error('Login failed:', result);
         toast.error(result.message || 'Authentication failed');
       }
     } catch (error) {
-      console.error('Network or parsing error:', error);
       toast.error('Network error or server unavailable');
     }
   };
@@ -114,12 +100,17 @@ const Login = () => {
         toast.success('Logged out successfully');
       }
     } catch (error) {
-      console.error('Logout error:', error);
       toast.error('Error logging out');
     }
   };
 
   const toggleAuthMode = (mode) => setAuthMode(mode);
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && authMode === 'signin') {
+      toggleAuthMode('signup');
+    }
+  };
 
   return (
     <div className="bg-transparent text-black p-8 min-h-screen flex justify-center items-center">
@@ -158,6 +149,7 @@ const Login = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Enter your password"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required

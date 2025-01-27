@@ -1,35 +1,42 @@
 import jwt from 'jsonwebtoken';
 
+/**
+ * @workspace Jwells/backend
+ * @middleware verifyToken
+ * @description Verifies JWT token from cookies
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ */
 const verifyToken = (req, res, next) => {
     try {
-        // Get token from cookie
-        const token = req.cookies.auth_token;
+        const token = req.cookies?.token;
         
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: "No token provided"
+                message: "Authentication required",
+                redirect: '/login'
             });
         }
 
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Check if session userId matches token userId
-        if (req.session.userId !== decoded.userId) {
+        if (!decoded.userId) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid session"
+                message: "Invalid token format",
+                redirect: '/login'
             });
         }
 
-        // Add user data to request
         req.user = decoded;
         next();
     } catch (error) {
         return res.status(401).json({
             success: false,
-            message: "Invalid token"
+            message: "Invalid or expired token",
+            redirect: '/login'
         });
     }
 };

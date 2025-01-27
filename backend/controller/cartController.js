@@ -1,16 +1,27 @@
+/**
+ * @workspace Jwells/backend
+ * @controller CartController
+ * @description Manages shopping cart operations
+ */
 import addToCartModel from '../model/cartProduct.js';
 
 export default class CartController {
     static async addToCart(req, res) {
         try {
             const { productId, quantity, userId } = req.body;
-            console.log(quantity)
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
+            }
+
             // Validate quantity is a valid number
             const parsedQuantity = parseInt(quantity);
             if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
                 return res.status(400).json({ 
                     success: false, 
-                    error: 'Please provide a valid quantity' 
+                    message: 'Please provide a valid quantity' 
                 });
             }
 
@@ -24,7 +35,11 @@ export default class CartController {
                 // Update quantity of existing item
                 existingCartItem.quantity = existingCartItem.quantity + parsedQuantity;
                 await existingCartItem.save();
-                res.status(200).json({ success: true, data: existingCartItem });
+                return res.status(200).json({ 
+                    success: true, 
+                    message: 'Cart updated successfully',
+                    data: existingCartItem 
+                });
             } else {
                 // Create new cart item
                 const cartItem = await addToCartModel.create({
@@ -32,32 +47,57 @@ export default class CartController {
                     quantity: parsedQuantity,
                     userId
                 });
-                res.status(201).json({ success: true, data: cartItem });
+                return res.status(201).json({ 
+                    success: true, 
+                    message: 'Item added to cart',
+                    data: cartItem 
+                });
             }
         } catch (error) {
-            res.status(400).json({ success: false, error: error.message });
+            return res.sendStatus(500);
         }
     }
 
     static async removeFromCart(req, res) {
         try {
-            const { cartItemId } = req.body;
+            const { cartItemId, userId } = req.body;
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
+            }
+
             await addToCartModel.findByIdAndDelete(cartItemId);
-            res.status(200).json({ success: true, message: 'Item removed from cart' });
+            return res.status(200).json({ 
+                success: true, 
+                message: 'Item removed from cart' 
+            });
         } catch (error) {
-            res.status(400).json({ success: false, error: error.message });
+            return res.sendStatus(500);
         }
     }
 
     static async showCart(req, res) {
         try {
             const { userId } = req.body;
+            if (!userId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId is required'
+                });
+            }
+
             const cartItems = await addToCartModel.find({ userId })
                 .populate('productId')
                 .populate('userId', 'name email');
-            res.status(200).json({ success: true, data: cartItems });
+            return res.status(200).json({ 
+                success: true, 
+                message: 'Cart retrieved successfully',
+                data: cartItems 
+            });
         } catch (error) {
-            res.status(400).json({ success: false, error: error.message });
+            return res.sendStatus(500);
         }
     }
 }
