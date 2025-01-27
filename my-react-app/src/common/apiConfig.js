@@ -27,7 +27,7 @@ const SummaryApi = {
   },
   showCart: {
     url: `${backendDomain}/cart/show`,
-    method: "get"
+    method: "post"
   },
 };
 

@@ -81,6 +81,8 @@ export default class CartController {
     static async showCart(req, res) {
         try {
             const { userId } = req.body;
+            console.log('Received userId:', userId); // Debug log
+
             if (!userId) {
                 return res.status(400).json({
                     success: false,
@@ -89,14 +91,23 @@ export default class CartController {
             }
 
             const cartItems = await addToCartModel.find({ userId })
-                .populate('productId');
-            return res.status(200).json({ 
-                success: true, 
+                .populate('productId')
+                .lean();  // Convert to plain JavaScript objects
+
+            console.log('Found cart items:', cartItems); // Debug log
+
+            return res.status(200).json({
+                success: true,
                 message: 'Cart retrieved successfully',
-                data: cartItems 
+                data: cartItems || []
             });
         } catch (error) {
-            return res.sendStatus(500);
+            console.error('Cart fetch error:', error); // Debug log
+            return res.status(500).json({
+                success: false,
+                message: 'Error fetching cart items',
+                error: error.message
+            });
         }
     }
 }

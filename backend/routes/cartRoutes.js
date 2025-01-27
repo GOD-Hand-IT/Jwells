@@ -9,6 +9,6 @@ router.use(verifyToken);
 
 router.post('/add', CartController.addToCart);
 router.delete('/remove', CartController.removeFromCart);
-router.get('/show', CartController.showCart);
+router.post('/show', CartController.showCart);
 
 export default router;

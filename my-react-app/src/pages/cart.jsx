@@ -7,37 +7,36 @@ const Cart = () => {
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
 
+    const fetchCartItems = async () => {
+        try {
+            const userId = localStorage.getItem('userId');
+            const response = await fetch(SummaryApi.showCart.url, {
+                method: SummaryApi.showCart.method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ userId })
+            });
 
+            const result = await response.json();
+            if (response.ok) {
+                setCartItems(result.data);
+                // Calculate total
+                const cartTotal = result.data.reduce((sum, item) => 
+                    sum + (item.productId.price * item.quantity), 0);
+                setTotal(cartTotal);
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            toast.error('Error fetching cart items');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchCartItems = async () => {
-            try {
-                const userId = localStorage.getItem('userId');
-                const response = await fetch(SummaryApi.showCart.url, {
-                    method: SummaryApi.showCart.method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ userId })
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    setCartItems(result.data);
-                    // Calculate total
-                    const cartTotal = result.data.reduce((sum, item) =>
-                        sum + (item.productId.price * item.quantity), 0);
-                    setTotal(cartTotal);
-                } else {
-                    toast.error(result.message);
-                }
-            } catch (error) {
-                toast.error('Error fetching cart items');
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchCartItems();
     }, []);
 
@@ -62,11 +61,11 @@ const Cart = () => {
 
                                         <div className="flex items-center justify-between md:order-3 md:justify-end">
                                             <div className="flex items-center">
-                                                <input
-                                                    type="text"
+                                                <input 
+                                                    type="text" 
                                                     className="w-10 text-center bg-transparent"
                                                     value={item.quantity}
-                                                    readOnly
+                                                    readOnly 
                                                 />
                                             </div>
                                             <div className="text-end md:w-32">
