@@ -45,8 +45,8 @@ export default class UserController {
             const user = await newUser.save()
             const token = createToken(user.id)
             setAuthCookie(res, token)
-            return res.status(201).json({ 
-                success: true, 
+            return res.status(201).json({
+                success: true,
                 message: "Registration successful",
                 user: {
                     id: user._id,
@@ -75,11 +75,11 @@ export default class UserController {
             if (!isMatch) {
                 return res.status(401).json({ success: false, message: "Invalid credentials" })
             }
-            
+
             const token = createToken(user.id)
             setAuthCookie(res, token)
-            return res.status(200).json({ 
-                success: true, 
+            return res.status(200).json({
+                success: true,
                 message: "Login successful",
                 user: {
                     id: user._id,
@@ -104,10 +104,87 @@ export default class UserController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict'
             });
-            
-            return res.status(200).json({ 
-                success: true, 
+
+            return res.status(200).json({
+                success: true,
                 message: "Logged out successfully"
+            });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
+
+    /**
+     * @controller getUser
+     * @description Get user details by userId
+     */
+    static getUser = async (req, res) => {
+        try {
+            const { userId } = req.body;
+
+            if (!userId) {
+                return res.status(400).json({ success: false, message: "User ID is required" });
+            }
+
+            const user = await userModal.findById(userId).select('-password');
+
+            if (!user) {
+                return res.status(404).json({ success: false, message: "User not found" });
+            }
+
+            return res.status(200).json({
+                success: true,
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
+
+    /**
+     * @controller updateUser
+     * @description Update user details by userId with password verification
+     */
+    static updateUser = async (req, res) => {
+        try {
+            const { userId, currentPassword, newPassword } = req.body;
+
+            if (!userId) {
+                return res.status(400).json({ success: false, message: "User ID is required" });
+            }
+
+            const user = await userModal.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ success: false, message: "User not found" });
+            }
+
+            // Password update logic
+            if (!currentPassword || !newPassword) {
+                return res.status(400).json({ success: false, message: "Both current and new password are required" });
+            }
+
+            const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isPasswordMatch) {
+                return res.status(401).json({ success: false, message: "Current password does not match" });
+            }
+
+            if (newPassword.length < 6) {
+                return res.status(400).json({ success: false, message: "New password must be minimum 6 characters" });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(newPassword, salt);
+
+            await user.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "Password updated successfully"
             });
         } catch (error) {
             res.status(500).json({ success: false, message: "Server error" });

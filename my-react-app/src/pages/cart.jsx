@@ -26,7 +26,7 @@ const Cart = () => {
             if (response.ok) {
                 setCartItems(result.data);
                 // Calculate total
-                const cartTotal = result.data.reduce((sum, item) => 
+                const cartTotal = result.data.reduce((sum, item) =>
                     sum + (item.productId.price * item.quantity), 0);
                 setTotal(cartTotal);
             } else {
@@ -40,8 +40,45 @@ const Cart = () => {
     };
 
     const handleQuantityChange = async (itemId, change) => {
-        // TODO: Implement quantity update logic
-        toast.info('Quantity update coming soon');
+        try {
+            const userId = localStorage.getItem('userId');
+            const currentItem = cartItems.find(item => item._id === itemId);
+            const newQuantity = currentItem.quantity + change;
+
+
+
+            // Don't allow negative quantities
+            if (newQuantity < 0) {
+                return;
+            }
+
+            const response = await fetch(SummaryApi.addToCart.url, {
+                method: SummaryApi.addToCart.method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    productId: currentItem.productId._id,
+                    quantity: change,
+                    userId: userId
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                fetchCartItems(); // Refresh cart items
+                if (result.message != null) {
+                    toast.success(result.message);
+                }
+            } else {
+                toast.error(result.message || 'Failed to update quantity')
+            }
+        } catch (error) {
+            console.error('Update quantity error:', error);
+            toast.error('Error updating quantity');
+        }
     };
 
     const handleRemoveItem = async (itemId) => {
@@ -79,7 +116,7 @@ const Cart = () => {
                 <div className="text-center p-8 rounded-lg shadow-md bg-white">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4">Please Login</h2>
                     <p className="text-gray-600 mb-6">You need to be logged in to access your cart</p>
-                    <button 
+                    <button
                         onClick={() => navigate('/login', { state: { from: '/cart' } })}
                         className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200"
                     >
@@ -112,7 +149,7 @@ const Cart = () => {
                                                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
                                                     </svg>
                                                 </button>
-                                                <input type="text" className="w-10 shrink-0 border-0 bg-transparent text-center" value={item.quantity} readOnly />
+                                                <input type="text" className="w-10 shrink-0 border-0 bg-transparent text-center text-black" value={item.quantity} readOnly />
                                                 <button onClick={() => handleQuantityChange(item._id, 1)} className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-[#41444B] cursor-pointer">
                                                     <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 18 18">
                                                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
@@ -133,7 +170,7 @@ const Cart = () => {
                                                     </svg>
                                                     Add to Favorites
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => handleRemoveItem(item._id)}
                                                     className="inline-flex items-center text-sm font-medium text-red-600 hover:underline"
                                                 >

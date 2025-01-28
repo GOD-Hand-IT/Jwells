@@ -17,40 +17,59 @@ export default class CartController {
             }
 
             // Validate quantity is a valid number
-            const parsedQuantity = parseInt(quantity);
-            if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: 'Please provide a valid quantity' 
+            const changeQuantity = parseInt(quantity);
+            if (isNaN(changeQuantity)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Please provide a valid quantity'
                 });
             }
 
-            // Check if product already exists in cart
-            const existingCartItem = await addToCartModel.findOne({ 
-                productId, 
-                userId 
+            // Check if product exists in cart
+            const existingCartItem = await addToCartModel.findOne({
+                productId,
+                userId
             });
 
             if (existingCartItem) {
+                // Calculate new quantity
+                const newQuantity = existingCartItem.quantity + changeQuantity;
+
+                // If new quantity is 0 or negative, remove the item
+                if (newQuantity <= 0) {
+                    await addToCartModel.findByIdAndDelete(existingCartItem._id);
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Item removed from cart',
+                    });
+                }
+
                 // Update quantity of existing item
-                existingCartItem.quantity = existingCartItem.quantity + parsedQuantity;
+                existingCartItem.quantity = newQuantity;
                 await existingCartItem.save();
-                return res.status(200).json({ 
-                    success: true, 
-                    message: 'Cart updated successfully',
-                    data: existingCartItem 
+                return res.status(200).json({
+                    success: true,
+                    data: existingCartItem
                 });
             } else {
+                // Only create new cart item if quantity is positive
+                if (changeQuantity <= 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Invalid quantity for new item'
+                    });
+                }
+
                 // Create new cart item
                 const cartItem = await addToCartModel.create({
                     productId,
-                    quantity: parsedQuantity,
+                    quantity: changeQuantity,
                     userId
                 });
-                return res.status(201).json({ 
-                    success: true, 
+                return res.status(201).json({
+                    success: true,
                     message: 'Item added to cart',
-                    data: cartItem 
+                    data: cartItem
                 });
             }
         } catch (error) {
@@ -69,9 +88,9 @@ export default class CartController {
             }
 
             await addToCartModel.findByIdAndDelete(cartItemId);
-            return res.status(200).json({ 
-                success: true, 
-                message: 'Item removed from cart' 
+            return res.status(200).json({
+                success: true,
+                message: 'Item removed from cart'
             });
         } catch (error) {
             return res.sendStatus(500);

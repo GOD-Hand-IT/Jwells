@@ -7,6 +7,7 @@ import Cart from './pages/cart.jsx';
 import FormPage from './pages/customizedesign.jsx';
 import Login from './components/Login.jsx';
 import Dashboard from './components/admin/Dashboard.jsx';
+import Profile from './pages/Profile.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
             {
                 path: '/admin',
                 element:<Dashboard/>
+            },
+            {
+                path: '/profile',
+                element: <Profile />
             }
 
         ]
@@ -44,4 +49,5 @@ export const router = createBrowserRouter([
         path: '/:name',
         element: <Product />
     }
+
 ]);

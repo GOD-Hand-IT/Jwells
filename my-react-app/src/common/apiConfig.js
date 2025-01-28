@@ -25,9 +25,21 @@ const SummaryApi = {
     url: `${backendDomain}/user/register`,
     method: "post"
   },
+  userProfile: {
+    url: `${backendDomain}/user`,
+    method: "post"
+  },
+  updateProfile: {
+    url: `${backendDomain}/user/update`,
+    method: "put"
+  },
   addToCart: {
     url: `${backendDomain}/cart/add`,
     method: "post"
+  },
+  removeFromCart: {
+    url: `${backendDomain}/cart/remove`,
+    method: "delete"
   },
   showCart: {
     url: `${backendDomain}/cart/show`,

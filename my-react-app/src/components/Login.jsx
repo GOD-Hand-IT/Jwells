@@ -72,7 +72,7 @@ const Login = () => {
         if (authMode === 'signin' && result.user) {
           toast.success('Login successful!');
         } else if (authMode === 'signup') {
-          toast.success('Registration successful! Please login.');
+          toast.success('Registration successful.');
         }
       } else {
         toast.error(result.message || 'Authentication failed');
