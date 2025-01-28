@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common/apiConfig';
 import Price from '../components/Price';
@@ -8,18 +8,20 @@ function ProductCard({ product }) {
   const title = product.name;
   const id = product.id;
   const price = product.price;
+  const navigate = useNavigate();
 
   const imageNode = product.image;
 
   const handleAddToCart = async (e) => {
     e.preventDefault(); // Prevent navigation when clicking cart button
     const userId = localStorage.getItem('userId');
-    
+
     if (!userId) {
-      toast.error('Please login to add items to cart');
+      toast.warning('Please login to add items to cart');
+      navigate('/login', { state: { from: '/cart' } });
       return;
     }
-    
+
     try {
       const response = await fetch(SummaryApi.addToCart.url, {
         method: SummaryApi.addToCart.method,
@@ -59,7 +61,7 @@ function ProductCard({ product }) {
               <img className="absolute top-0 right-0 h-full w-72 object-cover  ch-80  rounded-t-xl" src={imageNode} alt="product image" />
 
               <div className="absolute -right-16 bottom-0 mr-2 mb-4 space-y-2 transition-all duration-300 group-hover:right-0">
-                <button 
+                <button
                   onClick={handleAddToCart}
                   className="flex h-10 w-10 items-center justify-center bg-gray-900 text-white transition hover:bg-gray-700"
                 >

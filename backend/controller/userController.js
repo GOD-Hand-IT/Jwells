@@ -91,4 +91,26 @@ export default class UserController {
             res.status(500).json({ success: false, message: "Server error" })
         }
     }
+
+    /**
+     * @controller logoutUser
+     * @description Clear user authentication
+     */
+    static logoutUser = async (req, res) => {
+        try {
+            res.cookie('jwt', '', {
+                httpOnly: true,
+                expires: new Date(0), // Set expiration to past date
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
+            
+            return res.status(200).json({ 
+                success: true, 
+                message: "Logged out successfully"
+            });
+        } catch (error) {
+            res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
 }

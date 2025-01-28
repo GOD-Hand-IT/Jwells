@@ -6,10 +6,11 @@ import './App.css';
 import Context from './context/index.js';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
   return (
-    <>
+    <AuthProvider>
       <Context.Provider value={{
 
       }} />
@@ -19,9 +20,7 @@ const App = () => {
         <Outlet />
       </main>
       <Footer />
-
-
-    </>
+    </AuthProvider>
   );
 };
 
