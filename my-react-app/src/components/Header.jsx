@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import DropdownMenu from './DropdownMenu';
 import { toast } from 'react-toastify';
@@ -14,6 +14,7 @@ function Header() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
+  const profileDropdownRef = useRef(null);
 
   useEffect(() => {
     // Set the initial height of the menu to 0vh when the page loads
@@ -42,6 +43,17 @@ function Header() {
 
     // Call the initialization functions
     getData();
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -105,7 +117,7 @@ function Header() {
         {/* Add profile icon for mobile */}
         <div className="md:hidden absolute right-16 top-4">
           {isAuthenticated && (
-            <div className="relative">
+            <div className="relative" ref={profileDropdownRef}>
               <Link
                 to="/profile"
                 className="inline-block p-2 rounded hover:bg-gray-100"
@@ -159,7 +171,7 @@ function Header() {
             {/* Desktop profile icon */}
             <li className="hidden md:block">
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative" ref={profileDropdownRef}>
                   <Link
                     to="/profile"
                     className="inline-block p-2 rounded hover:bg-gray-100"
