@@ -33,7 +33,7 @@ html, body {
   list-style: none;
 }
 
-.nav-links li {
+li {
   display: inline-block;
   margin: 0 36px;
   position: relative;
