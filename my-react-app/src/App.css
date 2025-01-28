@@ -316,7 +316,7 @@ html::-webkit-scrollbar{
 
 .carousel img {
   position: relative;
-  border-radius: 200px;
+  border-radius: 500px;
   width: 200px;
   height: 200px;
   object-fit: cover;
@@ -429,7 +429,7 @@ footer {
   .nav-links {
     position: absolute;
     height: 70vh;
-    top: 150px;
+    top: 170px;
     right: 0;
     text-align: start;
     background-color: #FFF;

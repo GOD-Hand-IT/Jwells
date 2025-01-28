@@ -2,7 +2,7 @@ import React from "react";
 
 function AddProductModal({ onClose }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="text-black fixed inset-0 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <h2 className="text-xl font-bold mb-4">Add Product</h2>
         <form>
