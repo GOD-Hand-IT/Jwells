@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import SummaryApi from "../common/apiConfig";
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [authMode, setAuthMode] = useState("signin"); // Modes: 'signin', 'signup', 'forgot'
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    firstName: "",
-    lastName: ""
+    name: ""
   });
 
   const handleInputChange = (e) => {
@@ -44,8 +46,7 @@ const Login = () => {
         ? { email: formData.email, password: formData.password }
         : authMode === "signup"
           ? {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
+            name: formData.name,
             email: formData.email,
             password: formData.password
           }
@@ -66,37 +67,18 @@ const Login = () => {
       toast.dismiss(loadingToastId);
 
       if (response.ok) {
+        login(result.user.id); // Use context login
+        navigate(-1);  // Go back to previous route
         if (authMode === 'signin' && result.user) {
-          localStorage.setItem('userId', result.user.id);
-          navigate('/');
           toast.success('Login successful!');
         } else if (authMode === 'signup') {
           toast.success('Registration successful! Please login.');
-          toggleAuthMode('signin');
         }
       } else {
         toast.error(result.message || 'Authentication failed');
       }
     } catch (error) {
       toast.error('Network error or server unavailable');
-    }
-  };
-
-  // Update logout helper to work with HTTP-only cookies
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(SummaryApi.logout.url, {
-        method: SummaryApi.logout.method,
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        localStorage.removeItem('user');
-        navigate('/login');
-        toast.success('Logged out successfully');
-      }
-    } catch (error) {
-      toast.error('Error logging out');
     }
   };
 
@@ -164,29 +146,15 @@ const Login = () => {
 
         {authMode === "signup" && (
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* First Name */}
+            {/* Name */}
             <div>
-              <label className="block mb-2 text-sm font-[cinzel] font-medium">First Name</label>
+              <label className="block mb-2 text-sm font-[cinzel] font-medium">Name</label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter your first name"
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
-                required
-              />
-            </div>
-
-            {/* Last Name */}
-            <div>
-              <label className="block mb-2 text-sm font-[cinzel] font-medium">Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                placeholder="Enter your last name"
+                placeholder="Enter your name"
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-gray-300"
                 required
               />
