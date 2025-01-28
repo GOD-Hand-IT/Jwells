@@ -7,7 +7,7 @@ function Orders() {
   ];
 
   return (
-    <div>
+    <div className="text-black">
       <h2 className="text-2xl font-bold mb-4">Orders</h2>
       <table className="w-full border">
         <thead>

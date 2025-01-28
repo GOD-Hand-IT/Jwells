@@ -3,8 +3,8 @@ import React from 'react';
 function Section({ className, title, image, link }) {
   return (
     <section className={`section ${className}`} style={{ backgroundImage: `url(${image})` }}>
-      <div className="explore-close-center">
-        <div className="home">{title}</div>
+      <div className="m-[0px]">
+        <div className="font-[lato] font-medium text-white flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>
         <div className="flex">
           <div className="frame">
             <div className="text-wrapper"><a href={link}>EXPLORE</a></div>
@@ -17,7 +17,7 @@ function Section({ className, title, image, link }) {
 function InbetweenSection({ className, content }) {
   return (
     <section className={className}>
-      <div className="home-9">{content}</div>
+      <div className="flex justify-center items-center relative font-[lato] text-black text-[20px] tracking-[6px]">{content}</div>
     </section>
   );
 }
@@ -26,7 +26,7 @@ function InbetweenSection({ className, content }) {
 function CarouselSection({ className, title, images, description, buttonText }) {
   return (
     <section className={`section ${className}`}>
-      {title && <div className="home-5">{title}</div>}
+      {title && <div className="font-[lato] font-medium text-black flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>}
       <div className="carousel-wrapper">
         <div className="carousel">
           {images.map((image, index) => (

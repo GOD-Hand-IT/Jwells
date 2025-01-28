@@ -41,14 +41,7 @@ function Footer() {
 
 
       {/* Footer Bottom Section */}
-      <div className="mt-12 w-full font-[lato] text-center border-t border-gray-700 pt-6">
-        <p className="text-sm">
-          © {new Date().getFullYear()} <span className="font-semibold">HRIDHAYAM</span>. All rights reserved.
-        </p>
-        <p className="text-sm mt-1">
-          Designed and Developed by <span className="font-semibold cursor-pointer"></span>.
-        </p>
-      </div>
+      
     </footer>
   );
 }

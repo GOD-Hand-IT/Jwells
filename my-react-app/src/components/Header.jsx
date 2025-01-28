@@ -66,7 +66,8 @@ function Header() {
     <div className="Header">
       <div className="logo">HRIDHAYAM</div>
       <nav>
-        <ul id="menu" className="nav-links">
+        <ul id="menu" className="inline-block justify-center list-none nav-links">
+          <div className="">
           <li><Link to='/'>HOME</Link></li>
           <DropdownMenu
             title="ALL COLLECTIONS"
@@ -78,10 +79,11 @@ function Header() {
               </Link>
             )}
           />
-          <li><Link to='/admin' >Admin</Link></li>
+          <li><Link to='' >OUR STORY</Link></li>
           <li><Link to={"Sales"}>SALE</Link></li>
           <li><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
           <li><Link to='/cart'>CART</Link></li>
+          <li><Link to='' >CONTACT</Link></li>
           <DropdownMenu
             title="ACCOUNT"
             items={accountItems}
@@ -99,6 +101,7 @@ function Header() {
               </Link>
             )}
           />
+          </div>
         </ul>
       </nav>
       <div
