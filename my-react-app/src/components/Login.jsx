@@ -67,7 +67,7 @@ const Login = () => {
       toast.dismiss(loadingToastId);
 
       if (response.ok) {
-        login(result.user.id); // Use context login
+        login(result.user.id, result.user.role || 'user'); // Pass role to login
         navigate(-1);  // Go back to previous route
         if (authMode === 'signin' && result.user) {
           toast.success('Login successful!');

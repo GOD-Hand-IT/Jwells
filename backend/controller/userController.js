@@ -18,7 +18,7 @@ export default class UserController {
      */
     static registerUser = async (req, res) => {
         try {
-            const { name, email, password } = req.body
+            const { name, email, password , role } = req.body
             const exists = await userModal.findOne({ email })
 
             if (exists) {
@@ -39,7 +39,8 @@ export default class UserController {
             const newUser = new userModal({
                 name: name,
                 email: email,
-                password: hashedPassword
+                password: hashedPassword,
+                role: role  // Set default role
             })
 
             const user = await newUser.save()
@@ -51,7 +52,8 @@ export default class UserController {
                 user: {
                     id: user._id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    role: user.role
                 }
             })
         } catch (error) {
@@ -84,7 +86,8 @@ export default class UserController {
                 user: {
                     id: user._id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    role: user.role
                 }
             })
         } catch (error) {
@@ -137,7 +140,8 @@ export default class UserController {
                 user: {
                     id: user._id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    role: user.role
                 }
             });
         } catch (error) {

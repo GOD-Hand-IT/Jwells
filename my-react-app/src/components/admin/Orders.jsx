@@ -1,36 +1,36 @@
-import React from "react";
+import React from 'react';
 
-function Orders() {
-  const orders = [
-    { id: 1, product: "Product 1", customer: "John Doe", status: "Pending" },
-    { id: 2, product: "Product 2", customer: "Jane Smith", status: "Shipped" },
-  ];
-
+const Orders = () => {
   return (
-    <div className="text-black">
-      <h2 className="text-2xl font-bold mb-4">Orders</h2>
-      <table className="w-full border">
-        <thead>
-          <tr>
-            <th className="border p-2">Order ID</th>
-            <th className="border p-2">Product</th>
-            <th className="border p-2">Customer</th>
-            <th className="border p-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td className="border p-2">{order.id}</td>
-              <td className="border p-2">{order.product}</td>
-              <td className="border p-2">{order.customer}</td>
-              <td className="border p-2">{order.status}</td>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold">Orders Management</h2>
+      
+      <div className="bg-white shadow rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">#12345</td>
+              <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  Completed
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">$99.99</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-}
+};
 
 export default Orders;

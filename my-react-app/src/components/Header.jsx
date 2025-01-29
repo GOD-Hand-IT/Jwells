@@ -163,7 +163,6 @@ function Header() {
                 </Link>
               )}
             />
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]" ><Link to='/admin'>Admin</Link></li>
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to={"Sales"}>SALE</Link></li>
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/cart'>CART</Link></li>
