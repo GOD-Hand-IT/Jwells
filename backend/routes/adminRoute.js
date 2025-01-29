@@ -6,6 +6,6 @@ const router = express.Router()
 
 router.post("/product/add", upload.fields([{ name: 'image', maxCount: 1 }]), AdminController.addProduct)
 router.post("/product/remove", AdminController.removeProduct)
-router.get("/products", AdminController.listAllProducts)
+router.post("/product", AdminController.listAllProducts)
 
 export default router
