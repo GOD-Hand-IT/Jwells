@@ -29,6 +29,7 @@ const product = () => {
   return (
     <div>
       <ProductDetails
+        productId={productId}
         image={product.image}
         productName={product.name}
         price={product.price}
