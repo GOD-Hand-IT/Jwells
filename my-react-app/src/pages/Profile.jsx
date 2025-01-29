@@ -3,23 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import SummaryApi from '../common/apiConfig';
+import Dashboard from '../components/admin/Dashboard';
 
 const Profile = () => {
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, userRole } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [userDetails, setUserDetails] = useState({
         name: '',
         email: '',
         userId: ''
     });
-    
+
     const [passwordChange, setPasswordChange] = useState({
         currentPassword: '',
         newPassword: ''
     });
-    
+
     const [loading, setLoading] = useState(false);
+    const [showAdminContent, setShowAdminContent] = useState(false);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -102,74 +104,99 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
-                <div className="md:flex">
-                    <div className="p-8 w-full">
-                        <div className="mb-6">
-                            <div className="text-center mb-6">
-                                <div className="h-24 w-24 rounded-full bg-[#B4975A] mx-auto mb-4 flex items-center justify-center">
-                                    <span className="text-3xl text-white font-bold">
-                                        {userDetails.name ? userDetails.name[0].toUpperCase() : '?'}
-                                    </span>
-                                </div>
-                                <h2 className="text-xl font-semibold text-gray-800">{userDetails.name}</h2>
-                                <p className="text-gray-600">{userDetails.email}</p>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <h1 className="text-2xl font-bold text-gray-900">Change Password</h1>
+            {showAdminContent && userRole === 'admin' ? (
+                <Dashboard />
+            ) : (
+                <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
+                    <div className="md:flex">
+                        <div className="p-8 w-full relative">
+                            {isEditing && (
                                 <button
-                                    onClick={() => setIsEditing(!isEditing)}
-                                    className="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200
-                                    bg-[#B4975A] hover:bg-[#8B7355] text-white shadow-md hover:shadow-lg"
+                                    onClick={() => setIsEditing(false)}
+                                    className="absolute top-4 right-4 px-3 py-1 rounded-md text-sm font-medium 
+                                    text-red-600 hover:bg-gray-100 transition-colors duration-200"
                                 >
-                                    {isEditing ? 'Cancel' : 'Change Password'}
+                                    Cancel
                                 </button>
+                            )}
+                            <div className="mb-6">
+                                <div className="text-center mb-6">
+                                    <div className="h-24 w-24 rounded-full bg-[#B4975A] mx-auto mb-4 flex items-center justify-center">
+                                        <span className="text-3xl text-white font-bold">
+                                            {userDetails.name ? userDetails.name[0].toUpperCase() : '?'}
+                                        </span>
+                                    </div>
+                                    <h2 className="text-xl font-semibold text-gray-800">{userDetails.name}</h2>
+                                    <p className="text-gray-600">{userDetails.email}</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    {!isEditing && (
+                                        <button
+                                            onClick={() => setIsEditing(true)}
+                                            className="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200
+                                            bg-[#B4975A] hover:bg-[#8B7355] text-white shadow-md hover:shadow-lg"
+                                        >
+                                            Change Password
+                                        </button>
+                                    )}
+                                </div>
                             </div>
+
+                            {isEditing ? (
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Current Password</label>
+                                        <input
+                                            type="password"
+                                            name="currentPassword"
+                                            value={passwordChange.currentPassword}
+                                            onChange={handlePasswordChange}
+                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                                            focus:border-[#B4975A] focus:ring-[#B4975A] sm:text-sm text-black"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">New Password</label>
+                                        <input
+                                            type="password"
+                                            name="newPassword"
+                                            value={passwordChange.newPassword}
+                                            onChange={handlePasswordChange}
+                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                                            focus:border-[#B4975A] focus:ring-[#B4975A] sm:text-sm text-black"
+                                            required
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md
+                                        shadow-sm text-sm font-medium text-white bg-[#B4975A] hover:bg-[#8B7355]
+                                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B4975A]
+                                        transition-colors duration-200 disabled:opacity-50"
+                                    >
+                                        {loading ? 'Updating Password...' : 'Update Password'}
+                                    </button>
+                                </form>
+                            ) : null}
+
+                            {userRole === 'admin' && (
+                                <div className="mt-4">
+                                    <button
+                                        onClick={() => setShowAdminContent(!showAdminContent)}
+                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                                    >
+                                        {showAdminContent ? 'Back to Profile' : 'Open Admin Dashboard'}
+                                    </button>
+                                </div>
+                            )}
                         </div>
-
-                        {isEditing ? (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Current Password</label>
-                                    <input
-                                        type="password"
-                                        name="currentPassword"
-                                        value={passwordChange.currentPassword}
-                                        onChange={handlePasswordChange}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
-                                        focus:border-[#B4975A] focus:ring-[#B4975A] sm:text-sm text-black"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">New Password</label>
-                                    <input
-                                        type="password"
-                                        name="newPassword"
-                                        value={passwordChange.newPassword}
-                                        onChange={handlePasswordChange}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
-                                        focus:border-[#B4975A] focus:ring-[#B4975A] sm:text-sm text-black"
-                                        required
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md
-                                    shadow-sm text-sm font-medium text-white bg-[#B4975A] hover:bg-[#8B7355]
-                                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B4975A]
-                                    transition-colors duration-200 disabled:opacity-50"
-                                >
-                                    {loading ? 'Updating Password...' : 'Update Password'}
-                                </button>
-                            </form>
-                        ) : null}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
