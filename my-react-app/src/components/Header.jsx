@@ -113,7 +113,7 @@ function Header() {
       />
 
       <div className="Header">
-        <div className="font-[cinzel] font-thin text-black text-[48px]">HRIDHAYAM</div>
+        <div className="font-[cinzel] font-thin text-black text-[36px]">HRIDHAYAM</div>
         {/* Add profile icon for mobile */}
         <div className="md:hidden absolute right-16 top-4">
           {isAuthenticated && (
@@ -152,7 +152,7 @@ function Header() {
         </div>
         <nav>
           <ul id="menu" className="inline-block justify-center list-none nav-links">
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]" ><Link to='/'>HOME</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]" ><Link to='/'>HOME</Link></li>
             <DropdownMenu
               title="ALL COLLECTIONS"
               items={apiData}
@@ -163,10 +163,10 @@ function Header() {
                 </Link>
               )}
             />
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]" ><Link to='/admin'>Admin</Link></li>
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to={"Sales"}>SALE</Link></li>
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/cart'>CART</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]" ><Link to='/admin'>Admin</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]"><Link to={"Sales"}>SALE</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]"><Link to='/cart'>CART</Link></li>
 
             {/* Desktop profile icon */}
             <li className="hidden md:block">
