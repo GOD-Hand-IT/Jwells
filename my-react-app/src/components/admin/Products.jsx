@@ -20,6 +20,7 @@ const Products = () => {
   const categoryInputRef = useRef(null);
   const productsPerPage = 10;
   const userId = localStorage.getItem('userId');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -59,9 +60,16 @@ const Products = () => {
   }, [products]);
 
   // Filter and paginate products
-  const filteredProducts = selectedCategory
-    ? products.filter(product => product.category === selectedCategory)
-    : products;
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = searchQuery === '' || 
+      product.name.toLowerCase().includes(searchLower) ||
+      product.description?.toLowerCase().includes(searchLower) ||
+      product.price.toString().includes(searchLower);
+    
+    return matchesCategory && matchesSearch;
+  });
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -70,6 +78,18 @@ const Products = () => {
 
   const handleEdit = (product) => {
     setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleAddNewProduct = () => {
+    setSelectedProduct({
+      id: '',
+      name: '',
+      price: '',
+      category: '',
+      description: '',
+      image: '',
+    });
     setIsModalOpen(true);
   };
 
@@ -147,7 +167,7 @@ const Products = () => {
 
   return (
     <div className="p-6 max-w-8xl mx-auto bg-transparent">
-      {/* Header with Filters and Pagination */}
+      {/* Header with Filters, Search and Pagination */}
       <div className="mb-8 flex justify-between items-center bg-white/30 backdrop-blur-sm p-4 rounded-lg">
         <div className="flex items-center space-x-4">
           <select
@@ -160,6 +180,15 @@ const Products = () => {
               <option key={category} value={category}>{category}</option>
             ))}
           </select>
+          
+          {/* New Search Input */}
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 min-w-[300px]"
+          />
         </div>
 
         {/* Pagination Controls */}
@@ -268,10 +297,11 @@ const Products = () => {
         onClose={() => {
           setIsModalOpen(false);
           setSelectedProduct(null);
+          setPreviewImage(null);
         }}
         onSave={handleUpdateProduct}
         product={selectedProduct}
-        title="Edit Product"
+        title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
         categories={categories}
       />
 

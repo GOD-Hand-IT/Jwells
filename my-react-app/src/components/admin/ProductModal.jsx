@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = [] }) => {
-  const [formData, setFormData] = useState(product || {
+  const [formData, setFormData] = useState({
     name: '',
     price: '',
     category: '',
@@ -9,13 +9,38 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
     image: '',
     imageFile: null
   });
-  const [previewImage, setPreviewImage] = useState(product?.image || null);
-  const [newCategory, setNewCategory] = useState(product?.category || '');
+  const [previewImage, setPreviewImage] = useState(null);
+  const [newCategory, setNewCategory] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const categoryInputRef = useRef(null);
 
-  // Add useEffect for body scroll lock
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || '',
+        price: product.price || '',
+        category: product.category || '',
+        description: product.description || '',
+        image: product.image || '',
+        imageFile: null
+      });
+      setPreviewImage(product.image || null);
+      setNewCategory(product.category || '');
+    } else {
+      setFormData({
+        name: '',
+        price: '',
+        category: '',
+        description: '',
+        image: '',
+        imageFile: null
+      });
+      setPreviewImage(null);
+      setNewCategory('');
+    }
+  }, [product]);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -57,6 +82,14 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
     setShowSuggestions(false);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      ...formData,
+      id: product?.id,
+    });
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -64,10 +97,7 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
       <div className="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white/80 backdrop-blur-md">
         <div className="mt-3">
           <h3 className="text-xl font-medium text-gray-900 mb-4">{title}</h3>
-          <form className="mt-4" onSubmit={(e) => {
-            e.preventDefault();
-            onSave(formData);
-          }}>
+          <form className="mt-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-1">
                 <div className="mb-4">
@@ -107,7 +137,13 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
                     placeholder="Type to search or add new category"
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
                     required
+                    list="categories"
                   />
+                  <datalist id="categories">
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
                   {showSuggestions && (
                     <div className="absolute z-10 w-64 mt-1 bg-black border border-gray-700 rounded-md shadow-lg">
                       {filteredCategories.length > 0 ? (
