@@ -223,16 +223,7 @@ li {
   justify-content: center;
   align-items: center;
 }
-.home{
-  font-family: "Lato-Medium", Helvetica;
-  font-weight: 500;
-  color: #ffffff;
-  font-size: 40px;
-  letter-spacing: 12.00px;
-  line-height: normal;
-  white-space: nowrap;
-  margin-bottom: 5%;
-}
+
 .home-3{
   font-family: "Lato-Medium", Helvetica;
   font-weight: 500;
@@ -272,12 +263,7 @@ li {
   line-height: normal;
   text-decoration: none;
 }
-.inbetween{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 30vh;
-}
+
 .home-9{
   display: flex;
   justify-content: center;

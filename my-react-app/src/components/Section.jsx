@@ -14,9 +14,9 @@ function Section({ className, title, image, link }) {
     </section>
   );
 }
-function InbetweenSection({ className, content }) {
+function InbetweenSection({content }) {
   return (
-    <section className={className}>
+    <section className="flex justify-center items-center h-[30vh]">
       <div className="flex justify-center items-center relative font-[lato] text-black text-[20px] tracking-[6px]">{content}</div>
     </section>
   );
