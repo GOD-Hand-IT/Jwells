@@ -45,6 +45,14 @@ const SummaryApi = {
     url: `${backendDomain}/cart/show`,
     method: "post"
   },
+  fetchOrders: {
+    url: `${backendDomain}/order`,
+    method: "post"
+  },
+  fetchProducts: {
+    url: `${backendDomain}/admin/product`,
+    method: "post"
+  },
 };
 
 export default SummaryApi;
