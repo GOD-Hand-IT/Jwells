@@ -8,6 +8,7 @@ import FormPage from './pages/customizedesign.jsx';
 import Login from './components/Login.jsx';
 import Dashboard from './components/admin/Dashboard.jsx';
 import Profile from './pages/Profile.jsx';
+import OurStory from './pages/our_story.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
             {
                 path: '/profile',
                 element: <Profile />
+            },
+            {
+                path: '/our-story',
+                element: <OurStory />
             }
 
         ]
