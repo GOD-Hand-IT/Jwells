@@ -68,7 +68,12 @@ const SummaryApi = {
   customizeDesign: {
     url: `${backendDomain}/contact/designForm`,
     method: "post"
+  },
+  checkout: {
+    url: `${backendDomain}/contact/checkout`,
+    method: "post"
   }
+
 };
 
 export default SummaryApi;

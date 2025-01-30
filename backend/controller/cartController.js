@@ -35,15 +35,6 @@ export default class CartController {
                 // Calculate new quantity
                 const newQuantity = existingCartItem.quantity + changeQuantity;
 
-                // If new quantity is 0 or negative, remove the item
-                if (newQuantity <= 0) {
-                    await addToCartModel.findByIdAndDelete(existingCartItem._id);
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Item removed from cart',
-                    });
-                }
-
                 // Update quantity of existing item
                 existingCartItem.quantity = newQuantity;
                 await existingCartItem.save();

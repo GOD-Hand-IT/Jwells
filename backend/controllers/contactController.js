@@ -1,5 +1,9 @@
 import nodemailer from 'nodemailer';
 import asyncHandler from 'express-async-handler';
+import PDFDocument from 'pdfkit';
+import User from '../model/userModal.js';
+import Cart from '../model/cartProduct.js';
+import axios from 'axios'; // Add this import for fetching images
 
 // Create transporter
 const transporter = nodemailer.createTransport({
@@ -60,6 +64,143 @@ export default class ContactController {
             res.status(500).json({
                 success: false,
                 message: 'Error sending email',
+                error: error.message
+            });
+        }
+    });
+
+    static checkout = asyncHandler(async (req, res) => {
+        const { userId, phoneNumber } = req.body;
+
+        try {
+            const user = await User.findById(userId);
+            const cartItems = await Cart.find({ userId })
+                .populate('productId');
+
+            if (!user || !cartItems.length) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No cart items found'
+                });
+            }
+
+            // Create PDF
+            const doc = new PDFDocument({
+                size: 'A4',
+                margin: 50
+            });
+
+            let buffers = [];
+            doc.on('data', buffers.push.bind(buffers));
+
+            // Add header
+            doc.font('Helvetica-Bold')
+               .fontSize(24)
+               .text('Order Details', { align: 'center' })
+               .moveDown();
+
+            // Add customer details
+            doc.fontSize(12)
+               .text(`Customer Email: ${user.email}`)
+               .text(`Phone Number: ${phoneNumber}`)
+               .moveDown();
+
+            let total = 0;
+            let yPosition = doc.y;
+
+            // Process each product
+            for (const item of cartItems) {
+                const subtotal = item.productId.price * item.quantity;
+                total += subtotal;
+
+                // Check if we need a new page
+                if (yPosition > 700) {
+                    doc.addPage();
+                    yPosition = 50;
+                }
+
+                // Add product title
+                doc.font('Helvetica-Bold')
+                   .fontSize(14)
+                   .text(item.productId.name)
+                   .font('Helvetica')
+                   .fontSize(12);
+
+                // Add image if available
+                if (item.productId.image && item.productId.image.length > 0) {
+                    try {
+                        const response = await axios.get(item.productId.image[0], {
+                            responseType: 'arraybuffer'
+                        });
+                        const imageBuffer = Buffer.from(response.data);
+                        
+                        doc.image(imageBuffer, {
+                            fit: [200, 200],
+                            align: 'center'
+                        });
+                    } catch (error) {
+                        console.error('Error adding image:', error);
+                        doc.text('Image not available');
+                    }
+                }
+
+                // Add product details
+                doc.moveDown()
+                   .text(`Price: ₹${item.productId.price}`)
+                   .text(`Quantity: ${item.quantity}`)
+                   .text(`Subtotal: ₹${subtotal}`)
+                   .moveDown()
+                   .lineTo(doc.page.width - 50, doc.y)
+                   .stroke()
+                   .moveDown();
+
+                yPosition = doc.y;
+            }
+
+            // Add total
+            doc.font('Helvetica-Bold')
+               .fontSize(16)
+               .text(`Total Amount: ₹${total}`, { align: 'right' });
+
+            doc.end();
+
+            // Convert PDF to buffer
+            const pdfBuffer = Buffer.concat(buffers);
+
+            // Send email with PDF
+            const mailOptions = {
+                from: user.email,
+                to: "selvathala8677@gmail.com",
+                subject: 'Order Confirmation',
+                html: `
+                    <h3>New Order Received</h3>
+                    <p>Customer Email: ${user.email}</p>
+                    <p>Phone Number: ${phoneNumber}</p>
+                    <p>Total Amount: ₹${total}</p>
+                    <p>Please check the attached PDF for complete order details.</p>
+                `,
+                attachments: [{
+                    filename: 'order-details.pdf',
+                    content: pdfBuffer,
+                    contentType: 'application/pdf'
+                }]
+            };
+
+            await transporter.sendMail(mailOptions);
+
+            // Clear cart
+            await Cart.deleteMany({ userId });
+
+            res.status(200).json({
+                success: true,
+                message: 'Order placed successfully'
+            });
+
+        } catch (error) {
+            console.error('Checkout error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error processing order',
                 error: error.message
             });
         }
