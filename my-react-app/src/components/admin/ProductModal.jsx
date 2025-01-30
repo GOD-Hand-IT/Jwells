@@ -92,6 +92,7 @@ const ProductModal = ({
 
   const handleCategoryInput = (value) => {
     setNewCategory(value);
+    console.log('Category input:', categories); // Debug line
     const filtered = categories.filter(cat =>
       cat.toLowerCase().includes(value.toLowerCase())
     );
@@ -223,17 +224,13 @@ const ProductModal = ({
                     required
                     list="categories"
                   />
-                  <datalist id="categories">
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat} />
-                    ))}
-                  </datalist>
                   {showSuggestions && (
                     <div className="absolute z-10 w-64 mt-1 bg-black border border-gray-700 rounded-md shadow-lg">
                       {filteredCategories.length > 0 ? (
                         filteredCategories.map((category) => (
                           <div
                             key={category}
+                            onMouseOut={() => setShowSuggestions(false)}
                             onClick={() => handleCategorySelect(category)}
                             className="px-4 py-2 text-white hover:bg-gray-800 cursor-pointer"
                           >
