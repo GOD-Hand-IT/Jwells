@@ -65,6 +65,10 @@ const SummaryApi = {
     url: `${backendDomain}/admin/product/remove`,
     method: "delete"
   },
+  customizeDesign: {
+    url: `${backendDomain}/contact/designForm`,
+    method: "post"
+  }
 };
 
 export default SummaryApi;
