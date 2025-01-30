@@ -22,13 +22,20 @@ const FormPage = () => {
     setFiles([...e.target.files]);
   };
 
+  const isFormValid = () => {
+    return formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      formData.email.trim() !== '' &&
+      formData.description.trim() !== '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Append form fields
       Object.keys(formData).forEach(key => {
         formDataToSend.append(key, formData[key]);
@@ -62,7 +69,7 @@ const FormPage = () => {
 
       if (data.success) {
         toast.success('Your design request has been sent successfully!');
-        // Reset form
+        // Reset form and files
         setFormData({
           firstName: "",
           lastName: "",
@@ -70,7 +77,12 @@ const FormPage = () => {
           email: "",
           description: "",
         });
-        setFiles([]);
+        setFiles([]); // This will clear the files array
+        // Reset the file input element
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+          fileInput.value = '';
+        }
       } else {
         throw new Error(data.message || 'Submission failed');
       }
@@ -84,9 +96,19 @@ const FormPage = () => {
 
   return (
     <div className="bg-white text-black p-8 min-h-screen flex justify-center items-center">
+      {/* Loading Modal */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+          <div className="bg-white p-4 rounded-lg shadow-xl flex flex-col items-center max-w-[200px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="mt-2 text-sm font-[Cinzel]">Processing...</p>
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg space-y-6 bg-white p-6 rounded-lg shadow-md"
+        className={`w-full max-w-lg space-y-6 bg-white p-6 rounded-lg shadow-md ${loading ? 'pointer-events-none opacity-50' : ''}`}
       >
         {/* Form Heading */}
         <h1 className="text-2xl text-center mb-4 cursor-default sm:text-3xl font-light font-[Cinzel]">
@@ -191,9 +213,9 @@ const FormPage = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
-          className={`w-full bg-[#41444B] font-[Cinzel] text-white py-2 rounded hover:bg-black transition-all
-            ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          disabled={loading || !isFormValid()}
+          className={`w-full bg-[#41444B] font-[Cinzel] text-white py-2 rounded transition-all
+            ${(loading || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black cursor-pointer'}`}
         >
           {loading ? 'Sending...' : 'Submit Design Request'}
         </button>
