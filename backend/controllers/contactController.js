@@ -9,8 +9,8 @@ import axios from 'axios'; // Add this import for fetching images
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: "selvathala8677@gmail.com", // Your email
-        pass: "ldiq kmjo ucei kpzb"
+        user: process.env.EMAIL_ID, // Your email
+        pass: process.env.PASS_KEY // Your password
     }
 });
 
@@ -38,7 +38,7 @@ export default class ContactController {
 
             const mailOptions = {
                 from: email,
-                to: "selvathala8677@gmail.com", // Your email where you want to receive descriptions
+                to: process.env.EMAIL_ID, // Your email where you want to receive descriptions
                 subject: `Contact Form Message from ${firstName}`,
                 html: `
                     <h3>Contact Form Message</h3>
@@ -95,30 +95,30 @@ export default class ContactController {
 
             // Add company header
             doc.font('Helvetica-Bold')
-               .fontSize(28)
-               .fillColor('#333333')
-               .text('J WELLS', { align: 'center' })
-               .fontSize(14)
-               .fillColor('#666666')
-               .text('Order Invoice', { align: 'center' })
-               .moveDown(2);
+                .fontSize(28)
+                .fillColor('#333333')
+                .text('J WELLS', { align: 'center' })
+                .fontSize(14)
+                .fillColor('#666666')
+                .text('Order Invoice', { align: 'center' })
+                .moveDown(2);
 
             // Add order information
             doc.font('Helvetica-Bold')
-               .fontSize(12)
-               .text('ORDER DETAILS', { underline: true })
-               .moveDown(0.5)
-               .font('Helvetica')
-               .text(`Order Date: ${new Date().toLocaleDateString()}`)
-               .text(`Customer Email: ${user.email}`)
-               .text(`Phone Number: ${phoneNumber}`)
-               .moveDown(2);
+                .fontSize(12)
+                .text('ORDER DETAILS', { underline: true })
+                .moveDown(0.5)
+                .font('Helvetica')
+                .text(`Order Date: ${new Date().toLocaleDateString()}`)
+                .text(`Customer Email: ${user.email}`)
+                .text(`Phone Number: ${phoneNumber}`)
+                .moveDown(2);
 
             // Add product table header
             doc.font('Helvetica-Bold')
-               .fillColor('#000000')
-               .text('PRODUCT DETAILS', { underline: true })
-               .moveDown();
+                .fillColor('#000000')
+                .text('PRODUCT DETAILS', { underline: true })
+                .moveDown();
 
             let total = 0;
             let yPosition = doc.y;
@@ -135,18 +135,18 @@ export default class ContactController {
 
                 // Product container
                 doc.rect(50, doc.y, 500, 200)
-                   .stroke()
-                   .moveDown(0.5);
+                    .stroke()
+                    .moveDown(0.5);
 
                 // Product title with background
                 doc.fillColor('#f0f0f0')
-                   .rect(55, doc.y, 490, 25)
-                   .fill()
-                   .fillColor('#000000')
-                   .font('Helvetica-Bold')
-                   .fontSize(14)
-                   .text(item.productId.name, 60, doc.y + 5)
-                   .moveDown();
+                    .rect(55, doc.y, 490, 25)
+                    .fill()
+                    .fillColor('#000000')
+                    .font('Helvetica-Bold')
+                    .fontSize(14)
+                    .text(item.productId.name, 60, doc.y + 5)
+                    .moveDown();
 
                 // Two-column layout for image and details
                 const imageX = 60;
@@ -160,7 +160,7 @@ export default class ContactController {
                             responseType: 'arraybuffer'
                         });
                         const imageBuffer = Buffer.from(response.data);
-                        
+
                         doc.image(imageBuffer, imageX, startY, {
                             fit: [180, 150],
                             align: 'left'
@@ -172,35 +172,35 @@ export default class ContactController {
 
                 // Add product details
                 doc.font('Helvetica')
-                   .fontSize(12)
-                   .text('Product Details:', detailsX, startY)
-                   .moveDown(0.5)
-                   .text(`Price: Rs. ${Number(item.productId.price).toString()}`, detailsX)
-                   .text(`Quantity: ${item.quantity}`, detailsX)
-                   .font('Helvetica-Bold')
-                   .text(`Subtotal: Rs. ${Number(subtotal).toString()}`, detailsX)
-                   .moveDown(2);
+                    .fontSize(12)
+                    .text('Product Details:', detailsX, startY)
+                    .moveDown(0.5)
+                    .text(`Price: Rs. ${Number(item.productId.price).toString()}`, detailsX)
+                    .text(`Quantity: ${item.quantity}`, detailsX)
+                    .font('Helvetica-Bold')
+                    .text(`Subtotal: Rs. ${Number(subtotal).toString()}`, detailsX)
+                    .moveDown(2);
 
                 yPosition = doc.y;
             }
 
             // Add total section with styling
             doc.rect(50, doc.y, 500, 50)
-               .fillColor('#333333')
-               .fill()
-               .fillColor('#FFFFFF')
-               .font('Helvetica-Bold')
-               .fontSize(16)
-               .text(`Total Amount: Rs. ${Number(total).toString()}`, 60, doc.y + 15);
+                .fillColor('#333333')
+                .fill()
+                .fillColor('#FFFFFF')
+                .font('Helvetica-Bold')
+                .fontSize(16)
+                .text(`Total Amount: Rs. ${Number(total).toString()}`, 60, doc.y + 15);
 
             // Add footer with more space
             doc.moveDown(4) // Add extra space
-               .fillColor('#666666')
-               .fontSize(10)
-               .text('Thank you for shopping with J WELLS!', {
-                   align: 'center',
-                   y: doc.page.height - 70 // Increased space from bottom
-               });
+                .fillColor('#666666')
+                .fontSize(10)
+                .text('Thank you for shopping with J WELLS!', {
+                    align: 'center',
+                    y: doc.page.height - 70 // Increased space from bottom
+                });
 
             doc.end();
 
@@ -210,7 +210,7 @@ export default class ContactController {
             // Send email with PDF
             const mailOptions = {
                 from: user.email,
-                to: "selvathala8677@gmail.com",
+                to: process.env.EMAIL_ID,
                 subject: 'Order Confirmation',
                 html: `
                     <h3>New Order Received</h3>
