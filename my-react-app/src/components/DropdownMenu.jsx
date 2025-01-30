@@ -53,9 +53,9 @@ const DropdownMenu = ({ title, items, header, up, renderItem }) => {
   }, []);
 
   return (
-    <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px] dropdown" ref={menuRef}>
+    <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px] dropdown" ref={menuRef}>
       <a className="dropdown-toggle">{title}</a>
-      <div className={`dropdown-content h-[100vh] ${up}`}>
+      <div className={`dropdown-content h-[50vh] ${up}`}>
         {header && <h3>{header}</h3>}
         {items.map((item, index) => (
           <div key={index}>

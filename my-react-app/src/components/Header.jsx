@@ -114,45 +114,9 @@ function Header() {
 
       <div className="flex flex-col text-center justify-evenly shadow-lg h-[150px]">
         <div className="font-[cinzel] font-thin text-black text-[36px]">HRIDHAYAM</div>
-        {/* Add profile icon for mobile */}
-        <div className="md:hidden absolute right-16 top-4">
-          {isAuthenticated && (
-            <div className="relative" ref={profileDropdownRef}>
-              <Link
-                to="/profile"
-                className="inline-block p-2 rounded hover:bg-gray-100"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#B4975A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </Link>
-              <button
-                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                className="ml-1 p-1 rounded-full hover:bg-gray-100"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#B4975A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {showProfileDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100">
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#B4975A]"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
         <nav>
           <ul id="menu" className="inline-block justify-center mt-[30px] list-none nav-links">
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]" ><Link to='/'>HOME</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]" ><Link to='/'>HOME</Link></li>
             <DropdownMenu
               title="ALL COLLECTIONS"
               items={apiData}
@@ -163,12 +127,12 @@ function Header() {
                 </Link>
               )}
             />
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to={"/our-story"}>OUR STORY</Link></li>
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]"><Link to={"/our-story"}>OUR STORY</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
             {/* Desktop profile icon */}
             
           </ul>
-          <div className="inline block absolute text-[#41444B] top-[103px] right-[100px] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/cart'><svg
+          <div className="inline block absolute text-[#41444B] top-[103px] right-[100px] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]"><Link to='/cart'><svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       stroke="currentColor"
