@@ -27,7 +27,7 @@ function CarouselSection({ className, title, images, description, buttonText }) 
   return (
     <section className={`section ${className}`}>
       {title && <div className="font-[lato] font-medium text-black flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>}
-      <div className="absoulte w-5/6 h-[200px] justify-start overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+      <div className="absoulte w-[90%] h-[200px] justify-start overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-[60px] sm:gap-[90px] relative w-fit items-center pl-350 ">
           {images.map((image, index) => (
             <img className="w-[100px] h-[100px] sm:w-[200px] sm:h-[200px] aspect-square object-cover rounded-full snap-start" key={index} src={image} alt={`Carousel ${index + 1}`} />
