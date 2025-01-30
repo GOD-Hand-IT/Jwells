@@ -36,12 +36,12 @@ export const router = createBrowserRouter([
                 element:<Dashboard/>
             },
             {
-                path: '/profile',
-                element: <Profile />
-            },
-            {
                 path: '/our-story',
                 element: <OurStory />
+            },
+            {
+                path: '/:name',
+                element: <Product />
             }
 
         ]
@@ -51,8 +51,7 @@ export const router = createBrowserRouter([
         element: <Cart />
     },
     {
-        path: '/:name',
-        element: <Product />
+        path: '/profile',
+        element: <Profile />
     }
-
 ]);
