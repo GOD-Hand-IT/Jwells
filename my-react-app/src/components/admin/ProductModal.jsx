@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
+import SummaryApi from '../../common/apiConfig';
+import { toast } from 'react-toastify';
 
-
-const ProductModal = ({ 
-  isOpen, 
-  onClose, 
-  onSave, 
-  product, 
+const ProductModal = ({
+  isOpen,
+  onClose,
+  onSave,
+  product,
   categories = [],
-  createProductUrl,
-  updateProductUrl
 }) => {
-    
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -32,13 +31,15 @@ const ProductModal = ({
       Number(formData.price) > 0 &&
       formData.category.trim() !== '' &&
       formData.description.trim() !== '' &&
-      formData.image.trim() !== ''
+      formData.image.valueOf() !== ''
     );
   };
 
   useEffect(() => {
     if (product) {
+      console.log('Editing product:', product); // Add this debug line
       setFormData({
+        id: product._id || product.id, // Handle both _id and id cases
         name: product.name || '',
         price: product.price || '',
         category: product.category || '',
@@ -50,6 +51,7 @@ const ProductModal = ({
       setNewCategory(product.category || '');
     } else {
       setFormData({
+        id: null,
         name: '',
         price: '',
         category: '',
@@ -105,27 +107,42 @@ const ProductModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const productData = {
-        name: formData.name,
-        price: Number(formData.price),
-        category: formData.category,
-        description: formData.description,
-        image: formData.image,
-        id: product?.id || null,
-      };
+    setIsLoading(true);
+    toast.loading('Saving product...');
 
-      const url = product?.id 
-        ? updateProductUrl
-        : createProductUrl;
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('description', formData.description);
+
+      // Add the product ID if it exists
+      const productId = product?._id || product?.id;
+      if (productId) {
+        formDataToSend.append('id', productId);
+        console.log('Sending product ID:', productId); // Debug line
+      }
+
+      // Fixed image handling logic
+      if (formData.imageFile) {
+        formDataToSend.append('image', formData.imageFile);
+      } else if (formData.image && typeof formData.image === 'string' && !formData.image.startsWith('blob:')) {
+        // If there's an existing image URL and no new file selected
+        formDataToSend.append('existingImage', formData.image);
+      }
+
+      const url = productId
+        ? SummaryApi.updateProduct.url
+        : SummaryApi.addProduct.url;
+
+      const method = productId
+        ? SummaryApi.updateProduct.method
+        : SummaryApi.addProduct.method;
 
       const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
+        method: method,
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -133,11 +150,16 @@ const ProductModal = ({
       }
 
       const savedProduct = await response.json();
+      toast.dismiss();
+      toast.success(`Product ${product ? 'updated' : 'added'} successfully!`);
       onSave(savedProduct);
       onClose();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Failed to save product. Please try again.');
+      toast.dismiss();
+      toast.error('Failed to save product. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -156,7 +178,7 @@ const ProductModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white/80 backdrop-blur-md">
+      <div className={`relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white/80 backdrop-blur-md ${isLoading ? 'pointer-events-none opacity-60' : ''}`}>
         <div className="mt-3">
           <h3 className="text-xl font-medium text-gray-900 mb-4">{modalTitle}</h3>
           <form className="mt-4" onSubmit={handleSubmit}>
@@ -288,20 +310,17 @@ const ProductModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                disabled={isLoading}
+                className={`px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={!isFormValid()}
-                className={`px-4 py-2 rounded transition-colors ${
-                  isFormValid()
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                disabled={!isFormValid() || isLoading}
+                className={`px-4 py-2 rounded transition-colors ${isFormValid() && !isLoading ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
               >
-                {product ? 'Save Changes' : 'Add Product'}
+                {isLoading ? 'Saving...' : (product ? 'Save Changes' : 'Add Product')}
               </button>
             </div>
           </form>

@@ -57,6 +57,10 @@ const SummaryApi = {
     url: `${backendDomain}/admin/product/add`,
     method: "post"
   },
+  updateProduct: {
+    url: `${backendDomain}/admin/product/update`,
+    method: "put"
+  },
   removeProduct: {
     url: `${backendDomain}/admin/product/remove`,
     method: "delete"

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SummaryApi from '../../common/apiConfig.js';
 import AlertDialog from '../AlertDialog';
 import ProductModal from './ProductModal';
@@ -25,6 +27,7 @@ const Products = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
 
   useEffect(() => {
     setCurrentPage(1); // Reset page when category changes
@@ -63,11 +66,11 @@ const Products = () => {
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       product.name.toLowerCase().includes(searchLower) ||
       product.description?.toLowerCase().includes(searchLower) ||
       product.price.toString().includes(searchLower);
-    
+
     return matchesCategory && matchesSearch;
   });
 
@@ -81,18 +84,6 @@ const Products = () => {
     setIsModalOpen(true);
   };
 
-  const handleAddNewProduct = () => {
-    setSelectedProduct({
-      id: '',
-      name: '',
-      price: '',
-      category: '',
-      description: '',
-      image: '',
-    });
-    setIsModalOpen(true);
-  };
-
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
     setShowDeleteDialog(true);
@@ -101,57 +92,37 @@ const Products = () => {
   const handleDeleteConfirm = async () => {
     if (productToDelete) {
       try {
-        // Add your delete API call here
-        console.log('Deleting product:', productToDelete.id);
-        await fetch(`${SummaryApi.deleteProduct.url}/${productToDelete.id}`, {
-          method: 'DELETE',
+        const response = await fetch(SummaryApi.removeProduct.url, {
+          method: SummaryApi.removeProduct.method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
           credentials: 'include',
+          mode: 'cors',
+          body: JSON.stringify({ id: productToDelete._id })
         });
-        fetchProducts(); // Refresh the list
+
+        if (response.ok) {
+          toast.success('Product deleted successfully!');
+          fetchProducts(); // Refresh the list
+        } else {
+          toast.error('Failed to delete product');
+        }
       } catch (error) {
         console.error('Error deleting product:', error);
+        toast.error('Error deleting product: ' + error.message);
       }
       setShowDeleteDialog(false);
       setProductToDelete(null);
     }
   };
 
-  const handleUpdateProduct = async (updatedProduct) => {
+  const handleUpdateProduct = async (updatedPoduct) => {
+    console.log('Updated Product:', updatedPoduct);
     // Add your update API call here
     setIsModalOpen(false);
     fetchProducts(); // Refresh the list
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const image = URL.createObjectURL(file); // Create object URL for preview
-        setPreviewImage(image);
-        setSelectedProduct({
-          ...selectedProduct,
-          imageFile: file,
-          image: image // Update image in selectedProduct
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCategoryInput = (value) => {
-    setNewCategory(value);
-    const filtered = categories.filter(cat =>
-      cat.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredCategories(filtered);
-    setShowSuggestions(true);
-  };
-
-  const handleCategorySelect = (category) => {
-    setSelectedProduct({ ...selectedProduct, category });
-    setNewCategory(category);
-    setShowSuggestions(false);
   };
 
   useEffect(() => {
@@ -167,6 +138,17 @@ const Products = () => {
 
   return (
     <div className="p-6 max-w-8xl mx-auto bg-transparent">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {/* Header with Filters, Search and Pagination */}
       <div className="mb-8 flex justify-between items-center bg-white/30 backdrop-blur-sm p-4 rounded-lg">
         <div className="flex items-center space-x-4">
@@ -180,7 +162,7 @@ const Products = () => {
               <option key={category} value={category}>{category}</option>
             ))}
           </select>
-          
+
           {/* New Search Input */}
           <input
             type="text"
@@ -196,11 +178,10 @@ const Products = () => {
           <button
             onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
             disabled={currentPage === 1}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${
-              currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
+            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === 1
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
           >
             Previous
           </button>
@@ -210,11 +191,10 @@ const Products = () => {
           <button
             onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${
-              currentPage === totalPages
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
+            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === totalPages
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
           >
             Next
           </button>
@@ -303,7 +283,6 @@ const Products = () => {
         product={selectedProduct}
         title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
         categories={categories}
-        createProductUrl={SummaryApi.createProduct.url}
       />
 
       <AlertDialog
@@ -312,7 +291,7 @@ const Products = () => {
         onConfirm={handleDeleteConfirm}
         onCancel={() => setShowDeleteDialog(false)}
       />
-    </div>
+    </div >
   );
 };
 

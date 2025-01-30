@@ -26,7 +26,7 @@ server.use(cors({
 server.use("/user", userRouter)
 server.use("/product", productRouter)
 server.use("/cart", cartRouter)
-server.use('/admin', adminRouter)
+server.use("/admin", adminRouter)
 
 
 
