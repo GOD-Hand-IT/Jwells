@@ -14,10 +14,20 @@ function Dashboard({ onBackToProfile }) {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(SummaryApi.getCategories.url);
+      const response = await fetch(SummaryApi.category.url, {
+        method: SummaryApi.category.method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+        mode: 'cors',
+      });
       if (response.ok) {
         const data = await response.json();
-        setCategories(data);
+        if (Array.isArray(data.data)) {
+          setCategories(data.data);
+        }
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -63,8 +73,8 @@ function Dashboard({ onBackToProfile }) {
               <button
                 onClick={() => setActiveTab("overview")}
                 className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all ${activeTab === "overview"
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
                 <span className="material-icons-outlined">dashboard</span>
@@ -73,8 +83,8 @@ function Dashboard({ onBackToProfile }) {
               <button
                 onClick={() => setActiveTab("products")}
                 className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all ${activeTab === "products"
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
                 <span className="material-icons-outlined">inventory_2</span>
