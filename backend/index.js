@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 
 import cartRouter from './routes/cartRoutes.js'
 import adminRouter from './routes/adminRoute.js'
+import contactRouter from './routes/contactRoutes.js'
 
 const server = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ server.use("/user", userRouter)
 server.use("/product", productRouter)
 server.use("/cart", cartRouter)
 server.use("/admin", adminRouter)
+server.use("/contact", contactRouter)
 
 
 
