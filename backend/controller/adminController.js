@@ -9,30 +9,46 @@ import productModal from '../model/productModal.js'
 export default class AdminController {
     static addProduct = async (req, res) => {
         try {
-            const { name, price, description, category } = req.body
-            const image = req.files.image && req.files.image[0]
+            const { name, price, description, category } = req.body;
+            const image = req.files.image && req.files.image[0];
 
             if (!image) {
-                return res.sendStatus(400)
+                return res.status(400).json({
+                    success: false,
+                    message: "Image is required"
+                });
             }
 
-            const image1 = await cloudinary.uploader.upload(image.path, { resource_type: 'image' })
+            // Convert buffer to base64 for Cloudinary
+            const b64 = Buffer.from(image.buffer).toString('base64');
+            const dataURI = `data:${image.mimetype};base64,${b64}`;
+            
+            const image1 = await cloudinary.uploader.upload(dataURI, { 
+                resource_type: 'image',
+                folder: 'products'
+            });
+
             const product = new productModal({
                 name,
                 price,
                 description,
                 image: image1.secure_url,
                 category
-            })
-            await product.save()
+            });
+            
+            await product.save();
             return res.status(201).json({
                 success: true,
                 message: "Product added successfully",
                 data: product
-            })
+            });
         } catch (err) {
-            console.error(err)
-            return res.sendStatus(500)
+            console.error('Error in addProduct:', err);
+            return res.status(500).json({
+                success: false,
+                message: "Error adding product",
+                error: err.message
+            });
         }
     }
 
@@ -82,62 +98,48 @@ export default class AdminController {
 
     static updateProduct = async (req, res) => {
         try {
-            const { id, name, price, description, category } = req.body
-
-            // Check if product exists
-            const existingProduct = await productModal.findById(id)
-            if (!existingProduct) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Product not found"
-                })
-            }
-
-            // Prepare update object
+            const { id, name, price, description, category } = req.body;
+            
             const updateData = {
-                name: name || existingProduct.name,
-                price: price || existingProduct.price,
-                description: description || existingProduct.description,
-                category: category || existingProduct.category
-            }
+                name,
+                price,
+                description,
+                category
+            };
 
-            // Handle image update if provided
             if (req.files && req.files.image) {
-                const image = req.files.image[0]
-
-                // Delete old image if it exists
-                if (existingProduct.image) {
-                    const publicId = existingProduct.image.split('/').pop().split('.')[0];
-                    try {
-                        await cloudinary.uploader.destroy(publicId);
-                    } catch (deleteErr) {
-                        console.error('Error deleting old image:', deleteErr);
-                    }
-                }
-
-                // Upload new image
-                const image1 = await cloudinary.uploader.upload(image.path, { resource_type: 'image' })
-                updateData.image = image1.secure_url
+                const image = req.files.image[0];
+                
+                // Convert buffer to base64 for Cloudinary
+                const b64 = Buffer.from(image.buffer).toString('base64');
+                const dataURI = `data:${image.mimetype};base64,${b64}`;
+                
+                const cloudinaryResponse = await cloudinary.uploader.upload(dataURI, {
+                    resource_type: 'image',
+                    folder: 'products'
+                });
+                
+                updateData.image = cloudinaryResponse.secure_url;
             }
 
-            // Update product
             const updatedProduct = await productModal.findByIdAndUpdate(
                 id,
                 updateData,
-                { new: false }
-            )
+                { new: true }
+            );
 
             return res.status(200).json({
                 success: true,
                 message: "Product updated successfully",
                 data: updatedProduct
-            })
+            });
         } catch (err) {
-            console.error(err)
+            console.error('Error in updateProduct:', err);
             return res.status(500).json({
                 success: false,
-                message: "Error updating product"
-            })
+                message: "Error updating product",
+                error: err.message
+            });
         }
     }
 }
