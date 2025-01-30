@@ -1,21 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import Overview from "./Overview";
 import Products from "./Products";
 import ProductModal from "./ProductModal";
+import SummaryApi from '../../common/apiConfig';
 
 function Dashboard({ onBackToProfile }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(SummaryApi.getCategories.url);
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleProductAdded = async (productData) => {
     try {
-      // Add your create product API call here
-      // After successful creation:
       setShowAddProduct(false);
       setActiveTab("products");
+      await fetchCategories(); // Refresh categories after adding product
     } catch (error) {
       console.error('Error adding product:', error);
     }
@@ -91,7 +108,7 @@ function Dashboard({ onBackToProfile }) {
         onSave={handleProductAdded}
         product={null}
         title="Add New Product"
-        categories={[]} // You might want to pass categories here if available
+        categories={categories}
       />
     </div>
   );
