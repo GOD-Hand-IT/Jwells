@@ -303,6 +303,7 @@ const Products = () => {
         product={selectedProduct}
         title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
         categories={categories}
+        createProductUrl={SummaryApi.createProduct.url}
       />
 
       <AlertDialog

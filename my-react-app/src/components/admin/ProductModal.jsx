@@ -1,6 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = [] }) => {
+
+const ProductModal = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  product, 
+  categories = [],
+  createProductUrl,
+  updateProductUrl
+}) => {
+    
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -14,6 +24,17 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const categoryInputRef = useRef(null);
+
+  const isFormValid = () => {
+    return (
+      formData.name.trim() !== '' &&
+      formData.price !== '' &&
+      Number(formData.price) > 0 &&
+      formData.category.trim() !== '' &&
+      formData.description.trim() !== '' &&
+      formData.image.trim() !== ''
+    );
+  };
 
   useEffect(() => {
     if (product) {
@@ -82,21 +103,62 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
     setShowSuggestions(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      id: product?.id,
+    
+    try {
+      const productData = {
+        name: formData.name,
+        price: Number(formData.price),
+        category: formData.category,
+        description: formData.description,
+        image: formData.image,
+        id: product?.id || null,
+      };
+
+      const url = product?.id 
+        ? updateProductUrl
+        : createProductUrl;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save product');
+      }
+
+      const savedProduct = await response.json();
+      onSave(savedProduct);
+      onClose();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Failed to save product. Please try again.');
+    }
+  };
+
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
     });
   };
 
   if (!isOpen) return null;
 
+  const modalTitle = product ? 'Edit Product' : 'Add New Product';
+
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
       <div className="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white/80 backdrop-blur-md">
         <div className="mt-3">
-          <h3 className="text-xl font-medium text-gray-900 mb-4">{title}</h3>
+          <h3 className="text-xl font-medium text-gray-900 mb-4">{modalTitle}</h3>
           <form className="mt-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-1">
@@ -232,7 +294,12 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                disabled={!isFormValid()}
+                className={`px-4 py-2 rounded transition-colors ${
+                  isFormValid()
+                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 {product ? 'Save Changes' : 'Add Product'}
               </button>
@@ -242,6 +309,10 @@ const ProductModal = ({ isOpen, onClose, onSave, product, title, categories = []
       </div>
     </div>
   );
+};
+
+ProductModal.defaultProps = {
+  categories: []
 };
 
 export default ProductModal;

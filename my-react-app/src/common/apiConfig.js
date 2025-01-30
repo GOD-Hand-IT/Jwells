@@ -53,6 +53,14 @@ const SummaryApi = {
     url: `${backendDomain}/admin/product`,
     method: "post"
   },
+  addProduct: {
+    url: `${backendDomain}/admin/product/add`,
+    method: "post"
+  },
+  removeProduct: {
+    url: `${backendDomain}/admin/product/remove`,
+    method: "delete"
+  },
 };
 
 export default SummaryApi;
