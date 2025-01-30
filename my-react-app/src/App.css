@@ -83,13 +83,10 @@ li {
   width: 100%;
   height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items:center;
-  background-size: cover;
+
 }
 .section1 {
-  height: 78vh;
+  height: 80vh;
   background-image: url('images/frame-6.png');
 }
 
@@ -415,7 +412,7 @@ footer {
   .nav-links {
     position: absolute;
     height: 70vh;
-    top: 170px;
+    top: 110px;
     right: 0;
     text-align: start;
     background-color: #FFF;

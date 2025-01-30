@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Section, InbetweenSection, CarouselSection } from '../components/Section.jsx';
+import { Section, InbetweenSection, CarouselSection } from '../components/section.jsx';
 import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
 import bgImage from '../assets/frame-6.png';
 import bgImage2 from '../assets/section-2.jpeg';

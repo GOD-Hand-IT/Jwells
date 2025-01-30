@@ -3,7 +3,7 @@ import React from 'react';
 const Overview = () => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Dashboard Overview</h2>
+      <h2 className="text-black text-2xl font-semibold">Dashboard Overview</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">

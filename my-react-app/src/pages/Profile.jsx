@@ -134,7 +134,7 @@ const Profile = () => {
                                         <button
                                             onClick={() => setIsEditing(true)}
                                             className="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200
-                                            bg-[#B4975A] hover:bg-[#8B7355] text-white shadow-md hover:shadow-lg"
+                                            bg-[#41444B] hover:bg-[#FFD700] text-white shadow-md hover:shadow-lg"
                                         >
                                             Change Password
                                         </button>
@@ -187,7 +187,7 @@ const Profile = () => {
                                 <div className="mt-4">
                                     <button
                                         onClick={() => setShowAdminContent(!showAdminContent)}
-                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                                        className="px-4 py-2 bg-[#41444B] text-white rounded-md hover:bg-black transition-colors"
                                     >
                                         {showAdminContent ? 'Back to Profile' : 'Open Admin Dashboard'}
                                     </button>

@@ -2,7 +2,7 @@ import React from 'react';
 
 function Section({ className, title, image, link }) {
   return (
-    <section className={`section ${className}`} style={{ backgroundImage: `url(${image})` }}>
+    <section className={`section w-full relative bg-cover h-[100vh] ${className}`} style={{ backgroundImage: `url(${image})` }}>
       <div className="m-[0px]">
         <div className="font-[lato] font-medium text-white flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>
         <div className="flex">

@@ -4,10 +4,10 @@ function Footer() {
   return (
     <footer className="flex flex-col bg-gray-800 text-black py-8">
       {/* Main Flex Container */}
-      <div className="flex flex-wrap justify-start pb-20 items-start w-full">
+      <div className="flex flex-wrap justify-start pb-10 items-start w-full">
   {/* Left Column */}
   <div className="w-full lg:w-1/2 flex justify-center lg:justify-center">
-    <h1 className="text-6xl font-light font-[cinzel]">HRIDHAYAM</h1>
+    <h1 className="text-5xl font-light font-[cinzel]">HRIDHAYAM</h1>
   </div>
 
   {/* Right Column */}

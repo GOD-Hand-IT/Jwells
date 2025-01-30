@@ -112,7 +112,7 @@ function Header() {
         onCancel={() => setShowAlert(false)}
       />
 
-      <div className="Header">
+      <div className="flex flex-col text-center justify-evenly shadow-lg h-[150px]">
         <div className="font-[cinzel] font-thin text-black text-[36px]">HRIDHAYAM</div>
         {/* Add profile icon for mobile */}
         <div className="md:hidden absolute right-16 top-4">
@@ -151,7 +151,7 @@ function Header() {
           )}
         </div>
         <nav>
-          <ul id="menu" className="inline-block justify-center list-none nav-links">
+          <ul id="menu" className="inline-block justify-center mt-[30px] list-none nav-links">
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[16px]" ><Link to='/'>HOME</Link></li>
             <DropdownMenu
               title="ALL COLLECTIONS"
@@ -163,27 +163,40 @@ function Header() {
                 </Link>
               )}
             />
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to={"Sales"}>SALE</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to={"/our-story"}>OUR STORY</Link></li>
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
-            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/cart'>CART</Link></li>
-
             {/* Desktop profile icon */}
-            <li className="hidden md:block">
+            
+          </ul>
+          <div className="inline block absolute text-[#41444B] top-[103px] right-[100px] hover:text-[#FFD700] font-[cinzel] font-medium text-[18px]"><Link to='/cart'><svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+    >
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2 12h13l2-7H5" />
+    </svg></Link></div>
+          <div className=" absolute top-[100px] right-[10px] inline-block ">
               {isAuthenticated ? (
                 <div className="relative" ref={profileDropdownRef}>
                   <Link
                     to="/profile"
-                    className="inline-block p-2 rounded hover:bg-gray-100"
+                    className="inline-block p-2q rounded"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#B4975A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#41444B] hover:text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </Link>
                   <button
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                    className="ml-1 p-1 rounded-full hover:bg-gray-100"
+                    className="ml-1 p-1 rounded-full "
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#B4975A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#41444B] hover:text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -206,8 +219,7 @@ function Header() {
                   Login
                 </Link>
               )}
-            </li>
-          </ul>
+            </div>
         </nav>
         <div
           className={`container ${isMenuOpen ? "change" : ""}`}
