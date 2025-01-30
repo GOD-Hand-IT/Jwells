@@ -241,7 +241,7 @@ const Products = () => {
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">${product.price}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">Rs.{product.price}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.category}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex space-x-3">
