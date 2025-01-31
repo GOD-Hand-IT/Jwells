@@ -8,7 +8,7 @@ import SummaryApi from '../../common/apiConfig';
 
 function Dashboard({ onBackToProfile }) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("products");
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -70,16 +70,7 @@ function Dashboard({ onBackToProfile }) {
 
             <h1 className="text-2xl font-bold text-gray-800 mb-8">Admin Panel</h1>
             <nav className="space-y-4">
-              <button
-                onClick={() => setActiveTab("overview")}
-                className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all ${activeTab === "overview"
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                <span className="material-icons-outlined">dashboard</span>
-                <span>Overview</span>
-              </button>
+              
               <button
                 onClick={() => setActiveTab("products")}
                 className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all ${activeTab === "products"
@@ -87,7 +78,7 @@ function Dashboard({ onBackToProfile }) {
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
-                <span className="material-icons-outlined">inventory_2</span>
+                <span className="material-icons-outlined"></span>
                 <span>Products</span>
               </button>
 
@@ -96,7 +87,7 @@ function Dashboard({ onBackToProfile }) {
                 onClick={() => setShowAddProduct(true)}
                 className="w-full px-4 py-3 rounded-lg flex items-center space-x-3 text-white bg-green-600 hover:bg-green-700 transition-all"
               >
-                <span className="material-icons-outlined">add</span>
+                <span className="material-icons-outlined"></span>
                 <span>Add Product</span>
               </button>
             </nav>
@@ -106,7 +97,6 @@ function Dashboard({ onBackToProfile }) {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden">
           <div className="h-screen overflow-y-auto">
-            {activeTab === "overview" && <Overview />}
             {activeTab === "products" && <Products />}
           </div>
         </main>
