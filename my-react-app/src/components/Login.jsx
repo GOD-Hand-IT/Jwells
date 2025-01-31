@@ -238,16 +238,6 @@ const Login = () => {
                   Sign Up
                 </button>
               </p>
-              <p className="text-sm">
-                Forgot your password?{" "}
-                <button
-                  type="button"
-                  onClick={() => toggleAuthMode("forgot")}
-                  className="text-blue-500 hover:underline"
-                >
-                  Reset Here
-                </button>
-              </p>
             </>
           )}
 
