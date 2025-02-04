@@ -62,13 +62,18 @@ html, body {
 .section1 {
   height: 80vh;
   background-image: url('images/frame-6.png');
+  background-position-y:30% ;
+  background-size: cover;
+
 }
 
 .section2 {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  background-image: url('images/section-2.jpeg');
+  background-position-y:30% ;
+  background-size: cover;
+
 }
 
 .section3 {
@@ -82,8 +87,9 @@ html, body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  background-image: url('images/section4.jpeg');
-  background-position-y:40% ;
+  background-position-y:20% ;
+  background-size: cover;
+
 }
 
 .section5 {

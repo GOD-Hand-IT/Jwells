@@ -88,6 +88,8 @@ li {
 .section1 {
   height: 80vh;
   background-image: url('images/frame-6.png');
+  background-size: cover;
+
 }
 
 .section2 {
@@ -95,6 +97,8 @@ li {
   justify-content: flex-end;
   align-items: center;
   background-image: url('images/section-2.jpeg');
+  background-size: cover;
+
 }
 
 .section3 {
@@ -102,6 +106,8 @@ li {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  background-size: cover;
+
 }
 
 .section4 {
@@ -109,7 +115,8 @@ li {
   justify-content: flex-end;
   align-items: center;
   background-image: url('images/section4.jpeg');
-  background-position-y:40% ;
+  background-position-y:30% ;
+  background-size: cover;
 }
 
 .section5 {
@@ -375,6 +382,9 @@ footer {
   justify-content: center;
   flex-wrap: wrap;
   gap: 5%;
+}
+.best-carousal img{
+  object-fit: cover;
 }
 .footer2{
   display: flex;

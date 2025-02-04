@@ -9,6 +9,7 @@ import Login from './components/Login.jsx';
 import Dashboard from './components/admin/Dashboard.jsx';
 import Profile from './pages/Profile.jsx';
 import OurStory from './pages/our_story.jsx';
+import Contact from './pages/contact.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
             {
                 path: '/:name',
                 element: <Product />
+            },
+            {
+                path: '/contact',
+                element: <Contact/>
             }
 
         ]
