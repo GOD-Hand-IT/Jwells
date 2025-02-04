@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import SummaryApi from '../common/apiConfig';
 import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
-import bgImage from '../assets/frame-6.png';
+
 
 const ProductDetails = ({ image, productName, price, description, productId }) => {
   const [isLoading, setIsLoading] = useState(false);

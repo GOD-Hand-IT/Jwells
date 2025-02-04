@@ -293,6 +293,7 @@ function Header() {
             />
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]"><Link to={"/our-story"}>OUR STORY</Link></li>
             <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]"><Link to='/customize-design'>CUSTOMIZE DESIGN</Link></li>
+            <li className="inline block relative text-[#41444B] hover:text-[#FFD700] font-[cinzel] font-medium text-[12px]" ><Link to='/contact' >CONTACT</Link></li>
             {/* Desktop profile icon */}
 
           </ul>
