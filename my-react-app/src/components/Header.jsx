@@ -216,20 +216,20 @@ function Header() {
                 </button>
                 {/* Search Results */}
                 {searchTerm && (
-                  <div className="absolute w-full bg-white mt-2 rounded-lg shadow-[0_4px_20px_-2px_rgba(180,151,90,0.25)] max-h-[80vh] overflow-y-auto p-6">
+                  <div className="absolute w-full bg-white mt-2 rounded-lg shadow-[0_4px_30px_-2px_rgba(180,151,90,0.35)] max-h-[80vh] overflow-y-auto p-6">
                     {isLoading ? (
                       <div className="p-4 text-center text-gray-500">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#B4975A] mx-auto"></div>
                       </div>
                     ) : searchResults.length > 0 ? (
-                      <div className="grid grid-cols-4 gap-12">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-12">
                         {searchResults.map((product) => (
                           <Link
                             key={product._id}
                             to={`/${product.name}`}
                             state={{ productId: product._id }}
                             onClick={closeSearch}
-                            className="flex flex-col bg-white rounded-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl hover:border-[#B4975A] border-2 border-transparent"
+                            className="flex flex-col bg-white rounded-lg overflow-hidden transform transition duration-300 hover:scale-105 shadow-[0_2px_15px_rgba(180,151,90,0.2)] hover:shadow-[0_5px_25px_rgba(180,151,90,0.4)] hover:border-[#B4975A] border-2 border-transparent"
                           >
                             <div className="w-full h-28 bg-gray-50 relative group overflow-hidden">
                               {product.image ? (
@@ -252,8 +252,7 @@ function Header() {
                             </div>
                             <div className="p-3 bg-white transition-colors duration-300 hover:bg-gray-50">
                               <h3 className="font-[cinzel] text-gray-900 text-[11px] font-medium truncate mb-1">{product.name || 'Unnamed Product'}</h3>
-                              <p className="text-[10px] text-gray-500 mb-1">{product.category || 'No Category'}</p>
-                              <p className="text-[#B4975A] text-[11px] font-semibold">
+                              <p className="text-[#B4975A] text-[16px] font-semibold">
                                 ₹{product.price?.toLocaleString() || 'Price not available'}
                               </p>
                             </div>
@@ -277,7 +276,7 @@ function Header() {
         </div>
       )}
 
-      <div className="flex flex-col text-center justify-evenly shadow-[0_4px_20px_-4px_rgba(180,151,90,0.3)] h-[150px]">
+      <div className="flex flex-col text-center justify-evenly shadow-[0_4px_30px_-4px_rgba(180,151,90,0.4)] h-[150px]">
         <div className="font-[cinzel] font-thin text-black text-[36px]">HRIDHAYAM</div>
         <nav>
           <ul id="menu" className="inline-block justify-center mt-[30px] list-none nav-links">
@@ -337,7 +336,7 @@ function Header() {
                   </svg>
                 </button>
                 {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-[0_4px_15px_-3px_rgba(180,151,90,0.2)] py-2 z-50 border border-[#B4975A]/10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-[0_4px_20px_-3px_rgba(180,151,90,0.3)] py-2 z-50 border border-[#B4975A]/10">
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#B4975A]"
