@@ -6,6 +6,7 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
     const [tempPriceRange, setTempPriceRange] = useState([0, maxPrice]);
     const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState(new Set([selectedCategory]));
 
     const fetchCategories = async () => {
         try {
@@ -20,9 +21,11 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
             });
             if (response.ok) {
                 const data = await response.json();
-                if (Array.isArray(data.data)) {
-                    setCategories(data.data);
-                }
+                const categoryList = [];
+                data.data.forEach(category => {
+                    categoryList.push(category);
+                });
+                setCategories(categoryList);
             }
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -34,14 +37,15 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
         setPriceRange([0, maxPrice]);
         setTempPriceRange([0, maxPrice]);
         setIsPriceRangeChanged(false);
-    }, [maxPrice, selectedCategory]);
+    }, [maxPrice]);
 
-    // Add new useEffect to handle reset
     useEffect(() => {
         if (shouldReset) {
             setPriceRange([0, maxPrice]);
             setTempPriceRange([0, maxPrice]);
             setIsPriceRangeChanged(false);
+            setSelectedCategories(new Set([selectedCategory]));
+            onCategoryChange([]);
         }
     }, [shouldReset, maxPrice]);
 
@@ -57,6 +61,22 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
         setIsPriceRangeChanged(false);
     };
 
+    const handleCategoryChange = (category) => {
+        const newSelectedCategories = new Set(selectedCategories);
+        // Prevent unchecking the collection category
+        if (category === selectedCategory && newSelectedCategories.has(category)) {
+            return;
+        }
+        
+        if (newSelectedCategories.has(category)) {
+            newSelectedCategories.delete(category);
+        } else {
+            newSelectedCategories.add(category);
+        }
+        setSelectedCategories(newSelectedCategories);
+        onCategoryChange(Array.from(newSelectedCategories));
+    };
+
     return (
         <div className="w-64 p-4 bg-white shadow-md">
             <div>
@@ -64,15 +84,23 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
                 {categories.map((category) => (
                     <div key={category} className="mb-2 flex items-center">
                         <input
-                            type="radio"
+                            type="checkbox"
                             id={category}
                             value={category}
-                            checked={selectedCategory === category}
-                            onChange={(e) => onCategoryChange(e.target.value)}
-                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
-                            name="category"
+                            checked={selectedCategories.has(category)}
+                            onChange={() => handleCategoryChange(category)}
+                            disabled={category === selectedCategory}
+                            className={`w-4 h-4 mr-2 ${
+                                category === selectedCategory 
+                                ? 'accent-gray-400 cursor-not-allowed' 
+                                : 'accent-[#D4AF37] cursor-pointer'
+                            }`}
                         />
-                        <label htmlFor={category} className="text-black cursor-pointer hover:text-[#D4AF37] transition-colors">
+                        <label htmlFor={category} className={`${
+                            category === selectedCategory 
+                            ? 'text-gray-600' 
+                            : 'text-black cursor-pointer hover:text-[#D4AF37]'
+                        } transition-colors`}>
                             {category}
                         </label>
                     </div>
@@ -86,6 +114,7 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
                         type="range"
                         min="0"
                         max={maxPrice}
+                        step="1"
                         value={tempPriceRange[1]}
                         onChange={handlePriceChange}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"

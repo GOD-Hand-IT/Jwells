@@ -12,7 +12,7 @@ const Collection = () => {
     products: [],
     allProducts: [],
     currentPage: 1,
-    selectedCategory: collectionName,
+    selectedCategories: [collectionName], // Changed from selectedCategory to selectedCategories array
     maxPrice: 1000,
     priceRange: '0-1000'
   });
@@ -21,24 +21,31 @@ const Collection = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${SummaryApi.categoryProduct.url}${state.selectedCategory}`);
-        const { data } = await response.json();
-        if (Array.isArray(data)) {
-          const maxPrice = Math.max(...data.map(p => p.price)) || 1000;
-          setState(prev => ({
-            ...prev,
-            allProducts: data,
-            products: filterProductsByPriceRange(data, `0-${maxPrice}`),
-            maxPrice,
-            priceRange: `0-${maxPrice}`
-          }));
-        }
+        // Fetch products for all selected categories
+        const productPromises = state.selectedCategories.map(category =>
+          fetch(`${SummaryApi.categoryProduct.url}${category}`)
+            .then(res => res.json())
+            .then(({ data }) => data)
+        );
+
+        const productsArrays = await Promise.all(productPromises);
+        // Flatten and remove duplicates based on product ID or some unique identifier
+        const allProducts = [...new Set(productsArrays.flat())];
+        
+        const maxPrice = Math.max(...allProducts.map(p => p.price)) || 1000;
+        setState(prev => ({
+          ...prev,
+          allProducts,
+          products: filterProductsByPriceRange(allProducts, `0-${maxPrice}`),
+          maxPrice,
+          priceRange: `0-${maxPrice}`
+        }));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchProducts();
-  }, [state.selectedCategory]);
+  }, [state.selectedCategories]);
 
   useEffect(() => {
     setState(prev => ({
@@ -48,7 +55,14 @@ const Collection = () => {
   }, [state.priceRange]);
 
   useEffect(() => {
-    setState(prev => ({ ...prev, selectedCategory: collectionName }));
+    setState(prev => ({ 
+      ...prev, 
+      selectedCategories: [collectionName],
+      currentPage: 1,
+      priceRange: '0-1000' // Reset price range
+    }));
+    setShouldResetFilters(true); // Trigger sidebar reset
+    setTimeout(() => setShouldResetFilters(false), 100);
   }, [collectionName]);
 
   const handlePageChange = (page) => {
@@ -72,7 +86,7 @@ const Collection = () => {
       ...prev,
       priceRange: defaultPriceRange,
       products: filterProductsByPriceRange(prev.allProducts, defaultPriceRange),
-      selectedCategory: collectionName,
+      selectedCategories: [collectionName],
       currentPage: 1
     }));
     setShouldResetFilters(true);
@@ -109,8 +123,17 @@ const Collection = () => {
     <div className="contain flex">
       <Sidebar
         onPriceRangeChange={range => setState(prev => ({ ...prev, priceRange: range, currentPage: 1 }))}
-        onCategoryChange={category => setState(prev => ({ ...prev, selectedCategory: category, currentPage: 1 }))}
-        selectedCategory={state.selectedCategory}
+        onCategoryChange={categories => {
+          const updatedCategories = categories.includes(collectionName) 
+            ? categories 
+            : [collectionName, ...categories];
+          setState(prev => ({ 
+            ...prev, 
+            selectedCategories: updatedCategories,
+            currentPage: 1 
+          }));
+        }}
+        selectedCategory={collectionName}
         maxPrice={state.maxPrice}
         shouldReset={shouldResetFilters}
       />
