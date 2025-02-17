@@ -78,6 +78,8 @@ export default class ContactController {
         const { userId, phoneNumber } = req.body;
 
         try {
+            console.log(process.env.EMAIL_ID);
+            console.log(process.env.PASS_KEY);
             const user = await User.findById(userId);
             const cartItems = await Cart.find({ userId })
                 .populate('productId');
