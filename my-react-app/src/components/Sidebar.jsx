@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SummaryApi from '../common/apiConfig.js';
 
-const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPrice }) => {
+const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPrice, shouldReset }) => {
     const [priceRange, setPriceRange] = useState([0, maxPrice]);
     const [tempPriceRange, setTempPriceRange] = useState([0, maxPrice]);
+    const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false);
     const [categories, setCategories] = useState([]);
 
     const fetchCategories = async () => {
@@ -32,16 +33,28 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
         fetchCategories();
         setPriceRange([0, maxPrice]);
         setTempPriceRange([0, maxPrice]);
-    }, [maxPrice]);
+        setIsPriceRangeChanged(false);
+    }, [maxPrice, selectedCategory]);
+
+    // Add new useEffect to handle reset
+    useEffect(() => {
+        if (shouldReset) {
+            setPriceRange([0, maxPrice]);
+            setTempPriceRange([0, maxPrice]);
+            setIsPriceRangeChanged(false);
+        }
+    }, [shouldReset, maxPrice]);
 
     const handlePriceChange = (e) => {
         const value = parseInt(e.target.value);
         setTempPriceRange([0, value]);
+        setIsPriceRangeChanged(true);
     };
 
     const handleApplyPriceRange = () => {
         setPriceRange(tempPriceRange);
         onPriceRangeChange(`0-${tempPriceRange[1]}`);
+        setIsPriceRangeChanged(false);
     };
 
     return (
@@ -74,16 +87,24 @@ const Sidebar = ({ onPriceRangeChange, onCategoryChange, selectedCategory, maxPr
                         min="0"
                         max={maxPrice}
                         value={tempPriceRange[1]}
-                        onChange={(e) => {
-                            handlePriceChange(e);
-                            handleApplyPriceRange();
-                        }}
+                        onChange={handlePriceChange}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
                     />
                     <div className="flex justify-between text-black">
                         <span>${tempPriceRange[0]}</span>
                         <span>${tempPriceRange[1]}</span>
                     </div>
+                    <button
+                        onClick={handleApplyPriceRange}
+                        disabled={!isPriceRangeChanged}
+                        className={`mt-2 px-4 py-2 rounded ${
+                            isPriceRangeChanged 
+                            ? 'bg-[#D4AF37] text-white hover:bg-[#B08F26]' 
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        } transition-colors`}
+                    >
+                        Apply Filter
+                    </button>
                 </div>
             </div>
         </div>
