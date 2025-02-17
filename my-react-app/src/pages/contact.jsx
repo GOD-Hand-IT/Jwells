@@ -8,9 +8,9 @@ const Contact = () => {
       <div className="w-full lg:w-1/2 text-center lg:text-left">
         <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6">Contact Us</h1>
         <div className="bg-white p-6 rounded-lg shadow-lg w-full text-gray-700">
-          <p className="text-xl font-medium mb-4">Name: <span className="font-normal">John Doe</span></p>
-          <p className="text-xl font-medium mb-4">Contact No: <span className="font-normal">+1 234 567 890</span></p>
-          <p className="text-xl font-medium">Email: <span className="font-normal">john.doe@example.com</span></p>
+          <p className="text-xl font-medium mb-4">Name: <span className="font-normal">Kaviya mahesh</span></p>
+          <p className="text-xl font-medium mb-4">Contact No: <span className="font-normal">+91 9994227430</span></p>
+          <p className="text-xl font-medium">Email: <span className="font-normal">kaviyamaheshv@gmail.com</span></p>
         </div>
       </div>
 

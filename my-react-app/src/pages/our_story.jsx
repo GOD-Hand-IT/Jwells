@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import image from '../assets/section-1.png'
 
 const Our_story = () => {
   const [count, setCount] = useState(0)
@@ -60,7 +61,7 @@ const Our_story = () => {
                 <div
                     class="sm:w-[564px] w-full sm:h-[646px] h-full sm:bg-gray-100 rounded-3xl sm:border border-gray-200 relative">
                     <img class="sm:mt-5 sm:ml-5 w-full h-full rounded-3xl object-cover"
-                        src="https://pagedone.io/asset/uploads/1717742431.png" alt="about Us image" />
+                        src={image} alt="about Us image" />
                 </div>
             </div>
         </div>

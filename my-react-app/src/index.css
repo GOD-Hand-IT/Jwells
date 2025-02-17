@@ -437,6 +437,15 @@ footer {
   .container{
     display: inline-block;
   }
+  .section1{
+    background-position-x:50% ;
+  }
+  .section2{
+    background-position-x:30% ;
+  }
+  .section4{
+    background-position-x:50% ;
+  }
   .nav-links {
     position: absolute;
     height: 70vh;
