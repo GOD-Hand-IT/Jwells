@@ -1,121 +1,121 @@
 import React, { useEffect, useState } from "react";
-import ProductCard from '../components/productCard'
 import { useLocation } from 'react-router-dom';
+import ProductCard from '../components/productCard';
 import Pagination from '../components/Pagination';
 import Sidebar from '../components/Sidebar';
-import "../App.css";
+import NoProductsFound from '../components/NoProductsFound';
 import SummaryApi from "../common/apiConfig";
 
-const products = [
-
-];
-
-const itemsPerPage = 9;
-
 const Collection = () => {
-  const location = useLocation();
-  const { collectionName } = location.state;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortedProducts, setSortedProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(collectionName);
-  const [priceRange, setPriceRange] = useState('0-1000');
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const { state: { collectionName } } = useLocation();
+  const [state, setState] = useState({
+    products: [],
+    allProducts: [],
+    currentPage: 1,
+    selectedCategory: collectionName,
+    maxPrice: 1000,
+    priceRange: '0-1000'
+  });
+  const [shouldResetFilters, setShouldResetFilters] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchProducts = async () => {
       try {
-        const response = await fetch(`${SummaryApi.categoryProduct.url}${selectedCategory}?priceRange=${priceRange}`);
-        const data = await response.json();
-        if (Array.isArray(data.data)) {
-          setSortedProducts(data.data);
-          // Calculate max price from products
-          const highestPrice = Math.max(...data.data.map(product => product.price));
-          setMaxPrice(highestPrice || 1000); // fallback to 1000 if no products
-        } else {
-          console.error("API data is not an array:", data);
+        const response = await fetch(`${SummaryApi.categoryProduct.url}${state.selectedCategory}`);
+        const { data } = await response.json();
+        if (Array.isArray(data)) {
+          const maxPrice = Math.max(...data.map(p => p.price)) || 1000;
+          setState(prev => ({
+            ...prev,
+            allProducts: data,
+            products: filterProductsByPriceRange(data, `0-${maxPrice}`),
+            maxPrice,
+            priceRange: `0-${maxPrice}`
+          }));
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-    }
-    fetchData();
-  }, [selectedCategory, priceRange]);
+    };
+    fetchProducts();
+  }, [state.selectedCategory]);
 
-  const handlePriceRangeChange = (range) => {
-    setPriceRange(range);
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      products: filterProductsByPriceRange(prev.allProducts, prev.priceRange)
+    }));
+  }, [state.priceRange]);
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    setCurrentPage(1);
-  };
-
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-
-  const getPaginatedProducts = () => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return sortedProducts.slice(start, start + itemsPerPage);
-  };
-
-  const handleSortChange = (e) => {
-    const sortValue = e.target.value;
-    let sorted;
-
-    if (sortValue === "priceHighLow") {
-      sorted = [...sortedProducts].sort((a, b) => b.price - a.price);
-    } else if (sortValue === "priceLowHigh") {
-      sorted = [...sortedProducts].sort((a, b) => a.price - b.price);
-    } else {
-      sorted = [...products]; // Default order
-    }
-
-    setSortedProducts(sorted);
-    setCurrentPage(1); // Reset to the first page after sorting
-  };
+  useEffect(() => {
+    setState(prev => ({ ...prev, selectedCategory: collectionName }));
+  }, [collectionName]);
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setState(prev => ({ ...prev, currentPage: page }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      handlePageChange(currentPage - 1);
-    }
+  const getPaginatedProducts = () => {
+    const start = (state.currentPage - 1) * 9;
+    return state.products.slice(start, start + 9);
   };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      handlePageChange(currentPage + 1);
-    }
+  const filterProductsByPriceRange = (products, priceRange) => {
+    const [min, max] = priceRange.split('-').map(Number);
+    return products.filter(product => product.price >= min && product.price <= max );
   };
 
-  const categories = ["Rings", "Necklaces", "Bracelets", "Earrings"]; // Add your categories here
+  const resetFilters = () => {
+    const defaultPriceRange = `0-${state.maxPrice}`;
+    setState(prev => ({
+      ...prev,
+      priceRange: defaultPriceRange,
+      products: filterProductsByPriceRange(prev.allProducts, defaultPriceRange),
+      selectedCategory: collectionName,
+      currentPage: 1
+    }));
+    setShouldResetFilters(true);
+    // Reset the trigger after a short delay
+    setTimeout(() => setShouldResetFilters(false), 100);
+  };
 
-  return (
-    <div className="contain flex">
-      <Sidebar 
-        onPriceRangeChange={handlePriceRangeChange}
-        onCategoryChange={handleCategoryChange}
-        selectedCategory={selectedCategory}
-        maxPrice={maxPrice}
-      />
-      
-      {/* Main Content */}
-      <div className="flex-1 px-4">
+  const renderProducts = () => {
+    const paginatedProducts = getPaginatedProducts();
+    
+    if (state.products.length === 0) {
+      return <NoProductsFound onResetFilters={resetFilters} />;
+    }
+
+    return (
+      <>
         <div className="py-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
-          {getPaginatedProducts().map((product, index) => (
+          {paginatedProducts.map((product, index) => (
             <ProductCard key={index} product={product} />
           ))}
         </div>
         <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPrevPage={handlePrevPage}
-          onNextPage={handleNextPage}
+          currentPage={state.currentPage}
+          totalPages={Math.ceil(state.products.length / 9)}
+          onPrevPage={() => handlePageChange(state.currentPage - 1)}
+          onNextPage={() => handlePageChange(state.currentPage + 1)}
           onPageSelect={handlePageChange}
         />
+      </>
+    );
+  };
+
+  return (
+    <div className="contain flex">
+      <Sidebar
+        onPriceRangeChange={range => setState(prev => ({ ...prev, priceRange: range, currentPage: 1 }))}
+        onCategoryChange={category => setState(prev => ({ ...prev, selectedCategory: category, currentPage: 1 }))}
+        selectedCategory={state.selectedCategory}
+        maxPrice={state.maxPrice}
+        shouldReset={shouldResetFilters}
+      />
+      <div className="flex-1 px-4">
+        {renderProducts()}
       </div>
     </div>
   );
