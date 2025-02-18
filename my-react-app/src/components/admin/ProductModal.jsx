@@ -16,7 +16,10 @@ const ProductModal = ({
     category: '',
     description: '',
     image: '',
-    imageFile: null
+    imageFile: null,
+    discountPercentage: 0,
+    quantity: 0,
+    inStock: true
   });
   const [previewImage, setPreviewImage] = useState(null);
   const [newCategory, setNewCategory] = useState('');
@@ -45,7 +48,10 @@ const ProductModal = ({
         category: product.category || '',
         description: product.description || '',
         image: product.image || '',
-        imageFile: null
+        imageFile: null,
+        discountPercentage: product.discountPercentage || 0,
+        quantity: product.quantity || 0,
+        inStock: product.inStock !== undefined ? product.inStock : true
       });
       setPreviewImage(product.image || null);
       setNewCategory(product.category || '');
@@ -57,7 +63,10 @@ const ProductModal = ({
         category: '',
         description: '',
         image: '',
-        imageFile: null
+        imageFile: null,
+        discountPercentage: 0,
+        quantity: 0,
+        inStock: true
       });
       setPreviewImage(null);
       setNewCategory('');
@@ -117,6 +126,9 @@ const ProductModal = ({
       formDataToSend.append('price', formData.price);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('description', formData.description);
+      formDataToSend.append('discountPercentage', formData.discountPercentage);
+      formDataToSend.append('quantity', formData.quantity);
+      formDataToSend.append('inStock', formData.inStock);
 
       // Add the product ID if it exists
       const productId = product?._id || product?.id;
@@ -247,6 +259,72 @@ const ProductModal = ({
                       )}
                     </div>
                   )}
+                </div>
+                <div className="mb-4">
+                  <div className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.discountPercentage > 0}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          discountPercentage: e.target.checked ? formData.discountPercentage || 0 : 0
+                        });
+                      }}
+                      className="mr-2"
+                    />
+                    <label className="text-gray-700 text-sm font-bold">
+                      Apply Discount
+                    </label>
+                  </div>
+                  {formData.discountPercentage > 0 && (
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formData.discountPercentage}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        discountPercentage: Math.min(100, Math.max(0, Number(e.target.value)))
+                      })}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
+                      placeholder="Discount percentage (0-100)"
+                    />
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      quantity: Math.max(0, Number(e.target.value))
+                    })}
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.inStock}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        inStock: e.target.checked
+                      })}
+                      className="mr-2"
+                    />
+                    <label className="text-gray-700 text-sm font-bold">
+                      In Stock
+                    </label>
+                  </div>
                 </div>
               </div>
               <div className="col-span-1">

@@ -64,12 +64,13 @@ const Products = () => {
 
   // Filter and paginate products
   const filteredProducts = products.filter(product => {
+    if (!product) return false;
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = searchQuery === '' ||
-      product.name.toLowerCase().includes(searchLower) ||
-      product.description?.toLowerCase().includes(searchLower) ||
-      product.price.toString().includes(searchLower);
+      (product.name && product.name.toLowerCase().includes(searchLower)) ||
+      (product.description && product.description.toLowerCase().includes(searchLower)) ||
+      (product.price && product.price.toString().includes(searchLower));
 
     return matchesCategory && matchesSearch;
   });
@@ -118,11 +119,25 @@ const Products = () => {
     }
   };
 
-  const handleUpdateProduct = async (updatedPoduct) => {
-    console.log('Updated Product:', updatedPoduct);
-    // Add your update API call here
-    setIsModalOpen(false);
-    fetchProducts(); // Refresh the list
+  const handleUpdateProduct = async (updatedProduct) => {
+    try {
+      // Close modal first to show immediate feedback
+      setIsModalOpen(false);
+      setSelectedProduct(null);
+      
+      // Force refresh the products list
+      await fetchProducts();
+      
+      // Show appropriate success message based on whether it was an edit or add operation
+      if (updatedProduct._id || updatedProduct.id) {
+        toast.success('Product updated successfully!');
+      } else {
+        toast.success('New product added successfully!');
+      }
+    } catch (error) {
+      console.error('Error handling product update:', error);
+      toast.error('Failed to save product changes');
+    }
   };
 
   useEffect(() => {
@@ -223,6 +238,15 @@ const Products = () => {
                   Price
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                  Discount (%)
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                  Quantity
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
@@ -232,16 +256,43 @@ const Products = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {currentProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
+                <tr key={product._id}
+                  className={`hover:bg-gray-50 ${!product.inStock ? 'bg-red-50' :
+                    product.quantity <= 5 ? 'bg-yellow-50' : 'bg-white'
+                    }`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <img
-                      src={product.image}
+                      src={product.image || ''}
                       alt={product.name}
                       className="h-16 w-16 object-cover rounded"
+                      onError={(e) => {
+                        e.target.src = 'placeholder-image-url'; // Add a placeholder image URL
+                        e.target.onerror = null;
+                      }}
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">Rs.{product.price}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.name || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">Rs.{product.price || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                    {product.discountPercentage || 0}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                    {product.quantity || 0}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${!product.inStock
+                      ? 'bg-red-100 text-red-800'
+                      : product.quantity <= 5
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                      }`}>
+                      {!product.inStock
+                        ? 'Out of Stock'
+                        : product.quantity <= 5
+                          ? 'Low Stock'
+                          : 'In Stock'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.category}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex space-x-3">
@@ -279,10 +330,13 @@ const Products = () => {
           setSelectedProduct(null);
           setPreviewImage(null);
         }}
-        onSave={handleUpdateProduct}
+        onSave={
+          handleUpdateProduct
+        }
         product={selectedProduct}
         title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
         categories={categories}
+        fetchProducts={fetchProducts}  // Add this prop
       />
 
       <AlertDialog
