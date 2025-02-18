@@ -120,4 +120,43 @@ export default class CartController {
             });
         }
     }
+
+    static async getCartItemQuantity(req, res) {
+        try {
+            const { productId, userId } = req.body;
+
+            if (!userId || !productId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'UserId and productId are required'
+                });
+            }
+
+            const cartItem = await addToCartModel.findOne({
+                productId,
+                userId
+            });
+
+            if (!cartItem) {
+                return res.status(200).json({
+                    success: true,
+                    quantity: 0,
+                    message: 'Product not in cart'
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                quantity: cartItem.quantity,
+                data: cartItem
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Error fetching cart item quantity',
+                error: error.message
+            });
+        }
+    }
 }

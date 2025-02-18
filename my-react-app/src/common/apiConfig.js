@@ -45,6 +45,10 @@ const SummaryApi = {
     url: `${backendDomain}/cart/remove`,
     method: "delete"
   },
+  getCartQuantity: {
+    url: `${backendDomain}/cart/quantity`,
+    method: "post"
+  },
   showCart: {
     url: `${backendDomain}/cart/show`,
     method: "post"

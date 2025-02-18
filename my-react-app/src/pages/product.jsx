@@ -33,7 +33,9 @@ const product = () => {
         image={product.image}
         productName={product.name}
         price={product.price}
+        inStock={product.inStock}
         description={product.description}
+        discountPercentage={product.discountPercentage}
       />
     </div>
   );
