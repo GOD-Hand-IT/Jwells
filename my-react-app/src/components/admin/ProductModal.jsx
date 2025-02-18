@@ -284,17 +284,15 @@ const ProductModal = ({
                     <div className="flex items-center">
                       <input
                         type="number"
-                        max="100"
                         value={formData.discountPercentage}
                         onChange={(e) => {
-                          const newValue = Number(e.target.value);
                           setFormData({
                             ...formData,
-                            discountPercentage: newValue === 0 ? 1 : Math.min(100, Math.max(0, newValue))
+                            discountPercentage: e.target.value
                           });
                         }}
                         className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
-                        placeholder="Discount percentage (1-100)"
+                        placeholder="Discount percentage"
                       />
                       <span className="ml-2">%</span>
                     </div>
@@ -307,15 +305,11 @@ const ProductModal = ({
                   </label>
                   <input
                     type="number"
-                    min="0"
                     value={formData.quantity}
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-                      setFormData({
-                        ...formData,
-                        quantity: newValue === 0 ? 1 : Math.max(0, newValue)
-                      });
-                    }}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      quantity: e.target.value
+                    })}
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
                     required
                   />
@@ -330,9 +324,10 @@ const ProductModal = ({
                         ...formData,
                         inStock: e.target.checked
                       })}
+                      disabled={!product}
                       className="mr-2"
                     />
-                    <label className="text-gray-700 text-sm font-bold">
+                    <label className={`text-gray-700 text-sm font-bold ${!product ? 'opacity-50' : ''}`}>
                       In Stock
                     </label>
                   </div>
