@@ -329,12 +329,12 @@ const Cart = () => {
                                     </dl>
                                 </div>
 
-                                <button
-                                    onClick={handleOpenModal}  // Changed from setIsModalOpen(true)
+                                <div
+                                    onClick={() => navigate("/checkout")}  // Changed from setIsModalOpen(true)
                                     className="w-full rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900"
                                 >
                                     Proceed to Checkout
-                                </button>
+                                </div>
 
                                 <div className="flex items-center justify-center gap-2">
                                     <span className="text-sm font-normal text-gray-500">or</span>

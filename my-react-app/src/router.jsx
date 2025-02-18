@@ -11,6 +11,7 @@ import Profile from './pages/Profile.jsx';
 import OurStory from './pages/our_story.jsx';
 import Contact from './pages/contact.jsx';
 import Discounts from './pages/discounts.jsx';
+import Checkout from './pages/checkout.jsx';
 
 
 export const router = createBrowserRouter([
@@ -64,5 +65,9 @@ export const router = createBrowserRouter([
     {
         path: '/profile',
         element: <Profile />
+    },
+    {
+        path: '/checkout',
+        element: <Checkout />
     }
 ]);
