@@ -47,6 +47,7 @@ export default class ProductController {
                 name: product.name,
                 price: product.price,
                 discountPercentage: product.discountPercentage,
+                inStock: product.inStock,
                 image: product.image[0]
             }))
             return res.json({ success: true, data: products })

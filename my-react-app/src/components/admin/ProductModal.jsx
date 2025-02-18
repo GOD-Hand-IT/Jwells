@@ -36,7 +36,8 @@ const ProductModal = ({
       formData.category.trim() !== '' &&
       formData.description.trim() !== '' &&
       formData.image.valueOf() !== '' &&
-      Number(formData.quantity) > 0
+      Number(formData.quantity) > 0 &&
+      (!formData.hasDiscount || (formData.hasDiscount && Number(formData.discountPercentage) > 0))
     );
   };
 
@@ -285,12 +286,15 @@ const ProductModal = ({
                         type="number"
                         max="100"
                         value={formData.discountPercentage}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          discountPercentage: Math.min(100, Number(e.target.value) || 0)
-                        })}
+                        onChange={(e) => {
+                          const newValue = Number(e.target.value);
+                          setFormData({
+                            ...formData,
+                            discountPercentage: newValue === 0 ? 1 : Math.min(100, Math.max(0, newValue))
+                          });
+                        }}
                         className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
-                        placeholder="Discount percentage (0-100)"
+                        placeholder="Discount percentage (1-100)"
                       />
                       <span className="ml-2">%</span>
                     </div>
@@ -305,10 +309,13 @@ const ProductModal = ({
                     type="number"
                     min="0"
                     value={formData.quantity}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      quantity: Math.max(0, Number(e.target.value))
-                    })}
+                    onChange={(e) => {
+                      const newValue = Number(e.target.value);
+                      setFormData({
+                        ...formData,
+                        quantity: newValue === 0 ? 1 : Math.max(0, newValue)
+                      });
+                    }}
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
                     required
                   />
