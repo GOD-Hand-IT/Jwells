@@ -122,30 +122,33 @@ const ProductModal = ({
 
     try {
       const formDataToSend = new FormData();
-
-      // Always send these fields
       formDataToSend.append('name', formData.name);
       formDataToSend.append('price', formData.price);
-      formDataToSend.append('category', formData.category || newCategory); // Fix: Use either formData.category or newCategory
+      formDataToSend.append('category', formData.category);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('discountPercentage', formData.discountPercentage);
       formDataToSend.append('quantity', formData.quantity);
       formDataToSend.append('inStock', formData.inStock);
 
-      // Handle image
+      // Add the product ID only if editing an existing product
+      if (product && (product._id || product.id)) {
+        formDataToSend.append('id', product._id || product.id);
+      }
+
+      // Handle image upload
       if (formData.imageFile) {
         formDataToSend.append('image', formData.imageFile);
       } else if (formData.image && typeof formData.image === 'string' && !formData.image.startsWith('blob:')) {
         formDataToSend.append('existingImage', formData.image);
       }
 
-      const response = await fetch(
-        product ? SummaryApi.updateProduct.url : SummaryApi.addProduct.url,
-        {
-          method: product ? SummaryApi.updateProduct.method : SummaryApi.addProduct.method,
-          body: formDataToSend,
-        }
-      );
+      const url = product ? SummaryApi.updateProduct.url : SummaryApi.addProduct.url;
+      const method = product ? SummaryApi.updateProduct.method : SummaryApi.addProduct.method;
+
+      const response = await fetch(url, {
+        method: method,
+        body: formDataToSend,
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to ${product ? 'update' : 'add'} product`);
@@ -154,6 +157,7 @@ const ProductModal = ({
       const savedProduct = await response.json();
       toast.dismiss();
 
+      // Call onSave with the response data
       if (typeof onSave === 'function') {
         onSave(savedProduct.data || savedProduct);
       }
