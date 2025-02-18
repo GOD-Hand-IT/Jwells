@@ -124,20 +124,20 @@ const Products = () => {
       // Close modal first to show immediate feedback
       setIsModalOpen(false);
       setSelectedProduct(null);
-      
+
       // Force refresh the products list
       await fetchProducts();
-      
-      // Show appropriate success message based on whether it was an edit or add operation
-      if (updatedProduct._id || updatedProduct.id) {
-        toast.success('Product updated successfully!');
-      } else {
-        toast.success('New product added successfully!');
-      }
+
+      toast.success(updatedProduct._id ? 'Product updated successfully!' : 'New product added successfully!');
     } catch (error) {
       console.error('Error handling product update:', error);
       toast.error('Failed to save product changes');
     }
+  };
+
+  const handleAddNewProduct = () => {
+    setSelectedProduct(null);
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -217,8 +217,14 @@ const Products = () => {
       </div>
 
       {/* Title Section */}
-      <div className="mb-8">
+      <div className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Products Management</h1>
+        <button
+          onClick={handleAddNewProduct}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Add New Product
+        </button>
       </div>
 
       {/* Products Table */}
@@ -336,7 +342,6 @@ const Products = () => {
         product={selectedProduct}
         title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
         categories={categories}
-        fetchProducts={fetchProducts}  // Add this prop
       />
 
       <AlertDialog

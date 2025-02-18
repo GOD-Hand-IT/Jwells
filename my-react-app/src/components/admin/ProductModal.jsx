@@ -110,7 +110,7 @@ const ProductModal = ({
   };
 
   const handleCategorySelect = (category) => {
-    setFormData({ ...formData, category });
+    setFormData({ ...formData, category: category });  // Fix: Update formData.category
     setNewCategory(category);
     setShowSuggestions(false);
   };
@@ -122,55 +122,47 @@ const ProductModal = ({
 
     try {
       const formDataToSend = new FormData();
+
+      // Always send these fields
       formDataToSend.append('name', formData.name);
       formDataToSend.append('price', formData.price);
-      formDataToSend.append('category', formData.category);
+      formDataToSend.append('category', formData.category || newCategory); // Fix: Use either formData.category or newCategory
       formDataToSend.append('description', formData.description);
       formDataToSend.append('discountPercentage', formData.discountPercentage);
       formDataToSend.append('quantity', formData.quantity);
       formDataToSend.append('inStock', formData.inStock);
 
-      // Add the product ID if it exists
-      const productId = product?._id || product?.id;
-      if (productId) {
-        formDataToSend.append('id', productId);
-        console.log('Sending product ID:', productId); // Debug line
-      }
-
-      // Fixed image handling logic
+      // Handle image
       if (formData.imageFile) {
         formDataToSend.append('image', formData.imageFile);
       } else if (formData.image && typeof formData.image === 'string' && !formData.image.startsWith('blob:')) {
-        // If there's an existing image URL and no new file selected
         formDataToSend.append('existingImage', formData.image);
       }
 
-      const url = productId
-        ? SummaryApi.updateProduct.url
-        : SummaryApi.addProduct.url;
-
-      const method = productId
-        ? SummaryApi.updateProduct.method
-        : SummaryApi.addProduct.method;
-
-      const response = await fetch(url, {
-        method: method,
-        body: formDataToSend,
-      });
+      const response = await fetch(
+        product ? SummaryApi.updateProduct.url : SummaryApi.addProduct.url,
+        {
+          method: product ? SummaryApi.updateProduct.method : SummaryApi.addProduct.method,
+          body: formDataToSend,
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to save product');
+        throw new Error(`Failed to ${product ? 'update' : 'add'} product`);
       }
 
       const savedProduct = await response.json();
       toast.dismiss();
-      toast.success(`Product ${product ? 'updated' : 'added'} successfully!`);
-      onSave(savedProduct);
+
+      if (typeof onSave === 'function') {
+        onSave(savedProduct.data || savedProduct);
+      }
+
       onClose();
     } catch (error) {
       console.error('Error saving product:', error);
       toast.dismiss();
-      toast.error('Failed to save product. Please try again.');
+      toast.error(`Failed to ${product ? 'update' : 'add'} product. Please try again.`);
     } finally {
       setIsLoading(false);
     }
