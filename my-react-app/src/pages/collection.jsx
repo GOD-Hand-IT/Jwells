@@ -14,7 +14,8 @@ const Collection = () => {
     currentPage: 1,
     selectedCategories: [collectionName], // Changed from selectedCategory to selectedCategories array
     maxPrice: 1000,
-    priceRange: '0-1000'
+    priceRange: '0-1000',
+    statusFilters: ['instock'] // Add default status filter
   });
   const [shouldResetFilters, setShouldResetFilters] = useState(false);
 
@@ -31,12 +32,12 @@ const Collection = () => {
         const productsArrays = await Promise.all(productPromises);
         // Flatten and remove duplicates based on product ID or some unique identifier
         const allProducts = [...new Set(productsArrays.flat())];
-        
+
         const maxPrice = Math.max(...allProducts.map(p => p.price)) || 1000;
         setState(prev => ({
           ...prev,
           allProducts,
-          products: filterProductsByPriceRange(allProducts, `0-${maxPrice}`),
+          products: filterProductsByPriceRange(allProducts, `0-${maxPrice}`, prev.statusFilters),
           maxPrice,
           priceRange: `0-${maxPrice}`
         }));
@@ -50,13 +51,13 @@ const Collection = () => {
   useEffect(() => {
     setState(prev => ({
       ...prev,
-      products: filterProductsByPriceRange(prev.allProducts, prev.priceRange)
+      products: filterProductsByPriceRange(prev.allProducts, prev.priceRange, prev.statusFilters)
     }));
-  }, [state.priceRange]);
+  }, [state.priceRange, state.statusFilters]);
 
   useEffect(() => {
-    setState(prev => ({ 
-      ...prev, 
+    setState(prev => ({
+      ...prev,
       selectedCategories: [collectionName],
       currentPage: 1,
       priceRange: '0-1000' // Reset price range
@@ -75,9 +76,18 @@ const Collection = () => {
     return state.products.slice(start, start + 9);
   };
 
-  const filterProductsByPriceRange = (products, priceRange) => {
+  const filterProductsByPriceRange = (products, priceRange, statusFilters) => {
     const [min, max] = priceRange.split('-').map(Number);
-    return products.filter(product => product.price >= min && product.price <= max );
+    return products.filter(product => {
+      const priceInRange = product.price >= min && product.price <= max;
+
+      // Status filtering logic
+      const statusMatch = statusFilters.length === 2 || // Both filters selected
+        (statusFilters.includes('instock') && product.inStock) ||
+        (statusFilters.includes('preorder') && !product.inStock);
+
+      return priceInRange && statusMatch;
+    });
   };
 
   const resetFilters = () => {
@@ -85,7 +95,7 @@ const Collection = () => {
     setState(prev => ({
       ...prev,
       priceRange: defaultPriceRange,
-      products: filterProductsByPriceRange(prev.allProducts, defaultPriceRange),
+      products: filterProductsByPriceRange(prev.allProducts, defaultPriceRange, prev.statusFilters),
       selectedCategories: [collectionName],
       currentPage: 1
     }));
@@ -96,7 +106,7 @@ const Collection = () => {
 
   const renderProducts = () => {
     const paginatedProducts = getPaginatedProducts();
-    
+
     if (state.products.length === 0) {
       return <NoProductsFound onResetFilters={resetFilters} />;
     }
@@ -122,20 +132,30 @@ const Collection = () => {
   return (
     <div className="contain flex">
       <Sidebar
-        onPriceRangeChange={range => setState(prev => ({ ...prev, priceRange: range, currentPage: 1 }))}
+        onPriceRangeChange={range => setState(prev => ({
+          ...prev,
+          priceRange: range,
+          currentPage: 1
+        }))}
         onCategoryChange={categories => {
-          const updatedCategories = categories.includes(collectionName) 
-            ? categories 
+          const updatedCategories = categories.includes(collectionName)
+            ? categories
             : [collectionName, ...categories];
-          setState(prev => ({ 
-            ...prev, 
+          setState(prev => ({
+            ...prev,
             selectedCategories: updatedCategories,
-            currentPage: 1 
+            currentPage: 1
           }));
         }}
+        onStatusChange={statusFilters => setState(prev => ({
+          ...prev,
+          statusFilters,
+          currentPage: 1
+        }))}
         selectedCategory={collectionName}
         maxPrice={state.maxPrice}
         shouldReset={shouldResetFilters}
+        statusFilters={state.statusFilters}
       />
       <div className="flex-1 px-4">
         {renderProducts()}
