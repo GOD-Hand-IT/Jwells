@@ -8,7 +8,7 @@ import addToCartModel from '../model/cartProduct.js';
 export default class CartController {
     static async addToCart(req, res) {
         try {
-            const { productId, quantity, userId } = req.body;
+            const { productId, quantity, userId, isPreOrder, partialPayment } = req.body;
             if (!userId) {
                 return res.status(400).json({
                     success: false,
@@ -35,7 +35,14 @@ export default class CartController {
                 // Calculate new quantity
                 const newQuantity = existingCartItem.quantity + changeQuantity;
 
-                // Update quantity of existing item
+                if (existingCartItem.isPreOrder) {
+                    const totalPrice = (await existingCartItem.populate('productId')).productId.price * newQuantity;
+                    // Keep the same partial payment per unit, multiply by new quantity
+                    const newPartialPayment = Math.round((existingCartItem.partialPayment / existingCartItem.quantity) * newQuantity);
+                    existingCartItem.partialPayment = newPartialPayment;
+                    existingCartItem.balancePayment = Math.round(totalPrice - newPartialPayment);
+                }
+
                 existingCartItem.quantity = newQuantity;
                 await existingCartItem.save();
                 return res.status(200).json({
@@ -52,11 +59,19 @@ export default class CartController {
                 }
 
                 // Create new cart item
-                const cartItem = await addToCartModel.create({
+                const cartData = {
                     productId,
                     quantity: changeQuantity,
                     userId
-                });
+                };
+
+                if (isPreOrder) {
+                    cartData.isPreOrder = true;
+                    cartData.partialPayment = partialPayment;
+                    // Balance payment will be set after populating product price
+                }
+
+                const cartItem = await addToCartModel.create(cartData);
                 return res.status(201).json({
                     success: true,
                     message: 'Item added to cart',

@@ -15,6 +15,18 @@ const addToCart = mongoose.Schema({
         ref: 'user',
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    isPreOrder: {
+        type: Boolean,
+        default: false
+    },
+    partialPayment: {
+        type: Number,
+        default: 0
+    },
+    balancePayment: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

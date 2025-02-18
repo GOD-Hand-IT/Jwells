@@ -20,13 +20,13 @@ const ProductDetails = ({
   const navigate = useNavigate();
 
   // Calculate original price from discounted price
-  const discountedPrice = Number(price);
+  const discountedPrice = Math.round(Number(price));
   const originalPrice = discountPercentage > 0
-    ? Number(price / (1 - discountPercentage / 100))
+    ? Math.round(Number(price / (1 - discountPercentage / 100)))
     : discountedPrice;
 
-  // Calculate partial payment for pre-order
-  const partialPayment = originalPrice / 2;
+  // Calculate partial payment for pre-order (rounded to whole number)
+  const partialPayment = Math.round(discountedPrice / 2);
 
   const fetchCartQuantity = async () => {
     const userId = localStorage.getItem('userId');

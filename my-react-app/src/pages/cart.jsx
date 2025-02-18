@@ -45,8 +45,7 @@ const Cart = () => {
     const handleQuantityChange = async (itemId, change) => {
         const item = cartItems.find(item => item._id === itemId);
         const newQuantity = item.quantity + change;
-        toast.dismiss(); // Dismiss any existing toasts
-        // Prevent quantity from going below 1
+
         if (newQuantity < 1) {
             toast.warning('Quantity cannot be less than 1');
             return;
@@ -62,13 +61,15 @@ const Cart = () => {
                 body: JSON.stringify({
                     userId,
                     productId: item.productId._id,
-                    quantity: change // passing the change value (-1 or +1)
+                    quantity: change,
+                    isPreOrder: item.isPreOrder,
+                    partialPayment: item.partialPayment // Pass current partial payment
                 })
             });
 
             const result = await response.json();
             if (response.ok) {
-                fetchCartItems(); // Refresh cart items
+                fetchCartItems();
                 toast.success('Quantity updated successfully');
             } else {
                 toast.error(result.message || 'Failed to update quantity');
@@ -154,12 +155,36 @@ const Cart = () => {
         } else {
             document.body.style.overflow = 'unset';
         }
-        
+
         // Cleanup function
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, [isModalOpen, isPlacingOrder]);
+
+    // Calculate totals including pre-orders
+    const calculateTotals = () => {
+        let totalAmount = 0;
+        let totalPartialPayment = 0;
+        let totalBalancePayment = 0;
+
+        cartItems.forEach(item => {
+            const itemTotal = Math.round(item.productId.price * item.quantity);
+            if (item.isPreOrder) {
+                totalPartialPayment += Math.round(item.partialPayment);
+                totalBalancePayment += Math.round(itemTotal - item.partialPayment);
+            } else {
+                totalAmount += itemTotal;
+            }
+        });
+
+        return {
+            regularTotal: Math.round(totalAmount),
+            partialPaymentTotal: Math.round(totalPartialPayment),
+            balancePaymentTotal: Math.round(totalBalancePayment),
+            grandTotal: Math.round(totalAmount + totalPartialPayment)
+        };
+    };
 
     if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
@@ -197,6 +222,8 @@ const Cart = () => {
         );
     }
 
+    const totals = calculateTotals();
+
     return (
         <>
             <section className="bg-white py-8 antialiased md:py-16">
@@ -233,7 +260,7 @@ const Cart = () => {
                                                     </button>
                                                 </div>
                                                 <div className="text-end md:w-32">
-                                                    <p className="text-base font-bold text-black">₹{item.productId.price * item.quantity}</p>
+                                                    <p className="text-base font-bold text-black">₹{Math.round(item.productId.price * item.quantity)}</p>
                                                 </div>
                                             </div>
 
@@ -252,6 +279,23 @@ const Cart = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {item.isPreOrder && (
+                                            <div className="w-full bg-amber-50 p-2 rounded-md mt-2">
+                                                <p className="text-amber-800 text-sm font-medium">Pre-order Item</p>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Partial Payment:</span>
+                                                    <span>₹{Math.round(item.partialPayment)}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Balance Due:</span>
+                                                    <span>₹{Math.round((item.productId.price * item.quantity) - item.partialPayment)}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm mt-1">
+                                                    <span>Total Price:</span>
+                                                    <span>₹{Math.round(item.productId.price * item.quantity)}</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -261,16 +305,27 @@ const Cart = () => {
                             <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                                 <p className="text-xl font-semibold text-black">Order summary</p>
                                 <div className="space-y-4">
-                                    <div className="space-y-2">
+                                    {totals.regularTotal > 0 && (
                                         <dl className="flex items-center justify-between gap-4">
-                                            <dt className="text-base font-normal text-gray-500">Original price</dt>
-                                            <dd className="text-base font-medium text-gray-900">₹{total}</dd>
+                                            <dt className="text-base font-normal text-gray-500">Regular Items Total</dt>
+                                            <dd className="text-base font-medium text-gray-900">₹{totals.regularTotal}</dd>
                                         </dl>
-                                        {/* Add more summary items as needed */}
-                                    </div>
+                                    )}
+                                    {totals.partialPaymentTotal > 0 && (
+                                        <>
+                                            <dl className="flex items-center justify-between gap-4">
+                                                <dt className="text-base font-normal text-gray-500">Pre-order Partial Payment</dt>
+                                                <dd className="text-base font-medium text-gray-900">₹{totals.partialPaymentTotal}</dd>
+                                            </dl>
+                                            <dl className="flex items-center justify-between gap-4">
+                                                <dt className="text-base font-normal text-gray-500">Balance Payment Due</dt>
+                                                <dd className="text-base font-medium text-amber-600">₹{totals.balancePaymentTotal}</dd>
+                                            </dl>
+                                        </>
+                                    )}
                                     <dl className="flex items-center justify-between gap-4 border-t border-gray-500 pt-2">
-                                        <dt className="text-base font-bold text-gray-900">Total</dt>
-                                        <dd className="text-base font-bold text-gray-900">₹{total}</dd>
+                                        <dt className="text-base font-bold text-gray-900">Total Due Now</dt>
+                                        <dd className="text-base font-bold text-gray-900">₹{totals.grandTotal}</dd>
                                     </dl>
                                 </div>
 
@@ -299,9 +354,9 @@ const Cart = () => {
             {/* Checkout Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
-                    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" 
-                         onClick={() => !isPlacingOrder && setIsModalOpen(false)}
-                         style={{ backdropFilter: 'blur(4px)' }}>
+                    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm"
+                        onClick={() => !isPlacingOrder && setIsModalOpen(false)}
+                        style={{ backdropFilter: 'blur(4px)' }}>
                     </div>
                     <div className="fixed inset-0 flex items-center justify-center p-4">
                         <div className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
@@ -319,55 +374,55 @@ const Cart = () => {
                                     </button>
                                 </div>
                             )}
-                            
+
                             {/* Rest of the modal content remains the same */}
                             <div className="sm:flex sm:items-start">
-                                <div className="mt-3 w-full text-center sm:mt-0 sm:text-left">
-                                    <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">Complete Your Order</h3>
-                                    <div className="mt-2">
-                                        <input
-                                            type="tel"
-                                            placeholder="Enter your phone number"
-                                            className="w-full rounded-md border border-gray-300 px-4 py-2 text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
-                                            value={phoneNumber}
-                                            onChange={(e) => setPhoneNumber(e.target.value)}
-                                            maxLength="10"
-                                        />
-                                        <p className="mt-2 text-sm text-gray-500">Please enter your 10-digit phone number</p>
-                                    </div>
+                                <div className="mt-3 w-full text-center sm:mt-0 sm:text-left"></div>
+                                <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">Complete Your Order</h3>
+                                <div className="mt-2">
+                                    <input
+                                        type="tel"
+                                        placeholder="Enter your phone number"
+                                        className="w-full rounded-md border border-gray-300 px-4 py-2 text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        maxLength="10"
+                                    />
+                                    <p className="mt-2 text-sm text-gray-500">Please enter your 10-digit phone number</p>
                                 </div>
                             </div>
-                            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button
-                                    type="button"
-                                    onClick={handleCheckout}
-                                    disabled={isPlacingOrder}
-                                    className="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 sm:ml-3 sm:w-auto disabled:bg-gray-400"
-                                >
-                                    {isPlacingOrder ? (
-                                        <div className="flex items-center">
-                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Placing Order...
-                                        </div>
-                                    ) : (
-                                        'Place Order'
-                                    )}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    disabled={isPlacingOrder}
-                                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:bg-gray-100"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                        </div>
+                        <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                            <button
+                                type="button"
+                                onClick={handleCheckout}
+                                disabled={isPlacingOrder}
+                                className="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 sm:ml-3 sm:w-auto disabled:bg-gray-400"
+                            >
+                                {isPlacingOrder ? (
+                                    <div className="flex items-center">
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Placing Order...
+                                    </div>
+                                ) : (
+                                    'Place Order'
+                                )}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsModalOpen(false)}
+                                disabled={isPlacingOrder}
+                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:bg-gray-100"
+                            >
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
+
             )}
         </>
     );

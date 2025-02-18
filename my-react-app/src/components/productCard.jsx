@@ -19,6 +19,12 @@ function ProductCard({ product }) {
 
   const handleAddToCart = async (e) => {
     e.preventDefault(); // Prevent navigation when clicking cart button
+
+    if (!product.inStock) {
+      toast.info('This item is available for pre-order only');
+      return;
+    }
+
     const userId = localStorage.getItem('userId');
 
     if (!userId) {
@@ -75,7 +81,12 @@ function ProductCard({ product }) {
             <div className="absolute -right-16 bottom-0 mr-2 mb-4 space-y-2 transition-all duration-300 group-hover:right-0">
               <button
                 onClick={handleAddToCart}
-                className="flex h-8 w-8 items-center justify-center bg-gray-900/80 backdrop-blur-sm rounded-full text-white transition hover:bg-gray-700"
+                disabled={product.isPreOrder}
+                title={product.isPreOrder ? "This item is available for pre-order only" : "Add to cart"}
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-white transition ${product.isPreOrder
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gray-900/80 backdrop-blur-sm hover:bg-gray-700'
+                  }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
