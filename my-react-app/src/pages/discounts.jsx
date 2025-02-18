@@ -38,9 +38,9 @@ const Discounts = () => {
                     ...prev,
                     allProducts: discountedProducts,
                     products: filterProducts(
-                        discountedProducts, 
-                        `0-${maxPrice}`, 
-                        prev.statusFilters, 
+                        discountedProducts,
+                        `0-${maxPrice}`,
+                        prev.statusFilters,
                         prev.selectedCategories
                     ),
                     maxPrice,
@@ -67,14 +67,14 @@ const Discounts = () => {
         const [min, max] = priceRange.split('-').map(Number);
         return products.filter(product => {
             const priceInRange = product.price >= min && product.price <= max;
-            
+
             // Status filter
             const statusMatch = statusFilters.length === 0 ||
                 (statusFilters.includes('instock') && product.inStock) ||
                 (statusFilters.includes('preorder') && !product.inStock);
-            
-            // Category filter
-            const categoryMatch = categories.length === 0 || 
+
+            // Only apply category filter if categories are selected
+            const categoryMatch = categories.length === 0 ? true :
                 categories.includes(product.category);
 
             return priceInRange && statusMatch && categoryMatch;
@@ -83,12 +83,13 @@ const Discounts = () => {
 
     const resetFilters = () => {
         const defaultPriceRange = `0-${state.maxPrice}`;
+        const defaultStatusFilters = ['instock'];
         setState(prev => ({
             ...prev,
             priceRange: defaultPriceRange,
             selectedCategories: [],
-            statusFilters: [],
-            products: filterProducts(prev.allProducts, defaultPriceRange, [], []),
+            statusFilters: defaultStatusFilters,
+            products: filterProducts(prev.allProducts, defaultPriceRange, defaultStatusFilters, []),
             currentPage: 1
         }));
         setShouldResetFilters(true);
@@ -127,21 +128,22 @@ const Discounts = () => {
                     ...prev,
                     priceRange: range,
                     products: filterProducts(
-                        prev.allProducts, 
-                        range, 
-                        prev.statusFilters, 
+                        prev.allProducts,
+                        range,
+                        prev.statusFilters,
                         prev.selectedCategories
                     ),
                     currentPage: 1
                 }))}
                 onCategoryChange={categories => {
+                    console.log(categories);
                     setState(prev => ({
                         ...prev,
                         selectedCategories: categories,
                         products: filterProducts(
-                            prev.allProducts, 
-                            prev.priceRange, 
-                            prev.statusFilters, 
+                            prev.allProducts,
+                            prev.priceRange,
+                            prev.statusFilters,
                             categories
                         ),
                         currentPage: 1
@@ -151,9 +153,9 @@ const Discounts = () => {
                     ...prev,
                     statusFilters,
                     products: filterProducts(
-                        prev.allProducts, 
-                        prev.priceRange, 
-                        statusFilters, 
+                        prev.allProducts,
+                        prev.priceRange,
+                        statusFilters,
                         prev.selectedCategories
                     ),
                     currentPage: 1

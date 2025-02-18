@@ -14,7 +14,7 @@ const Sidebar = ({
     const [tempPriceRange, setTempPriceRange] = useState([0, maxPrice]);
     const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false);
     const [categories, setCategories] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState(new Set([selectedCategory]));
+    const [selectedCategories, setSelectedCategories] = useState(new Set(selectedCategory ? [selectedCategory] : []));
     const [selectedStatus, setSelectedStatus] = useState(new Set(['instock']));
 
     const fetchCategories = async () => {
