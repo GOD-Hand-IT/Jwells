@@ -10,6 +10,8 @@ import Dashboard from './components/admin/Dashboard.jsx';
 import Profile from './pages/Profile.jsx';
 import OurStory from './pages/our_story.jsx';
 import Contact from './pages/contact.jsx';
+import Discounts from './pages/discounts.jsx';
+
 
 export const router = createBrowserRouter([
     {
@@ -26,15 +28,15 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/customize-design',
-                element:<FormPage/>
+                element: <FormPage />
             },
             {
                 path: '/login',
-                element:<Login/>
+                element: <Login />
             },
             {
                 path: '/admin',
-                element:<Dashboard/>
+                element: <Dashboard />
             },
             {
                 path: '/our-story',
@@ -45,8 +47,12 @@ export const router = createBrowserRouter([
                 element: <Product />
             },
             {
+                path: "/discounts",
+                element: <Discounts />
+            },
+            {
                 path: '/contact',
-                element: <Contact/>
+                element: <Contact />
             }
 
         ]

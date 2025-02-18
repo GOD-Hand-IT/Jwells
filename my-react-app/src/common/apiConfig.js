@@ -5,6 +5,10 @@ const SummaryApi = {
     url: `${backendDomain}/product/category`,
     method: "get"
   },
+  discount: {
+    url: `${backendDomain}/product/discount`,
+    method: "get"
+  },
   categoryProduct: {
     url: `${backendDomain}/product/`,
     method: "get"
