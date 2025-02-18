@@ -19,7 +19,8 @@ const ProductModal = ({
     imageFile: null,
     discountPercentage: 0,
     quantity: 0,
-    inStock: true
+    inStock: true,
+    hasDiscount: false  // Add this new field
   });
   const [previewImage, setPreviewImage] = useState(null);
   const [newCategory, setNewCategory] = useState('');
@@ -34,7 +35,8 @@ const ProductModal = ({
       Number(formData.price) > 0 &&
       formData.category.trim() !== '' &&
       formData.description.trim() !== '' &&
-      formData.image.valueOf() !== ''
+      formData.image.valueOf() !== '' &&
+      Number(formData.quantity) > 0
     );
   };
 
@@ -51,7 +53,8 @@ const ProductModal = ({
         imageFile: null,
         discountPercentage: product.discountPercentage || 0,
         quantity: product.quantity || 0,
-        inStock: product.inStock !== undefined ? product.inStock : true
+        inStock: product.inStock !== undefined ? product.inStock : true,
+        hasDiscount: product.discountPercentage > 0,
       });
       setPreviewImage(product.image || null);
       setNewCategory(product.category || '');
@@ -66,7 +69,8 @@ const ProductModal = ({
         imageFile: null,
         discountPercentage: 0,
         quantity: 0,
-        inStock: true
+        inStock: true,
+        hasDiscount: false,
       });
       setPreviewImage(null);
       setNewCategory('');
@@ -126,7 +130,8 @@ const ProductModal = ({
       formDataToSend.append('price', formData.price);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('description', formData.description);
-      formDataToSend.append('discountPercentage', formData.discountPercentage);
+      // Ensure discount is sent as a number, defaulting to 0 if invalid
+      formDataToSend.append('discountPercentage', Number(formData.discountPercentage) || 0);
       formDataToSend.append('quantity', formData.quantity);
       formDataToSend.append('inStock', formData.inStock);
 
@@ -260,10 +265,11 @@ const ProductModal = ({
                   <div className="flex items-center mb-2">
                     <input
                       type="checkbox"
-                      checked={formData.discountPercentage > 0}
+                      checked={formData.hasDiscount}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
+                          hasDiscount: e.target.checked,
                           discountPercentage: e.target.checked ? formData.discountPercentage || 0 : 0
                         });
                       }}
@@ -273,19 +279,21 @@ const ProductModal = ({
                       Apply Discount
                     </label>
                   </div>
-                  {formData.discountPercentage > 0 && (
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={formData.discountPercentage}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        discountPercentage: Math.min(100, Math.max(0, Number(e.target.value)))
-                      })}
-                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
-                      placeholder="Discount percentage (0-100)"
-                    />
+                  {formData.hasDiscount && (
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        max="100"
+                        value={formData.discountPercentage}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          discountPercentage: Math.min(100, Number(e.target.value) || 0)
+                        })}
+                        className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        placeholder="Discount percentage (0-100)"
+                      />
+                      <span className="ml-2">%</span>
+                    </div>
                   )}
                 </div>
 

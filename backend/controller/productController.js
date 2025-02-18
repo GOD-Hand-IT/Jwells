@@ -24,15 +24,15 @@ export default class ProductController {
             const id = req.params.id
             const product = await productModal.findById(id)
             if (!product) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Product not found"
+                return res.status(404).json({ 
+                    success: false, 
+                    message: "Product not found" 
                 })
             }
-            return res.status(200).json({
-                success: true,
+            return res.status(200).json({ 
+                success: true, 
                 message: "Product retrieved successfully",
-                data: product
+                data: product 
             })
         } catch (err) {
             return res.sendStatus(500)
@@ -41,37 +41,16 @@ export default class ProductController {
 
     static getProductsOnCategory = async (req, res) => {
         try {
-            const category = req.params.category
-            const products = (await productModal.find({
-                category,
-                discount: 0
-            })).map(product => ({
+            const category  = req.params.category
+            const products = (await productModal.find({ category })).map(product => ({
                 id: product._id,
                 name: product.name,
                 price: product.price,
+                discountPercentage: product.discountPercentage,
                 image: product.image[0]
             }))
             return res.json({ success: true, data: products })
-        } catch (err) {
-            console.error(err)
-            res.sendStatus(500)
-        }
-    }
 
-    static getDiscountedProductsOnCategory = async (req, res) => {
-        try {
-            const category = req.params.category
-            const products = (await productModal.find({
-                category,
-                discount: { $gt: 0 }
-            })).map(product => ({
-                id: product._id,
-                name: product.name,
-                price: product.price,
-                discount: product.discount,
-                image: product.image[0]
-            }))
-            return res.json({ success: true, data: products })
         } catch (err) {
             console.error(err)
             res.sendStatus(500)
