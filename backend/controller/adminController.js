@@ -5,6 +5,7 @@
  */
 import { v2 as cloudinary } from 'cloudinary'
 import productModal from '../model/productModal.js'
+import Order from '../model/order.js'
 
 export default class AdminController {
     static addProduct = async (req, res) => {
@@ -184,6 +185,68 @@ export default class AdminController {
                 success: false,
                 message: "Error updating product",
                 error: err.message
+            });
+        }
+    }
+
+    static getAllOrders = async (req, res) => {
+        try {
+            const orders = await Order.find()
+                .populate('items.productId')
+                .populate('userId', 'name email')
+                .sort({ createdAt: -1 });
+
+            return res.status(200).json({
+                success: true,
+                data: orders
+            });
+        } catch (error) {
+            console.error('Error in getAllOrders:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error fetching orders',
+                error: error.message
+            });
+        }
+    }
+
+    static updateOrderStatus = async (req, res) => {
+        try {
+            const { orderId } = req.params;
+            const { status } = req.body;
+
+            const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid status'
+                });
+            }
+
+            const order = await Order.findByIdAndUpdate(
+                orderId,
+                { status },
+                { new: true }
+            ).populate('items.productId');
+
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Order not found'
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Order status updated successfully',
+                data: order
+            });
+        } catch (error) {
+            console.error('Error in updateOrderStatus:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error updating order status',
+                error: error.message
             });
         }
     }
