@@ -9,6 +9,6 @@ router.use(verifyToken);
 router.post('/create', OrderController.createOrder);
 router.get('/user', OrderController.getUserOrders);
 router.get('/:orderId', OrderController.getOrderById);
-router.post('/payment', OrderController.verifyPayment);
+router.post('/payment', OrderController.handleRazorpayPayment);
 
 export default router;

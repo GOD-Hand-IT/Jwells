@@ -158,14 +158,14 @@ const Checkout = () => {
           method: SummaryApi.payment.method,
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ amount: totals.grandTotal })
+          body: JSON.stringify({ amount: totals.paidAmount })
         });
 
         const paymentData = await paymentResponse.json();
 
-        if (paymentResponse.ok && paymentData.paymentUrl) {
-          window.location.href = paymentData.paymentUrl;
-        } else {
+        if (paymentResponse.ok  ) {
+            const rzp = new window.Razorpay(options);
+            rzp.open();        } else {
           toast.error(paymentData.message || "Failed to initiate payment");
           setSubmitting(false);
           return;

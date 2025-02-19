@@ -99,58 +99,30 @@ export default class OrderController {
     }
 
     static async handleRazorpayPayment(req, res) {
-        try {
-          const { userId, shippingAddress, contactPhone, totalAmount } = req.body;
-    
-          if (!userId || !shippingAddress || !contactPhone || !totalAmount) {
-            return res.status(400).json({
-              success: false,
-              message: 'Missing required fields'
+        try{
+            const { payAmount } = req.body;
+            const options = {
+                amount: payAmount * 100, // Amount in paise
+                currency: 'INR',
+                receipt: `receipt_${Date.now()}`,
+                payment_capture: 1,
+            };
+        
+            const razorpayOrder = await razorpayInstance.orders.create(options, (err, order) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Error creating Razorpay order',
+                        error: err.message
+                    });
+                }
+                return res.status(200).json({
+                    success: true,
+                    data: order
+                });
             });
-          }
-    
-          // Get cart items
-          const cartItems = await CartProduct.find({ userId }).populate('productId');
-    
-          if (!cartItems.length) {
-            return res.status(400).json({
-              success: false,
-              message: 'Cart is empty'
-            });
-          }
-    
-          const orderItems = cartItems.map(item => ({
-            productId: item.productId._id,
-            quantity: item.quantity,
-            price: item.productId.price,
-            isPreOrder: item.isPreOrder,
-            partialPayment: item.isPreOrder ? item.partialPayment : 0
-          }));
-    
-    
-          // Create order with payment method
-          const order = await Order.create({
-            userId,
-            items: orderItems,
-            totalAmount,
-            paidAmount: 0,
-            balanceAmount: totalAmount,
-            shippingAddress,
-            contactPhone,
-            paymentMethod: 'online',
-            paymentStatus: 'pending',
-            razorpayOrderId: razorpayOrder.id,
-          });
-    
-          return res.status(201).json({
-            success: true,
-            message: 'Order created successfully',
-            orderId: order._id,
-            razorpayOrderId: razorpayOrder.id,
-            amount: razorpayOrder.amount,
-            currency: razorpayOrder.currency,
-          });
-        } catch (error) {
+        }
+        catch (error) {
           console.error('Razorpay payment error:', error);
           return res.status(500).json({
             success: false,
