@@ -55,7 +55,9 @@ export default class OrderController {
                 payment_capture: 1,
             };
 
-            const razorpayOrder = await razorpayInstance.orders.create(options);
+            // const razorpayOrder = await razorpayInstance.orders.create(options);
+            // console.log('Razorpay order:', razorpayOrder);
+
 
             // Create order with payment method
             const order = await Order.create({
@@ -96,13 +98,10 @@ export default class OrderController {
             return res.status(201).json({
                 success: true,
                 message: 'Order created successfully',
-                orderId: order._id,
-                razorpayOrderId: razorpayOrder.id,
-                amount: razorpayOrder.amount,
-                currency: razorpayOrder.currency,
+                orderId: order.id,
+                data: order
             });
         } catch (error) {
-            console.error('Order creation error:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error creating order',
@@ -115,7 +114,6 @@ export default class OrderController {
         try {
             const { userId } = req.body;
             const orders = await Order.find({ userId })
-                .populate('items.productId')
                 .sort({ createdAt: -1 });
 
             return res.status(200).json({
