@@ -4,8 +4,10 @@
  * @description Handles admin-specific operations
  */
 import { v2 as cloudinary } from 'cloudinary'
+import mongoose from 'mongoose';
 import productModal from '../model/productModal.js'
 import Order from '../model/order.js'
+import Product from '../model/productModal.js'  // Add this import to ensure Product model is registered
 
 export default class AdminController {
     static addProduct = async (req, res) => {
@@ -192,8 +194,7 @@ export default class AdminController {
     static getAllOrders = async (req, res) => {
         try {
             const orders = await Order.find()
-                .populate('items.productId')
-                .populate('userId', 'name email')
+                .populate('userId', 'name email') // populate user details
                 .sort({ createdAt: -1 });
 
             return res.status(200).json({

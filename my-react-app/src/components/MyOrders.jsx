@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FaEye } from 'react-icons/fa';
-import SummaryApi from '../../common/apiConfig';
-import OrderModal from '../OrderModal';
+import SummaryApi from '../common/apiConfig';
+import OrderModal from './OrderModal';
 
-const Orders = () => {
+const MyOrders = () => {
+
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const ordersPerPage = 10;
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         fetchOrders();
@@ -17,9 +17,15 @@ const Orders = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(SummaryApi.getAllOrders.url, {
-                method: SummaryApi.getAllOrders.method,
+            const response = await fetch(SummaryApi.getMyOrders.url, {
+                method: SummaryApi.getMyOrders.method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
                 credentials: 'include',
+                mode: 'cors',
+                body: JSON.stringify({ userId: userId })
             });
             const data = await response.json();
             if (data.success) {
@@ -30,54 +36,30 @@ const Orders = () => {
         }
     };
 
-    const handleStatusUpdate = async (orderId, status) => {
-        try {
-            const response = await fetch(`${SummaryApi.updateOrder.url}${orderId}`, {
-                method: SummaryApi.updateOrder.method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ status }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                toast.success('Order status updated successfully');
-                fetchOrders();
-            }
-        } catch (error) {
-            toast.error('Failed to update order status');
-        }
-    };
-
-    const indexOfLastOrder = currentPage * ordersPerPage;
-    const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-    const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
-    const totalPages = Math.ceil(orders.length / ordersPerPage);
-
     return (
-        <div className="p-6 max-w-8xl mx-auto bg-transparent">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">Orders Management</h1>
-
-            <div className="bg-white/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-200/50">
+        <div className="max-w-4xl mx-auto p-4">
+            <h2 className="text-2xl font-bold mb-6">My Orders</h2>
+            <div className="bg-white shadow rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Order ID</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Customer Name</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Email</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Date</th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Status</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Tracking #</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Total</th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white">
-                            {currentOrders.map((order) => (
+                        <tbody className="divide-y divide-gray-200">
+                            {orders.map((order) => (
                                 <tr key={order._id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{order._id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{order.userId.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{order.userId.email}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                                        {order._id.slice(-8)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                                        {new Date(order.createdAt).toLocaleDateString()}
+                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                       ${order.status === 'delivered' ? 'bg-green-100 text-green-800' :
@@ -87,7 +69,7 @@ const Orders = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-gray-800">
-                                        {order.trackingNumber || 'N/A'}
+                                        ₹{order.totalAmount}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <button
@@ -107,24 +89,14 @@ const Orders = () => {
                 </div>
             </div>
 
-            {/* Pagination */}
-            <div className="flex justify-end mt-4 space-x-2">
-                <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border rounded-md disabled:opacity-50"
-                >
-                    Previous
-                </button>
-                <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 border rounded-md disabled:opacity-50"
-                >
-                    Next
-                </button>
-            </div>
+            {/* Show empty state if no orders */}
+            {orders.length === 0 && (
+                <div className="text-center py-8">
+                    <p className="text-gray-500">No orders found</p>
+                </div>
+            )}
 
+            {/* Order Modal */}
             <OrderModal
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -132,11 +104,10 @@ const Orders = () => {
                     setSelectedOrder(null);
                 }}
                 orderId={selectedOrder}
-                isAdmin={true}
-                onStatusUpdate={handleStatusUpdate}
+                isAdmin={false}
             />
         </div>
     );
 };
 
-export default Orders;
+export default MyOrders;

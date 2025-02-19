@@ -84,8 +84,23 @@ const SummaryApi = {
   createOrder: {
     url: `${backendDomain}/order/create`,
     method: "post"
+  },
+  getAllOrders: {
+    url: `${backendDomain}/admin/orders`,
+    method: "get"
+  },
+  updateOrder: {
+    url: `${backendDomain}/admin/order/update/`,
+    method: "put"
+  },
+  getMyOrders: {
+    url: `${backendDomain}/order/user`,
+    method: "get"
+  },
+  getOrderDetails: {
+    url: `${backendDomain}/order/details/`,
+    method: "get"
   }
-
 };
 
 export default SummaryApi;

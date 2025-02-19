@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(verifyToken);
 
 router.post('/create', OrderController.createOrder);
-router.get('/user/:userId', OrderController.getUserOrders);
+router.get('/user', OrderController.getUserOrders);
 router.get('/:orderId', OrderController.getOrderById);
 
 export default router;

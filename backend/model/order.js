@@ -3,13 +3,13 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true
     },
     items: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product',
+            ref: 'product',
             required: true
         },
         quantity: {
@@ -48,6 +48,11 @@ const orderSchema = new mongoose.Schema({
     },
     contactPhone: {
         type: String,
+        required: true
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['cod', 'online'],
         required: true
     },
     shippingAddress: {

@@ -12,7 +12,8 @@ export default class OrderController {
                 totalAmount,
                 balanceDue,
                 paidAmount,
-                paymentMethod
+                paymentMethod,
+                transactionId
             } = req.body;
 
             if (!userId || !shippingAddress || !contactPhone || !paymentMethod) {
@@ -40,7 +41,7 @@ export default class OrderController {
                 partialPayment: paymentMethod === 'cod' ? 0 : (item.isPreOrder ? item.partialPayment : 0)
             }));
 
-            // Create order with payment method
+            // Create order using amounts from request body
             const order = await Order.create({
                 userId,
                 items: orderItems,
@@ -50,7 +51,8 @@ export default class OrderController {
                 shippingAddress,
                 contactPhone,
                 paymentMethod,
-                paymentStatus: paymentMethod === 'cod' ? 'pending' : 'partial'
+                paymentStatus: paymentMethod === 'cod' ? 'pending' : (paidAmount > 0 ? 'partial' : 'pending'),
+                transactionId: transactionId || null
             });
 
             // Call checkout from ContactController
@@ -93,7 +95,7 @@ export default class OrderController {
 
     static async getUserOrders(req, res) {
         try {
-            const { userId } = req.params;
+            const { userId } = req.body;
             const orders = await Order.find({ userId })
                 .populate('items.productId')
                 .sort({ createdAt: -1 });

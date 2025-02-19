@@ -149,7 +149,8 @@ const Checkout = () => {
         totalAmount: totals.grandTotal,
         balanceDue: paymentMethod === 'cod' ? totals.grandTotal : totals.balancePaymentTotal,
         paidAmount: paymentMethod === 'cod' ? 0 : totals.grandTotal - totals.balancePaymentTotal,
-        paymentMethod
+        paymentMethod: paymentMethod,
+        transactionId: paymentMethod === 'cod' ? null : 'PENDING' // Add this line
       };
 
       const response = await fetch(SummaryApi.createOrder.url, {
