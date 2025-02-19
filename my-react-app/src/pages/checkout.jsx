@@ -6,6 +6,7 @@ import SummaryApi from "../common/apiConfig";
 const Checkout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -18,6 +19,7 @@ const Checkout = () => {
     state: "",
     zipcode: "",
   });
+  const [formValid, setFormValid] = useState(false);
 
   const userId = localStorage.getItem("userId");
 
@@ -99,9 +101,67 @@ const Checkout = () => {
     };
   };
 
+  const validateForm = () => {
+    const isPhoneValid = /^\d{10}$/.test(userData.phone);
+    const isAddressValid =
+      address.street.trim() !== "" &&
+      address.city.trim() !== "" &&
+      address.state.trim() !== "" &&
+      address.zipcode.trim() !== "";
+
+    setFormValid(isPhoneValid && isAddressValid);
+  };
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setUserData({ ...userData, phone: value });
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [userData.phone, address]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your payment processing logic here
+
+    if (!address.street || !address.city || !address.state || !address.zipcode || !userData.phone) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const formattedAddress = `${address.street}, ${address.city}, ${address.state} - ${address.zipcode}`;
+
+      const orderData = {
+        userId,
+        shippingAddress: formattedAddress,
+        contactPhone: userData.phone,
+        totalAmount: calculateTotals().grandTotal,
+        balanceDue: calculateTotals().balancePaymentTotal
+      };
+
+      const response = await fetch(SummaryApi.createOrder.url, {
+        method: SummaryApi.createOrder.method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.orderId) {
+        toast.success("Order created successfully!");
+        navigate(`/`);
+      } else {
+        toast.error(data.message || "Failed to create order");
+      }
+    } catch (error) {
+      console.error("Order creation error:", error);
+      toast.error("Error processing your order");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -128,11 +188,15 @@ const Checkout = () => {
             <input
               type="tel"
               value={userData.phone}
-              onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-              placeholder="Phone Number"
+              onChange={handlePhoneChange}
+              placeholder="Phone Number (10 digits)"
               required
+              maxLength="10"
               className="border p-2 rounded w-full text-black"
             />
+            {userData.phone && !/^\d{10}$/.test(userData.phone) && (
+              <p className="text-red-500 text-sm mt-1">Please enter a valid 10-digit phone number</p>
+            )}
 
             {/* Address Form */}
             <div className="space-y-4">
@@ -171,6 +235,28 @@ const Checkout = () => {
                 className="border p-2 rounded w-full text-black"
               />
             </div>
+
+            <button
+              type="submit"
+              disabled={submitting || !formValid}
+              className={`w-full ${submitting || !formValid
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800'
+                } text-white py-2 rounded-lg transition-all duration-300 mt-4 flex items-center justify-center 
+              font-[cinzel] text-base tracking-wider shadow-lg transform hover:scale-[1.02] 
+              border border-amber-400 hover:border-amber-600`}
+            >
+              {submitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Processing...
+                </>
+              ) : !formValid ? (
+                'Please Fill Required Details'
+              ) : (
+                'Proceed to Payment →'
+              )}
+            </button>
           </form>
         </div>
 
@@ -225,13 +311,6 @@ const Checkout = () => {
               <p>₹{totals.grandTotal}</p>
             </div>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-white text-black py-3 rounded-lg hover:bg-gray-300 transition duration-300 mt-6"
-          >
-            Proceed to Payment
-          </button>
         </div>
       </div>
     </div>

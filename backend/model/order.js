@@ -46,6 +46,10 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    contactPhone: {
+        type: String,
+        required: true
+    },
     shippingAddress: {
         type: String,
         required: true

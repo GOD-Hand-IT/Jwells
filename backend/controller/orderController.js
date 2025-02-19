@@ -21,7 +21,14 @@ const transporter = nodemailer.createTransport({
 export default class OrderController {
     static async createOrder(req, res) {
         try {
-            const { userId, shippingAddress, phoneNumber } = req.body;
+            const { userId, shippingAddress, contactPhone, totalAmount, balanceDue } = req.body;
+
+            if (!userId || !shippingAddress || !contactPhone) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields'
+                });
+            }
 
             // Get cart items
             const cartItems = await CartProduct.find({ userId }).populate('productId');
@@ -33,37 +40,27 @@ export default class OrderController {
                 });
             }
 
-            // Calculate totals
-            let totalAmount = 0;
-            let paidAmount = 0;
-
-            const orderItems = cartItems.map(item => {
-                const itemTotal = item.productId.price * item.quantity;
-                totalAmount += itemTotal;
-                if (item.isPreOrder) {
-                    paidAmount += item.partialPayment;
-                }
-
-                return {
-                    productId: item.productId._id,
-                    quantity: item.quantity,
-                    price: item.productId.price,
-                    isPreOrder: item.isPreOrder
-                };
-            });
+            const orderItems = cartItems.map(item => ({
+                productId: item.productId._id,
+                quantity: item.quantity,
+                price: item.productId.price,
+                isPreOrder: item.isPreOrder,
+                partialPayment: item.isPreOrder ? item.partialPayment : 0
+            }));
 
             // Create order
             const order = await Order.create({
                 userId,
                 items: orderItems,
                 totalAmount,
-                paidAmount,
-                balanceAmount: totalAmount - paidAmount,
-                shippingAddress
+                paidAmount: totalAmount - balanceDue,
+                balanceAmount: balanceDue,
+                shippingAddress,
+                contactPhone
             });
 
             // Send order confirmation email
-            await OrderController.#processOrderConfirmation(userId, phoneNumber, cartItems, shippingAddress);
+            await OrderController.#processOrderConfirmation(userId, contactPhone, cartItems, shippingAddress);
 
             // Clear cart
             await CartProduct.deleteMany({ userId });
@@ -71,6 +68,7 @@ export default class OrderController {
             return res.status(201).json({
                 success: true,
                 message: 'Order created successfully',
+                orderId: order._id,
                 data: order
             });
         } catch (error) {

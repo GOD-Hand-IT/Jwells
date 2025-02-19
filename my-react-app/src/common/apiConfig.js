@@ -80,6 +80,10 @@ const SummaryApi = {
   checkout: {
     url: `${backendDomain}/contact/checkout`,
     method: "post"
+  },
+  createOrder: {
+    url: `${backendDomain}/order/create`,
+    method: "post"
   }
 
 };
