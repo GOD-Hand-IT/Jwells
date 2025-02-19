@@ -127,15 +127,6 @@ export default class OrderController {
             partialPayment: item.isPreOrder ? item.partialPayment : 0
           }));
     
-          // Create Razorpay order
-          const options = {
-            amount: totalAmount * 100, // Amount in paise
-            currency: 'INR',
-            receipt: `receipt_${Date.now()}`,
-            payment_capture: 1,
-          };
-    
-          const razorpayOrder = await razorpayInstance.orders.create(options);
     
           // Create order with payment method
           const order = await Order.create({
@@ -170,9 +161,24 @@ export default class OrderController {
       }
 
       static async verifyPayment(req, res) {
-        const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+        const { payAmount } = req.body;
     
         try {
+
+            // Create Razorpay order
+          const options = {
+            amount: payAmount * 100, // Amount in paise
+            currency: 'INR',
+            receipt: `receipt_${Date.now()}`,
+            payment_capture: 1,
+          };
+    
+          const razorpayOrder = await razorpayInstance.orders.create(options);
+
+          const razorpayOrderId = razorpayOrder.id;
+
+
+
           const generatedSignature = crypto
             .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
             .update(`${razorpayOrderId}|${razorpayPaymentId}`)

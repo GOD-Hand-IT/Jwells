@@ -150,8 +150,27 @@ const Checkout = () => {
         balanceDue: paymentMethod === 'cod' ? totals.grandTotal : totals.balancePaymentTotal,
         paidAmount: paymentMethod === 'cod' ? 0 : totals.grandTotal - totals.balancePaymentTotal,
         paymentMethod: paymentMethod,
-        transactionId: paymentMethod === 'cod' ? null : 'PENDING' // Add this line
+        transactionId: paymentMethod === 'cod' ? null : 'PENDING'
       };
+
+      if (paymentMethod === 'online') {
+        const paymentResponse = await fetch(SummaryApi.payment.url, {
+          method: SummaryApi.payment.method,
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ amount: totals.grandTotal })
+        });
+
+        const paymentData = await paymentResponse.json();
+
+        if (paymentResponse.ok && paymentData.paymentUrl) {
+          window.location.href = paymentData.paymentUrl;
+        } else {
+          toast.error(paymentData.message || "Failed to initiate payment");
+          setSubmitting(false);
+          return;
+        }
+      }
 
       const response = await fetch(SummaryApi.createOrder.url, {
         method: SummaryApi.createOrder.method,
