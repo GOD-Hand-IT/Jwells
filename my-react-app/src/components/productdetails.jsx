@@ -160,6 +160,9 @@ const ProductDetails = ({
       return;
     }
 
+    // Calculate the partial payment amount based on current quantity
+    const currentPartialPayment = Math.round((discountedPrice * quantity) / 2);
+
     try {
       const response = await fetch(SummaryApi.addToCart.url, {
         method: SummaryApi.addToCart.method,
@@ -172,7 +175,7 @@ const ProductDetails = ({
           userId: userId,
           productId: productId,
           isPreOrder: true,
-          partialPayment: partialPayment
+          partialPayment: currentPartialPayment
         })
       });
 
@@ -196,7 +199,11 @@ const ProductDetails = ({
   };
 
   const handleQuantityChange = (change) => {
-    setQuantity(prev => Math.max(1, prev + change));
+    const newQuantity = Math.max(1, quantity + change);
+    setQuantity(newQuantity);
+    // Recalculate partial payment based on new quantity
+    const newPartialPayment = Math.round((discountedPrice * newQuantity) / 2);
+    setPartialPayment(newPartialPayment);
   };
 
   return (
@@ -284,7 +291,20 @@ const ProductDetails = ({
                 {/* Pre-order section */}
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                   <p className="text-amber-800 mb-2">Pre-order with 50% advance payment</p>
-                  <p className="text-lg font-semibold mb-4">Partial Payment: ₹{partialPayment.toFixed(2)}</p>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span>Total Price:</span>
+                      <span>₹{Math.round(discountedPrice * quantity)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Partial Payment (50%):</span>
+                      <span>₹{Math.round((discountedPrice * quantity) / 2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-amber-800">
+                      <span>Balance Due:</span>
+                      <span>₹{Math.round((discountedPrice * quantity) / 2)}</span>
+                    </div>
+                  </div>
                   <button
                     onClick={handlePreOrder}
                     disabled={isLoading}

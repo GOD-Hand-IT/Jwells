@@ -75,7 +75,7 @@ export default class ContactController {
     });
 
     static checkout = asyncHandler(async (req, res) => {
-        const { userId, phoneNumber } = req.body;
+        const { userId, phoneNumber, shippingAddress, totalAmount, balanceDue } = req.body;
 
         try {
             console.log(process.env.EMAIL_ID);
@@ -119,6 +119,11 @@ export default class ContactController {
                 .text(`Order Date: ${new Date().toLocaleDateString()}`)
                 .text(`Customer Email: ${user.email}`)
                 .text(`Phone Number: ${phoneNumber}`)
+                .moveDown(0.5)
+                .font('Helvetica-Bold')
+                .text('Shipping Address:', { underline: true })
+                .font('Helvetica')
+                .text(shippingAddress)
                 .moveDown(2);
 
             // Add product table header
@@ -127,7 +132,7 @@ export default class ContactController {
                 .text('PRODUCT DETAILS', { underline: true })
                 .moveDown();
 
-            let total = 0;
+            let total = totalAmount;  // Use the passed totalAmount instead of calculating
             let yPosition = doc.y;
 
             // Process each product with improved layout
@@ -192,13 +197,16 @@ export default class ContactController {
             }
 
             // Add total section with styling
-            doc.rect(50, doc.y, 500, 50)
+            doc.rect(50, doc.y, 500, 80)  // Increased height for payment details
                 .fillColor('#333333')
                 .fill()
                 .fillColor('#FFFFFF')
                 .font('Helvetica-Bold')
                 .fontSize(16)
-                .text(`Total Amount: Rs. ${Number(total).toString()}`, 60, doc.y + 15);
+                .text(`Total Amount: Rs. ${Number(totalAmount).toString()}`, 60, doc.y + 15)
+                .fontSize(14)
+                .text(`Paid Amount: Rs. ${Number(totalAmount - balanceDue).toString()}`, 60)
+                .text(`Balance Due: Rs. ${Number(balanceDue).toString()}`, 60);
 
             // Add footer with more space
             doc.moveDown(4) // Add extra space
@@ -223,7 +231,11 @@ export default class ContactController {
                     <h3>New Order Received</h3>
                     <p>Customer Email: ${user.email}</p>
                     <p>Phone Number: ${phoneNumber}</p>
-                    <p>Total Amount: Rs. ${total}</p>
+                    <p><strong>Shipping Address:</strong><br>${shippingAddress}</p>
+                    <p><strong>Payment Details:</strong></p>
+                    <p>Total Amount: Rs. ${totalAmount}</p>
+                    <p>Paid Amount: Rs. ${totalAmount - balanceDue}</p>
+                    <p>Balance Due: Rs. ${balanceDue}</p>
                     <p>Please check the attached PDF for complete order details.</p>
                 `,
                 attachments: [{
@@ -234,10 +246,6 @@ export default class ContactController {
             };
 
             await transporter.sendMail(mailOptions);
-
-            // Clear cart
-            await Cart.deleteMany({ userId });
-
             res.status(200).json({
                 success: true,
                 message: 'Order placed successfully'

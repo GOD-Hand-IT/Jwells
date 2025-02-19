@@ -11,6 +11,7 @@ import orderRouter from './routes/orderRoute.js'
 import cartRouter from './routes/cartRoutes.js'
 import adminRouter from './routes/adminRoute.js'
 import contactRouter from './routes/contactRoutes.js'
+import orderRouter from './routes/orderRoutes.js'
 
 const server = express();
 const PORT = process.env.PORT || 3000;

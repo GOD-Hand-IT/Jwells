@@ -5,6 +5,7 @@
  */
 import { v2 as cloudinary } from 'cloudinary'
 import productModal from '../model/productModal.js'
+import Order from '../model/order.js'
 
 export default class AdminController {
     static addProduct = async (req, res) => {
@@ -184,6 +185,87 @@ export default class AdminController {
                 success: false,
                 message: "Error updating product",
                 error: err.message
+            });
+        }
+    }
+
+    static getAllOrders = async (req, res) => {
+        try {
+            const orders = await Order.find()
+                .populate('items.productId')
+                .populate('userId', 'name email')
+                .sort({ createdAt: -1 });
+
+            return res.status(200).json({
+                success: true,
+                data: orders
+            });
+        } catch (error) {
+            console.error('Error in getAllOrders:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error fetching orders',
+                error: error.message
+            });
+        }
+    }
+
+    static updateOrderDetails = async (req, res) => {
+        try {
+            const { orderId } = req.params;
+            const { status, trackingNumber } = req.body;
+
+            const updateData = {};
+
+            // Handle status update if provided
+            if (status !== undefined) {
+                const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+                if (!validStatuses.includes(status)) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Invalid status'
+                    });
+                }
+                updateData.status = status;
+            }
+
+            // Handle tracking number update if provided
+            if (trackingNumber !== undefined) {
+                updateData.trackingNumber = trackingNumber;
+            }
+
+            // If neither status nor tracking number provided
+            if (Object.keys(updateData).length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No valid update data provided'
+                });
+            }
+
+            const order = await Order.findByIdAndUpdate(
+                orderId,
+                updateData,
+                { new: true }
+            ).populate('items.productId');
+
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Order not found'
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Order details updated successfully',
+                data: order
+            });
+        } catch (error) {
+            console.error('Error in updateOrderDetails:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error updating order details',
+                error: error.message
             });
         }
     }
