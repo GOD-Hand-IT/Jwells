@@ -6,7 +6,7 @@ import ContactController from '../controllers/contactController.js';
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+  });
 
 export default class OrderController {
     static async createOrder(req, res) {
@@ -18,8 +18,7 @@ export default class OrderController {
                 totalAmount,
                 balanceDue,
                 paidAmount,
-                paymentMethod,
-                transactionId
+                paymentMethod
             } = req.body;
 
             if (!userId || !shippingAddress || !contactPhone || !paymentMethod) {
@@ -46,29 +45,19 @@ export default class OrderController {
                 isPreOrder: paymentMethod === 'cod' ? false : item.isPreOrder,
                 partialPayment: paymentMethod === 'cod' ? 0 : (item.isPreOrder ? item.partialPayment : 0)
             }));
-
-            // Create Razorpay order
-            const options = {
-                amount: totalAmount * 100, // Amount in paise
-                currency: 'INR',
-                receipt: `receipt_${Date.now()}`,
-                payment_capture: 1,
-            };
-
-            const razorpayOrder = await razorpayInstance.orders.create(options);
+            
 
             // Create order with payment method
             const order = await Order.create({
                 userId,
                 items: orderItems,
                 totalAmount,
-                paidAmount: paymentMethod === 'cod' ? 0 : totalAmount,
-                balanceAmount: paymentMethod === 'cod' ? totalAmount : 0,
+                paidAmount,
+                balanceAmount: balanceDue,
                 shippingAddress,
                 contactPhone,
                 paymentMethod,
-                paymentStatus: paymentMethod === 'cod' ? 'pending' : (paidAmount > 0 ? 'partial' : 'pending'),
-                transactionId: transactionId || null
+                paymentStatus: paymentMethod === 'cod' ? 'pending' : 'partial'
             });
 
             // Call checkout from ContactController
@@ -97,9 +86,7 @@ export default class OrderController {
                 success: true,
                 message: 'Order created successfully',
                 orderId: order._id,
-                razorpayOrderId: razorpayOrder.id,
-                amount: razorpayOrder.amount,
-                currency: razorpayOrder.currency,
+                data: order
             });
         } catch (error) {
             console.error('Order creation error:', error);
@@ -111,9 +98,106 @@ export default class OrderController {
         }
     }
 
+    static async handleRazorpayPayment(req, res) {
+        try {
+          const { userId, shippingAddress, contactPhone, totalAmount } = req.body;
+    
+          if (!userId || !shippingAddress || !contactPhone || !totalAmount) {
+            return res.status(400).json({
+              success: false,
+              message: 'Missing required fields'
+            });
+          }
+    
+          // Get cart items
+          const cartItems = await CartProduct.find({ userId }).populate('productId');
+    
+          if (!cartItems.length) {
+            return res.status(400).json({
+              success: false,
+              message: 'Cart is empty'
+            });
+          }
+    
+          const orderItems = cartItems.map(item => ({
+            productId: item.productId._id,
+            quantity: item.quantity,
+            price: item.productId.price,
+            isPreOrder: item.isPreOrder,
+            partialPayment: item.isPreOrder ? item.partialPayment : 0
+          }));
+    
+          // Create Razorpay order
+          const options = {
+            amount: totalAmount * 100, // Amount in paise
+            currency: 'INR',
+            receipt: `receipt_${Date.now()}`,
+            payment_capture: 1,
+          };
+    
+          const razorpayOrder = await razorpayInstance.orders.create(options);
+    
+          // Create order with payment method
+          const order = await Order.create({
+            userId,
+            items: orderItems,
+            totalAmount,
+            paidAmount: 0,
+            balanceAmount: totalAmount,
+            shippingAddress,
+            contactPhone,
+            paymentMethod: 'online',
+            paymentStatus: 'pending',
+            razorpayOrderId: razorpayOrder.id,
+          });
+    
+          return res.status(201).json({
+            success: true,
+            message: 'Order created successfully',
+            orderId: order._id,
+            razorpayOrderId: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+          });
+        } catch (error) {
+          console.error('Razorpay payment error:', error);
+          return res.status(500).json({
+            success: false,
+            message: 'Error processing Razorpay payment',
+            error: error.message
+          });
+        }
+      }
+
+      static async verifyPayment(req, res) {
+        const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+    
+        try {
+          const generatedSignature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+            .digest('hex');
+    
+          if (generatedSignature === razorpaySignature) {
+            // Update order status to 'paid'
+            await Order.updateOne(
+              { razorpayOrderId },
+              { paymentStatus: 'paid', razorpayPaymentId }
+            );
+    
+            return res.status(200).json({ success: true, message: 'Payment verified successfully' });
+          } else {
+            return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+          }
+        } catch (error) {
+          console.error('Error verifying payment:', error);
+          return res.status(500).json({ message: 'Failed to verify payment' });
+        }
+      }
+
     static async getUserOrders(req, res) {
         try {
-            const { userId } = req.body;
+            const { userId } = req.params;
             const orders = await Order.find({ userId })
                 .populate('items.productId')
                 .sort({ createdAt: -1 });
@@ -130,31 +214,7 @@ export default class OrderController {
             });
         }
     }
-    static async verifyPayment(req, res) {
-        const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
-
-        try {
-            const generatedSignature = crypto
-                .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-                .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-                .digest('hex');
-
-            if (generatedSignature === razorpaySignature) {
-                // Update order status to 'paid'
-                await Order.updateOne(
-                    { razorpayOrderId },
-                    { paymentStatus: 'paid', razorpayPaymentId }
-                );
-
-                return res.status(200).json({ success: true, message: 'Payment verified successfully' });
-            } else {
-                return res.status(400).json({ success: false, message: 'Invalid payment signature' });
-            }
-        } catch (error) {
-            console.error('Error verifying payment:', error);
-            return res.status(500).json({ message: 'Failed to verify payment' });
-        }
-    }
+    
     static async getOrderById(req, res) {
         try {
             const { orderId } = req.params;
