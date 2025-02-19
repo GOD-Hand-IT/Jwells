@@ -63,7 +63,7 @@ export default class OrderController {
             });
 
             // Send order confirmation email
-            await OrderController.#processOrderConfirmation(userId, phoneNumber, cartItems);
+            await OrderController.#processOrderConfirmation(userId, phoneNumber, cartItems, shippingAddress);
 
             // Clear cart
             await CartProduct.deleteMany({ userId });
@@ -128,7 +128,7 @@ export default class OrderController {
         }
     }
 
-    static async #processOrderConfirmation(userId, phoneNumber, cartItems) {
+    static async #processOrderConfirmation(userId, phoneNumber, cartItems, shippingAddress) {
         const user = await User.findById(userId);
         if (!user || !cartItems.length) {
             throw new Error('Invalid user or cart items');
@@ -171,6 +171,7 @@ export default class OrderController {
                 <h3>New Order Received</h3>
                 <p>Customer Email: ${user.email}</p>
                 <p>Phone Number: ${phoneNumber}</p>
+                <p>Shipping Address: ${shippingAddress}</p>
                 <p>Total Amount: Rs. ${total}</p>
                 <p>Please check the attached PDF for complete order details.</p>
             `,
