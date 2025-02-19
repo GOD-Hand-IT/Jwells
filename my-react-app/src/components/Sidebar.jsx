@@ -16,6 +16,7 @@ const Sidebar = ({
     const [categories, setCategories] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState(new Set(selectedCategory ? [selectedCategory] : []));
     const [selectedStatus, setSelectedStatus] = useState(new Set(['instock']));
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Controls mobile sidebar visibility
 
     const fetchCategories = async () => {
         try {
@@ -73,7 +74,6 @@ const Sidebar = ({
 
     const handleCategoryChange = (category) => {
         const newSelectedCategories = new Set(selectedCategories);
-        // Prevent unchecking the collection category
         if (category === selectedCategory && newSelectedCategories.has(category)) {
             return;
         }
@@ -90,7 +90,7 @@ const Sidebar = ({
     const handleStatusChange = (status) => {
         const newSelectedStatus = new Set(selectedStatus);
         if (newSelectedStatus.has(status)) {
-            if (newSelectedStatus.size > 1) { // Prevent unchecking all filters
+            if (newSelectedStatus.size > 1) {
                 newSelectedStatus.delete(status);
             }
         } else {
@@ -101,88 +101,101 @@ const Sidebar = ({
     };
 
     return (
-        <div className="w-64 p-4 bg-white shadow-md">
-            {/* Status Filter Section */}
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3 text-black">Status</h3>
-                <div className="mb-2 flex items-center">
-                    <input
-                        type="checkbox"
-                        id="instock"
-                        checked={selectedStatus.has('instock')}
-                        onChange={() => handleStatusChange('instock')}
-                        className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
-                    />
-                    <label htmlFor="instock" className="text-black cursor-pointer hover:text-[#D4AF37]">
-                        In Stock
-                    </label>
-                </div>
-                <div className="mb-2 flex items-center">
-                    <input
-                        type="checkbox"
-                        id="preorder"
-                        checked={selectedStatus.has('preorder')}
-                        onChange={() => handleStatusChange('preorder')}
-                        className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
-                    />
-                    <label htmlFor="preorder" className="text-black cursor-pointer hover:text-[#D4AF37]">
-                        Pre-order
-                    </label>
-                </div>
-            </div>
+        <div className="w-64 p-4 bg-white self-start">
+            {/* Filter Heading - Always Visible */}
+            <h3
+                className="text-lg font-[cinzel] font-semibold mb-3 text-black cursor-pointer"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+                Filter <div className='md:hidden'>{isSidebarOpen ? '▲' : '▼'}</div>
+            </h3>
 
-            <div>
-                <h3 className="text-lg font-semibold mb-3 text-black">Categories</h3>
-                {categories.map((category) => (
-                    <div key={category} className="mb-2 flex items-center">
+            {/* Sidebar Content - Hidden on Mobile by Default */}
+            <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'block' : 'hidden'} md:block`}>
+                {/* Status Filter Section */}
+                <div className="mb-6">
+                    <h3 className="text-lg font-[cinzel] font-thin mb-3 text-black">Status</h3>
+                    <div className="mb-2 font-[cinzel] flex items-center">
                         <input
                             type="checkbox"
-                            id={category}
-                            value={category}
-                            checked={selectedCategories.has(category)}
-                            onChange={() => handleCategoryChange(category)}
-                            disabled={category === selectedCategory}
-                            className={`w-4 h-4 mr-2 ${category === selectedCategory
-                                    ? 'accent-gray-400 cursor-not-allowed'
-                                    : 'accent-[#D4AF37] cursor-pointer'
-                                }`}
+                            id="instock"
+                            checked={selectedStatus.has('instock')}
+                            onChange={() => handleStatusChange('instock')}
+                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
                         />
-                        <label htmlFor={category} className={`${category === selectedCategory
-                                ? 'text-gray-600'
-                                : 'text-black cursor-pointer hover:text-[#D4AF37]'
-                            } transition-colors`}>
-                            {category}
+                        <label htmlFor="instock" className="text-black cursor-pointer hover:text-[#D4AF37]">
+                            In Stock
                         </label>
                     </div>
-                ))}
-            </div>
-
-            <div className="mb-6 mt-6">
-                <h3 className="text-lg font-semibold mb-3 text-black">Price Range</h3>
-                <div className="flex flex-col space-y-2">
-                    <input
-                        type="range"
-                        min="0"
-                        max={maxPrice}
-                        step="1"
-                        value={tempPriceRange[1]}
-                        onChange={handlePriceChange}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
-                    />
-                    <div className="flex justify-between text-black">
-                        <span>${tempPriceRange[0]}</span>
-                        <span>${tempPriceRange[1]}</span>
+                    <div className="mb-2 font-[cinzel] flex items-center">
+                        <input
+                            type="checkbox"
+                            id="preorder"
+                            checked={selectedStatus.has('preorder')}
+                            onChange={() => handleStatusChange('preorder')}
+                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
+                        />
+                        <label htmlFor="preorder" className="text-black cursor-pointer hover:text-[#D4AF37]">
+                            Pre-order
+                        </label>
                     </div>
-                    <button
-                        onClick={handleApplyPriceRange}
-                        disabled={!isPriceRangeChanged}
-                        className={`mt-2 px-4 py-2 rounded ${isPriceRangeChanged
+                </div>
+
+                {/* Categories */}
+                <div>
+                    <h3 className="text-lg font-[cinzel] font-normal mb-3 text-black">Categories</h3>
+                    {categories.map((category) => (
+                        <div key={category} className="mb-2 font-[cinzel] flex items-center">
+                            <input
+                                type="checkbox"
+                                id={category}
+                                value={category}
+                                checked={selectedCategories.has(category)}
+                                onChange={() => handleCategoryChange(category)}
+                                disabled={category === selectedCategory}
+                                className={`w-4 h-4 mr-2 ${category === selectedCategory
+                                    ? 'accent-gray-400 cursor-not-allowed'
+                                    : 'accent-[#D4AF37] cursor-pointer'
+                                    }`}
+                            />
+                            <label htmlFor={category} className={`${category === selectedCategory
+                                ? 'text-gray-600'
+                                : 'text-black cursor-pointer hover:text-[#D4AF37]'
+                                } transition-colors`}>
+                                {category}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Price Range */}
+                <div className="mb-6 mt-6">
+                    <h3 className="text-lg font-[cinzel] font-normal mb-3 text-black">Price Range</h3>
+                    <div className="flex flex-col space-y-2">
+                        <input
+                            type="range"
+                            min="0"
+                            max={maxPrice}
+                            step="1"
+                            value={tempPriceRange[1]}
+                            onChange={handlePriceChange}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
+                        />
+                        <div className="flex justify-between text-black">
+                            <span>${tempPriceRange[0]}</span>
+                            <span>${tempPriceRange[1]}</span>
+                        </div>
+                        <button
+                            onClick={handleApplyPriceRange}
+                            disabled={!isPriceRangeChanged}
+                            className={`mt-2 px-4 py-2 rounded ${isPriceRangeChanged
                                 ? 'bg-[#D4AF37] text-white hover:bg-[#B08F26]'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            } transition-colors`}
-                    >
-                        Apply Filter
-                    </button>
+                                } transition-colors`}
+                        >
+                            Apply Filter
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -7,7 +7,7 @@ import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
 import cookieParser from 'cookie-parser';
-
+import orderRouter from './routes/orderRoute.js'
 import cartRouter from './routes/cartRoutes.js'
 import adminRouter from './routes/adminRoute.js'
 import contactRouter from './routes/contactRoutes.js'
@@ -29,6 +29,7 @@ server.use("/product", productRouter)
 server.use("/cart", cartRouter)
 server.use("/admin", adminRouter)
 server.use("/contact", contactRouter)
+server.use("/order", orderRouter)
 
 
 

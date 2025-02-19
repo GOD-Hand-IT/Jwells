@@ -1,6 +1,76 @@
-import React from "react";
+import {useState,React} from "react";
 
 const Checkout = () => {
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        zipcode: "",
+        phone: "",
+      });
+
+      const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      };
+    
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        try {
+          // Send form data to the backend to create a Razorpay order
+          const response = await axios.post("/api/placeOrder", formData);
+    
+          const { orderId, amount, currency } = response.data;
+    
+          // Initialize Razorpay payment
+          const options = {
+            key: process.env.RAZORPAY_KEY_ID,
+            amount: amount,
+            currency: currency,
+            name: "Your Company Name",
+            description: "Test Transaction",
+            order_id: orderId,
+            handler: async (response) => {
+              try {
+                // Verify payment on the backend
+                const verifyResponse = await axios.post("/api/verifyPayment", {
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
+                });
+    
+                if (verifyResponse.data.success) {
+                  toast.success("Payment successful!");
+                } else {
+                  toast.error("Payment verification failed!");
+                }
+              } catch (error) {
+                console.error("Payment verification error:", error);
+                toast.error("Payment verification error!");
+              }
+            },
+            prefill: {
+              name: `${formData.firstName} ${formData.lastName}`,
+              email: formData.email,
+              contact: formData.phone,
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+    
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } catch (error) {
+          console.error("Order creation error:", error);
+          toast.error("Failed to create order!");
+        }
+      };
+    
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="bg-white shadow-lg rounded-lg w-full max-w-4xl grid grid-cols-1 md:grid-cols-2">
