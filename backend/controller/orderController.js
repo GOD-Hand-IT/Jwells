@@ -98,7 +98,7 @@ export default class OrderController {
     }
 
     static async handleRazorpayPayment(req, res) {
-        try{
+        try {
             const { payAmount } = req.body;
             const options = {
                 amount: payAmount * 100, // Amount in paise
@@ -106,7 +106,7 @@ export default class OrderController {
                 receipt: `receipt_${Date.now()}`,
                 payment_capture: 1,
             };
-        
+
             const razorpayOrder = await razorpayInstance.orders.create(options, (err, order) => {
                 if (err) {
                     return res.status(500).json({
@@ -122,16 +122,16 @@ export default class OrderController {
             });
         }
         catch (error) {
-          console.error('Razorpay payment error:', error);
-          return res.status(500).json({
-            success: false,
-            message: 'Error processing Razorpay payment',
-            error: error.message
-          });
+            console.error('Razorpay payment error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error processing Razorpay payment',
+                error: error.message
+            });
         }
-      }
+    }
 
-            
+
 
     static async verifyPayment(req, res) {
         const { payAmount } = req.body;
@@ -176,7 +176,7 @@ export default class OrderController {
 
     static async getUserOrders(req, res) {
         try {
-            const { userId } = req.params;
+            const { userId } = req.body;
             const orders = await Order.find({ userId })
                 .sort({ createdAt: -1 });
 
