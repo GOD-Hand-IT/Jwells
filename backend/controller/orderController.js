@@ -1,11 +1,27 @@
 import Order from '../model/order.js';
 import CartProduct from '../model/cartProduct.js';
-import { v4 as uuidv4 } from 'uuid';
+import User from '../model/userModal.js';
+import nodemailer from 'nodemailer';
+import PDFDocument from 'pdfkit';
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_ID,
+        pass: process.env.PASS_KEY
+    },
+    secure: false,
+    port: 25,
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 export default class OrderController {
     static async createOrder(req, res) {
         try {
-            const { userId, shippingAddress } = req.body;
+            const { userId, shippingAddress, phoneNumber } = req.body;
 
             // Get cart items
             const cartItems = await CartProduct.find({ userId }).populate('productId');
@@ -43,9 +59,11 @@ export default class OrderController {
                 totalAmount,
                 paidAmount,
                 balanceAmount: totalAmount - paidAmount,
-                shippingAddress,
-                trackingNumber: uuidv4().substring(0, 8).toUpperCase()
+                shippingAddress
             });
+
+            // Send order confirmation email
+            await OrderController.#processOrderConfirmation(userId, phoneNumber, cartItems);
 
             // Clear cart
             await CartProduct.deleteMany({ userId });
@@ -108,5 +126,61 @@ export default class OrderController {
                 error: error.message
             });
         }
+    }
+
+    static async #processOrderConfirmation(userId, phoneNumber, cartItems) {
+        const user = await User.findById(userId);
+        if (!user || !cartItems.length) {
+            throw new Error('Invalid user or cart items');
+        }
+
+        // Create PDF
+        const doc = new PDFDocument({
+            size: 'A4',
+            margin: 50
+        });
+
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+
+        // Add company header
+        doc.font('Helvetica-Bold')
+            .fontSize(28)
+            .fillColor('#333333')
+            .text('J WELLS', { align: 'center' })
+        // ...rest of PDF generation code...
+
+        let total = 0;
+        for (const item of cartItems) {
+            const subtotal = item.productId.price * item.quantity;
+            total += subtotal;
+            // ...rest of items processing...
+        }
+
+        doc.end();
+
+        // Convert PDF to buffer
+        const pdfBuffer = Buffer.concat(buffers);
+
+        // Send email
+        const mailOptions = {
+            from: user.email,
+            to: process.env.EMAIL_ID,
+            subject: 'Order Confirmation',
+            html: `
+                <h3>New Order Received</h3>
+                <p>Customer Email: ${user.email}</p>
+                <p>Phone Number: ${phoneNumber}</p>
+                <p>Total Amount: Rs. ${total}</p>
+                <p>Please check the attached PDF for complete order details.</p>
+            `,
+            attachments: [{
+                filename: 'order-details.pdf',
+                content: pdfBuffer,
+                contentType: 'application/pdf'
+            }]
+        };
+
+        await transporter.sendMail(mailOptions);
     }
 }

@@ -14,6 +14,5 @@ const upload = multer({
 });
 
 router.post('/designForm', upload.array('files', 5), ContactController.sendContactForm);
-router.post('/checkout', ContactController.checkout);
 
 export default router;

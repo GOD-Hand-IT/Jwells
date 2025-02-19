@@ -9,9 +9,7 @@ router.post("/product/add", upload.fields([{ name: 'image', maxCount: 1 }]), Adm
 router.delete("/product/remove", AdminController.removeProduct)
 router.post("/product", AdminController.listAllProducts)
 router.put("/product/update", upload.fields([{ name: 'image', maxCount: 1 }]), AdminController.updateProduct)
-
-// Order routes
 router.get("/orders", AdminController.getAllOrders)
-router.put("/order/status/:orderId", AdminController.updateOrderStatus)
+router.put("/order/status/:orderId", AdminController.updateOrderDetails)
 
 export default router

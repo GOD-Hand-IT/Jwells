@@ -210,22 +210,41 @@ export default class AdminController {
         }
     }
 
-    static updateOrderStatus = async (req, res) => {
+    static updateOrderDetails = async (req, res) => {
         try {
             const { orderId } = req.params;
-            const { status } = req.body;
+            const { status, trackingNumber } = req.body;
 
-            const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-            if (!validStatuses.includes(status)) {
+            const updateData = {};
+
+            // Handle status update if provided
+            if (status !== undefined) {
+                const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+                if (!validStatuses.includes(status)) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Invalid status'
+                    });
+                }
+                updateData.status = status;
+            }
+
+            // Handle tracking number update if provided
+            if (trackingNumber !== undefined) {
+                updateData.trackingNumber = trackingNumber;
+            }
+
+            // If neither status nor tracking number provided
+            if (Object.keys(updateData).length === 0) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Invalid status'
+                    message: 'No valid update data provided'
                 });
             }
 
             const order = await Order.findByIdAndUpdate(
                 orderId,
-                { status },
+                updateData,
                 { new: true }
             ).populate('items.productId');
 
@@ -238,14 +257,14 @@ export default class AdminController {
 
             return res.status(200).json({
                 success: true,
-                message: 'Order status updated successfully',
+                message: 'Order details updated successfully',
                 data: order
             });
         } catch (error) {
-            console.error('Error in updateOrderStatus:', error);
+            console.error('Error in updateOrderDetails:', error);
             return res.status(500).json({
                 success: false,
-                message: 'Error updating order status',
+                message: 'Error updating order details',
                 error: error.message
             });
         }
