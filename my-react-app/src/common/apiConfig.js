@@ -90,15 +90,15 @@ const SummaryApi = {
     method: "get"
   },
   updateOrder: {
-    url: `${backendDomain}/admin/order/update/`,
+    url: `${backendDomain}/admin/order/status/`,
     method: "put"
   },
   getMyOrders: {
     url: `${backendDomain}/order/user`,
-    method: "get"
+    method: "post"
   },
   getOrderDetails: {
-    url: `${backendDomain}/order/details/`,
+    url: `${backendDomain}/order/`,
     method: "get"
   },
   payment: {

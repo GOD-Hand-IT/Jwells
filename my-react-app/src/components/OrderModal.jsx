@@ -5,14 +5,19 @@ import SummaryApi from '../common/apiConfig';
 const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [trackingNumber, setTrackingNumber] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
 
     useEffect(() => {
+        console.log('Modal props:', { isOpen, orderId }); // Debug log
         if (isOpen && orderId) {
             fetchOrderDetails();
         }
     }, [isOpen, orderId]);
 
     const fetchOrderDetails = async () => {
+        console.log('Fetching order details for:', orderId); // Debug log
         setLoading(true);
         try {
             const response = await fetch(`${SummaryApi.getOrderDetails.url}${orderId}`, {
@@ -26,9 +31,44 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                 toast.error('Failed to fetch order details');
             }
         } catch (error) {
+            console.error('Error fetching order:', error); // Debug log
             toast.error('Error fetching order details');
         } finally {
             setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (order) {
+            setTrackingNumber(order.trackingNumber || '');
+            setSelectedStatus(order.status);
+        }
+    }, [order]);
+
+    const handleUpdateOrder = async () => {
+        try {
+            const response = await fetch(`${SummaryApi.updateOrder.url}${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    status: selectedStatus,
+                    trackingNumber: trackingNumber
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success('Order updated successfully');
+                setIsEditing(false);
+                fetchOrderDetails();
+                if (onStatusUpdate) onStatusUpdate(orderId, selectedStatus);
+            } else {
+                toast.error('Failed to update order');
+            }
+        } catch (error) {
+            toast.error('Error updating order');
         }
     };
 
@@ -49,86 +89,172 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
     const orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">Order Details</h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        ✕
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl w-full max-w-7xl max-h-[90vh] overflow-hidden shadow-2xl">
+                {/* Header */}
+                <div className="flex justify-between items-center p-6 bg-gradient-to-r from-amber-500 to-amber-700">
+                    <div className="space-y-1">
+                        <h2 className="text-2xl font-bold text-white">Order #{order._id}</h2>
+                        <p className="text-amber-100 text-sm">
+                            {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </p>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-amber-600/50 rounded-full transition-colors">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Order Summary */}
-                    <div className="border-b pb-4">
-                        <h3 className="font-semibold mb-2">Order Summary</h3>
-                        <p>Order ID: {order._id}</p>
-                        <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                        <p>Status: {order.status}</p>
-                        <p>Tracking Number: {order.trackingNumber || 'N/A'}</p>
-                    </div>
-
-                    {/* Customer Details */}
-                    <div className="border-b pb-4">
-                        <h3 className="font-semibold mb-2">Customer Information</h3>
-                        <p>Name: {order.userId.name}</p>
-                        <p>Email: {order.userId.email}</p>
-                        <p>Phone: {order.contactPhone}</p>
-                        <p>Shipping Address: {order.shippingAddress}</p>
-                    </div>
-
-                    {/* Order Items */}
-                    <div>
-                        <h3 className="font-semibold mb-2">Order Items</h3>
-                        <div className="space-y-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(90vh-80px)]">
+                    {/* Left Column - Order Items & Payment */}
+                    <div className="p-6 overflow-y-auto">
+                        {/* Order Items */}
+                        <div className="space-y-4 mb-8">
+                            <h3 className="text-xl font-bold text-gray-800">Order Items</h3>
                             {order.items.map((item, index) => (
-                                <div key={index} className="flex justify-between items-center border-b py-2">
-                                    <div>
-                                        <p className="font-medium">{item.productId.name}</p>
-                                        <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                                <div key={index} className="flex gap-4 p-4 rounded-xl bg-amber-50 border border-amber-200 hover:shadow-md transition-all">
+                                    {/* Product Image */}
+                                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-white border border-amber-200 flex-shrink-0">
+                                        <img
+                                            src={item.productId.image?.[0] || '/placeholder-jewelry.png'}
+                                            alt={item.productId.name}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
-                                    <p>₹{item.price * item.quantity}</p>
+                                    {/* Product Details */}
+                                    <div className="flex-1">
+                                        <h4 className="font-semibold text-gray-900">{item.productId.name}</h4>
+                                        <div className="mt-1 space-y-1">
+                                            <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                                            <p className="text-sm text-gray-600">Price: ₹{item.price}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-amber-800">₹{item.price * item.quantity}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
 
-                    {/* Payment Details */}
-                    <div className="border-t pt-4">
-                        <div className="flex justify-between">
-                            <p className="font-semibold">Total Amount:</p>
-                            <p>₹{order.totalAmount}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            <p className="font-semibold">Paid Amount:</p>
-                            <p>₹{order.paidAmount}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            <p className="font-semibold">Balance Due:</p>
-                            <p>₹{order.balanceAmount}</p>
-                        </div>
-                    </div>
-
-                    {/* Admin Controls */}
-                    {isAdmin && (
-                        <div className="border-t pt-4">
-                            <h3 className="font-semibold mb-2">Update Order Status</h3>
-                            <div className="flex gap-2">
-                                {orderStatuses.map(status => (
-                                    <button
-                                        key={status}
-                                        onClick={() => onStatusUpdate(order._id, status)}
-                                        className={`px-3 py-1 rounded-full text-sm ${order.status === status
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-200 hover:bg-gray-300'
-                                            }`}
-                                    >
-                                        {status}
-                                    </button>
-                                ))}
+                        {/* Payment Summary */}
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+                            <h3 className="text-xl font-bold text-gray-800 mb-4">Payment Details</h3>
+                            <div className="space-y-3">
+                                <div className="flex justify-between p-3 bg-white rounded-lg border border-amber-200">
+                                    <span className="text-gray-600">Total Amount</span>
+                                    <span className="font-bold text-amber-800">₹{order.totalAmount}</span>
+                                </div>
+                                <div className="flex justify-between p-3 bg-white rounded-lg border border-green-200">
+                                    <span className="text-gray-600">Paid Amount</span>
+                                    <span className="font-bold text-green-600">₹{order.paidAmount}</span>
+                                </div>
+                                <div className="flex justify-between p-3 bg-white rounded-lg border border-amber-300">
+                                    <span className="text-gray-800 font-medium">Balance Due</span>
+                                    <span className="font-bold text-amber-600">₹{order.balanceAmount}</span>
+                                </div>
                             </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Right Column - Status & Customer Details */}
+                    <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 overflow-y-auto border-l border-amber-100">
+                        {/* Status Section */}
+                        <div className="bg-white rounded-xl p-6 mb-6 border border-amber-200">
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="text-xl font-bold text-gray-800">Order Status</h3>
+                                <span className={`px-4 py-1.5 rounded-full text-sm font-medium 
+                                    ${order.status === 'delivered' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                        order.status === 'cancelled' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                            'bg-amber-100 text-amber-700 border border-amber-200'}`}>
+                                    {order.status.toUpperCase()}
+                                </span>
+                            </div>
+
+                            {isAdmin && (
+                                <div className="mt-4 pt-4 border-t border-amber-100">
+                                    {isEditing ? (
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                                <select
+                                                    value={selectedStatus}
+                                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                                    className="w-full p-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                >
+                                                    {orderStatuses.map(status => (
+                                                        <option
+                                                            key={status}
+                                                            value={status}
+                                                            className="text-gray-900 bg-white"
+                                                        >
+                                                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Tracking Number
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={trackingNumber}
+                                                    onChange={(e) => setTrackingNumber(e.target.value)}
+                                                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    placeholder="Enter tracking number"
+                                                />
+                                            </div>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={handleUpdateOrder}
+                                                    className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all"
+                                                >
+                                                    Update Order
+                                                </button>
+                                                <button
+                                                    onClick={() => setIsEditing(false)}
+                                                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setIsEditing(true)}
+                                            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all"
+                                        >
+                                            Update Order Status
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Customer Information */}
+                        <div className="bg-white rounded-xl p-6 border border-amber-200">
+                            <h3 className="text-xl font-bold text-gray-800 mb-4">Customer Details</h3>
+                            <div className="space-y-4">
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-amber-800 mb-1">Phone</p>
+                                    <p className="font-medium text-gray-900">{order.contactPhone}</p>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-amber-800 mb-1">Delivery Address</p>
+                                    <p className="font-medium text-gray-900">{order.shippingAddress}</p>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-amber-800 mb-1">Tracking Number</p>
+                                    <p className="font-medium text-gray-900">{order.trackingNumber || 'Not Available'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

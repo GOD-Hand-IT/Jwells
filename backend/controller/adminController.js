@@ -246,8 +246,10 @@ export default class AdminController {
             const order = await Order.findByIdAndUpdate(
                 orderId,
                 updateData,
-                { new: true }
-            ).populate('items.productId');
+                { new: true })
+                .populate('userId', 'name email')// populate user details
+                .populate('items.productId');
+
 
             if (!order) {
                 return res.status(404).json({

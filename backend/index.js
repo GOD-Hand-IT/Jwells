@@ -34,12 +34,13 @@ server.use("/order", orderRouter)
 
 
 // const storage  = multer.diskStorage({
-connectDB();
-connectCloudinary();
-console.log("Connected to MongoDB and Cloudinary");
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+connectDB();
+connectCloudinary();
+
+
 
 
 
