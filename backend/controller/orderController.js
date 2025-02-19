@@ -5,9 +5,17 @@ import ContactController from '../controllers/contactController.js';
 export default class OrderController {
     static async createOrder(req, res) {
         try {
-            const { userId, shippingAddress, contactPhone, totalAmount, balanceDue } = req.body;
+            const {
+                userId,
+                shippingAddress,
+                contactPhone,
+                totalAmount,
+                balanceDue,
+                paidAmount,
+                paymentMethod
+            } = req.body;
 
-            if (!userId || !shippingAddress || !contactPhone) {
+            if (!userId || !shippingAddress || !contactPhone || !paymentMethod) {
                 return res.status(400).json({
                     success: false,
                     message: 'Missing required fields'
@@ -28,19 +36,21 @@ export default class OrderController {
                 productId: item.productId._id,
                 quantity: item.quantity,
                 price: item.productId.price,
-                isPreOrder: item.isPreOrder,
-                partialPayment: item.isPreOrder ? item.partialPayment : 0
+                isPreOrder: paymentMethod === 'cod' ? false : item.isPreOrder,
+                partialPayment: paymentMethod === 'cod' ? 0 : (item.isPreOrder ? item.partialPayment : 0)
             }));
 
-            // Create order
+            // Create order with payment method
             const order = await Order.create({
                 userId,
                 items: orderItems,
                 totalAmount,
-                paidAmount: totalAmount - balanceDue,
+                paidAmount,
                 balanceAmount: balanceDue,
                 shippingAddress,
-                contactPhone
+                contactPhone,
+                paymentMethod,
+                paymentStatus: paymentMethod === 'cod' ? 'pending' : 'partial'
             });
 
             // Call checkout from ContactController
