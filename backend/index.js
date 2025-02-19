@@ -7,7 +7,6 @@ import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
 import cookieParser from 'cookie-parser';
-
 import cartRouter from './routes/cartRoutes.js'
 import adminRouter from './routes/adminRoute.js'
 import contactRouter from './routes/contactRoutes.js'

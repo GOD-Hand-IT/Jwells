@@ -269,7 +269,7 @@ const ProductDetails = ({
                 <button
                   onClick={handleAddToCart}
                   disabled={isLoading}
-                  className={`w-full py-4 px-6 rounded-lg bg-black text-white font-medium 
+                  className={`w-full py-4 px-6 rounded-lg bg-black cursor-pointer text-white font-medium 
                     ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'} 
                     transition duration-300`}
                 >
@@ -279,7 +279,7 @@ const ProductDetails = ({
                 <button
                   onClick={handleBuyNow}
                   disabled={isLoading}
-                  className={`w-full py-4 px-6 rounded-lg bg-blue-600 text-white font-medium 
+                  className={`w-full py-4 px-6 rounded-lg bg-blue-600 cursor-pointer text-white font-medium 
                     ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'} 
                     transition duration-300`}
                 >

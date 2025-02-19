@@ -66,7 +66,7 @@ function ProductCard({ product }) {
         <div className="group my-1.5 flex w-full max-w-xs flex-col overflow-hidden bg-white">
           <div className="relative flex h-64 w-60 overflow-hidden">
             {discountPercentage > 0 && (
-              <div className="absolute right-2 top-2 z-10">
+              <div className="absolute right-2 top-2 z-1">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500 shadow-md animate-pulse">
                   <span className="text-xs font-bold text-white">
                     -{discountPercentage}%
