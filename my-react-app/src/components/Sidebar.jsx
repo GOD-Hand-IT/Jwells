@@ -115,6 +115,13 @@ const Sidebar = ({
     return (
         <div className="mt-10 relative self-start">
             {/* Filter Heading - Always Visible */}
+            <h3
+                className="text-lg font-[cinzel] font-semibold mb-3 text-black cursor-pointer md:text-lg"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+                Filter <div className='md:hidden'>{isSidebarOpen ? '▲' : '▼'}</div>
+            </h3>
+
             {/* Sidebar Content - Hidden on Mobile by Default */}
             <div className={`fixed top-0 left-0 h-full w-64 p-4 bg-white transition-transform duration-300 ease-in-out transform z-5 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:block`}>
                 {/* Close Button for Mobile */}
@@ -134,18 +141,6 @@ const Sidebar = ({
                         />
                         <label htmlFor="instock" className="text-black cursor-pointer hover:text-[#D4AF37]">
                             In Stock
-                        </label>
-                    </div>
-                    <div className="mb-2 font-[cinzel] flex items-center md:text-base">
-                        <input
-                            type="checkbox"
-                            id="preorder"
-                            checked={selectedStatus.has('preorder')}
-                            onChange={() => handleStatusChange('preorder')}
-                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
-                        />
-                        <label htmlFor="preorder" className="text-black cursor-pointer hover:text-[#D4AF37]">
-                            Pre-order
                         </label>
                     </div>
                 </div>
