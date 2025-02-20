@@ -72,7 +72,7 @@ const Orders = () => {
         <div className="p-6 max-w-8xl mx-auto bg-transparent">
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-gray-800">Orders Management</h1>
-                <span className="text-sm text-gray-500">Total Orders: {orders.length}</span>
+                <span className="text-sm text-gray-500 ml-10">Total Orders: {orders.length}</span>
             </div>
 
             {/* Simplified Search and Filters UI */}
