@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
   return (
-    <footer className="flex flex-col bg-gray-800 text-black py-8">
+    <footer className="flex flex-col z-[10] bg-gray-800 text-black py-8">
       {/* Main Flex Container */}
       <div className="flex flex-wrap justify-start pb-10 items-start w-full">
   {/* Left Column */}

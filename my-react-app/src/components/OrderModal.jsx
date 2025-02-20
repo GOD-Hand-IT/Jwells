@@ -92,7 +92,7 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl w-full max-w-7xl max-h-[90vh] overflow-hidden shadow-2xl">
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 bg-gradient-to-r from-amber-500 to-amber-700">
+                <div className="flex justify-between items-center p-6 bg-black">
                     <div className="space-y-1">
                         <h2 className="text-2xl font-bold text-white">Order #{order._id}</h2>
                         <p className="text-amber-100 text-sm">
@@ -103,7 +103,7 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                             })}
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-amber-600/50 rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-black cursor-pointer rounded-full transition-colors ml-auto">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -117,9 +117,9 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                         <div className="space-y-4 mb-8">
                             <h3 className="text-xl font-bold text-gray-800">Order Items</h3>
                             {order.items.map((item, index) => (
-                                <div key={index} className="flex gap-4 p-4 rounded-xl bg-amber-50 border border-amber-200 hover:shadow-md transition-all">
+                                <div key={index} className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-200 hover:shadow-md transition-all">
                                     {/* Product Image */}
-                                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-white border border-amber-200 flex-shrink-0">
+                                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-white border border-gray-200 flex-shrink-0">
                                         <img
                                             src={item.productId.image?.[0] || '/placeholder-jewelry.png'}
                                             alt={item.productId.name}
@@ -135,48 +135,48 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-bold text-amber-800">₹{item.price * item.quantity}</p>
+                                        <p className="font-bold text-black">₹{item.price * item.quantity}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Payment Summary */}
-                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Payment Details</h3>
                             <div className="space-y-3">
-                                <div className="flex justify-between p-3 bg-white rounded-lg border border-amber-200">
+                                <div className="flex justify-between p-3 bg-white rounded-lg border border-gray-200">
                                     <span className="text-gray-600">Total Amount</span>
-                                    <span className="font-bold text-amber-800">₹{order.totalAmount}</span>
+                                    <span className="font-bold text-black">₹{order.totalAmount}</span>
                                 </div>
                                 <div className="flex justify-between p-3 bg-white rounded-lg border border-green-200">
                                     <span className="text-gray-600">Paid Amount</span>
                                     <span className="font-bold text-green-600">₹{order.paidAmount}</span>
                                 </div>
-                                <div className="flex justify-between p-3 bg-white rounded-lg border border-amber-300">
+                                <div className="flex justify-between p-3 bg-white rounded-lg border border-gray-300">
                                     <span className="text-gray-800 font-medium">Balance Due</span>
-                                    <span className="font-bold text-amber-600">₹{order.balanceAmount}</span>
+                                    <span className="font-bold text-black">₹{order.balanceAmount}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Right Column - Status & Customer Details */}
-                    <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 overflow-y-auto border-l border-amber-100">
+                    <div className="bg-gradient-to-br from-gray-50/50 to-gray-100/50 p-6 overflow-y-auto border-l border-gray-100">
                         {/* Status Section */}
-                        <div className="bg-white rounded-xl p-6 mb-6 border border-amber-200">
+                        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-xl font-bold text-gray-800">Order Status</h3>
                                 <span className={`px-4 py-1.5 rounded-full text-sm font-medium 
                                     ${order.status === 'delivered' ? 'bg-green-100 text-green-700 border border-green-200' :
                                         order.status === 'cancelled' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                            'bg-amber-100 text-amber-700 border border-amber-200'}`}>
+                                            'bg-gray-100 text-black border border-gray-200'}`}>
                                     {order.status.toUpperCase()}
                                 </span>
                             </div>
 
                             {isAdmin && (
-                                <div className="mt-4 pt-4 border-t border-amber-100">
+                                <div className="mt-4 pt-4 border-t border-gray-100">
                                     {isEditing ? (
                                         <div className="space-y-4">
                                             <div>
@@ -227,7 +227,7 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                                     ) : (
                                         <button
                                             onClick={() => setIsEditing(true)}
-                                            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all"
+                                            className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-4 py-2 rounded-lg hover:from-gray-900 hover:to-gray-700 transition-all"
                                         >
                                             Update Order Status
                                         </button>
@@ -237,7 +237,7 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                         </div>
 
                         {/* Customer Information */}
-                        <div className="bg-white rounded-xl p-6 border border-amber-200">
+                        <div className="bg-white rounded-xl p-6 border border-gray-200">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Customer Details</h3>
                             <div className="space-y-4">
                                 <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
@@ -252,12 +252,12 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                                     <p className="text-sm text-amber-800 mb-1">Phone</p>
                                     <p className="font-medium text-gray-900">{order.contactPhone}</p>
                                 </div>
-                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                                    <p className="text-sm text-amber-800 mb-1">Delivery Address</p>
+                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <p className="text-sm text-black mb-1">Delivery Address</p>
                                     <p className="font-medium text-gray-900">{order.shippingAddress}</p>
                                 </div>
-                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                                    <p className="text-sm text-amber-800 mb-1">Tracking Number</p>
+                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <p className="text-sm text-black mb-1">Tracking Number</p>
                                     <p className="font-medium text-gray-900">{order.trackingNumber || 'Not Available'}</p>
                                 </div>
                             </div>

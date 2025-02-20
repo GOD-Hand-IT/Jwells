@@ -100,22 +100,38 @@ const Sidebar = ({
         onStatusChange(Array.from(newSelectedStatus));
     };
 
+    const handleMinPriceChange = (e) => {
+        const value = parseInt(e.target.value);
+        setTempPriceRange([value, tempPriceRange[1]]);
+        setIsPriceRangeChanged(true);
+    };
+
+    const handleMaxPriceChange = (e) => {
+        const value = parseInt(e.target.value);
+        setTempPriceRange([tempPriceRange[0], value]);
+        setIsPriceRangeChanged(true);
+    };
+
     return (
-        <div className="w-64 p-4 bg-white self-start">
+        <div className="mt-10 relative self-start">
             {/* Filter Heading - Always Visible */}
             <h3
-                className="text-lg font-[cinzel] font-semibold mb-3 text-black cursor-pointer"
+                className="text-lg font-[cinzel] font-semibold mb-3 text-black cursor-pointer md:text-lg"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
                 Filter <div className='md:hidden'>{isSidebarOpen ? '▲' : '▼'}</div>
             </h3>
 
             {/* Sidebar Content - Hidden on Mobile by Default */}
-            <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'block' : 'hidden'} md:block`}>
+            <div className={`fixed top-0 left-0 h-full w-64 p-4 bg-white transition-transform duration-300 ease-in-out transform z-5 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:block`}>
+                {/* Close Button for Mobile */}
+                <div className="md:hidden flex justify-end mb-4">
+                    <button onClick={() => setIsSidebarOpen(false)} className="text-black text-xl">&times;</button>
+                </div>
                 {/* Status Filter Section */}
                 <div className="mb-6">
-                    <h3 className="text-lg font-[cinzel] font-thin mb-3 text-black">Status</h3>
-                    <div className="mb-2 font-[cinzel] flex items-center">
+                    <h3 className="text-lg font-[cinzel] font-thin mb-3 text-black md:text-lg">Status</h3>
+                    <div className="mb-2 font-[cinzel] flex items-center md:text-base">
                         <input
                             type="checkbox"
                             id="instock"
@@ -127,25 +143,13 @@ const Sidebar = ({
                             In Stock
                         </label>
                     </div>
-                    <div className="mb-2 font-[cinzel] flex items-center">
-                        <input
-                            type="checkbox"
-                            id="preorder"
-                            checked={selectedStatus.has('preorder')}
-                            onChange={() => handleStatusChange('preorder')}
-                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
-                        />
-                        <label htmlFor="preorder" className="text-black cursor-pointer hover:text-[#D4AF37]">
-                            Pre-order
-                        </label>
-                    </div>
                 </div>
 
                 {/* Categories */}
                 <div>
-                    <h3 className="text-lg font-[cinzel] font-normal mb-3 text-black">Categories</h3>
+                    <h3 className="text-lg font-[cinzel] font-normal mb-3 text-black md:text-lg">Categories</h3>
                     {categories.map((category) => (
-                        <div key={category} className="mb-2 font-[cinzel] flex items-center">
+                        <div key={category} className="mb-2 font-[cinzel] flex items-center md:text-base">
                             <input
                                 type="checkbox"
                                 id={category}
@@ -182,8 +186,7 @@ const Sidebar = ({
                             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
                         />
                         <div className="flex justify-between text-black">
-                            <span>${tempPriceRange[0]}</span>
-                            <span>${tempPriceRange[1]}</span>
+                            <span>Rs.{tempPriceRange[1]}</span>
                         </div>
                         <button
                             onClick={handleApplyPriceRange}
