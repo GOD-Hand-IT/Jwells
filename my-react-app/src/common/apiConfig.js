@@ -105,6 +105,11 @@ const SummaryApi = {
     url: `${backendDomain}/order/payment`,
     method: "post"
   },
+  verifyPayment: {
+    url: `${backendDomain}/order/verifyPayment`,
+    method: "post"
+  }
+
 };
 
 export default SummaryApi;

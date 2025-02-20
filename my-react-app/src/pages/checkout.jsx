@@ -23,6 +23,7 @@ const Checkout = () => {
   });
   const [formValid, setFormValid] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('online');
+  const [showProcessingModal, setShowProcessingModal] = useState(false);
 
   const userId = localStorage.getItem("userId");
 
@@ -167,15 +168,17 @@ const Checkout = () => {
 
         if (response.success) {
           const paymentData = response.data;
-          console.log("Payment data:", paymentData.amount);
+          console.log("Payment data:", paymentData.orderId);
           const options = {
             key: "rzp_test_jw2Qi0BtmyvmdO",
             amount: paymentData.amount,
             currency: paymentData.currency,
-            name: "Your Store Name",
+            name: "Hridhayam",
             description: "Payment for your order",
-            order_id: paymentData.orderId,
-            handler: async (response) => {
+            order_id: paymentData.id,
+            handler: async (response, error) => {
+              console.log(error)
+              setShowProcessingModal(true);
               try {
                 const verifyResponse = await fetch(SummaryApi.verifyPayment.url, {
                   method: SummaryApi.verifyPayment.method,
@@ -193,11 +196,15 @@ const Checkout = () => {
                   orderData.transactionId = response.razorpay_payment_id;
                   await createOrder(orderData);
                 } else {
+                  setShowProcessingModal(false);
                   toast.error("Payment verification failed");
+                  navigate("/cart", { replace: true });
                 }
               } catch (error) {
+                setShowProcessingModal(false);
                 toast.error("Payment verification failed");
                 console.error(error);
+                navigate("/cart", { replace: true });
               }
             },
             prefill: {
@@ -211,6 +218,12 @@ const Checkout = () => {
           };
 
           const rzp = new Razorpay(options);
+          rzp.on("payment.failed", function (response) {
+            setShowProcessingModal(false);
+            toast.error("Payment failed");
+            navigate("/cart", { replace: true });
+          }
+          );
           rzp.open();
           return;
         } else {
@@ -268,6 +281,17 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Processing Modal */}
+      {showProcessingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500 mx-auto mb-4"></div>
+            <p className="text-lg font-[cinzel] text-gray-800">Processing your order...</p>
+            <p className="text-sm text-gray-600">Please do not close this window</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-[cinzel] text-amber-800 text-center mb-6">Complete Your Order</h1>
 
