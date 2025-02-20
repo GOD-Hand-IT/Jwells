@@ -108,11 +108,11 @@ export default class OrderController {
                 payment_capture: 1,
             };
 
-            const razorpayOrder = await razorpayInstance.orders.create(options, (err, order) => {
+            razorpayInstance.orders.create(options, (err, order) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'Error creating Razorpay order',
+                        message: err,
                         error: err.message
                     });
                 }
