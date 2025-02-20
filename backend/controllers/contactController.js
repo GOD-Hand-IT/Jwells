@@ -75,7 +75,7 @@ export default class ContactController {
     });
 
     static checkout = asyncHandler(async (req, res) => {
-        const { userId, phoneNumber, shippingAddress, totalAmount, balanceDue } = req.body;
+        const { userId, phoneNumber, shippingAddress, totalAmount, balanceDue, transactionId } = req.body;
 
         try {
             console.log(process.env.EMAIL_ID);
@@ -236,6 +236,7 @@ export default class ContactController {
                     <p>Total Amount: Rs. ${totalAmount}</p>
                     <p>Paid Amount: Rs. ${totalAmount - balanceDue}</p>
                     <p>Balance Due: Rs. ${balanceDue}</p>
+                    ${transactionId ? `<p><strong>Transaction ID:</strong> ${transactionId}</p>` : ''}
                     <p>Please check the attached PDF for complete order details.</p>
                 `,
                 attachments: [{

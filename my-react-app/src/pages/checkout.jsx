@@ -149,14 +149,15 @@ const Checkout = () => {
         userId,
         shippingAddress: formattedAddress,
         contactPhone: userData.phone,
-        totalAmount: totals.grandTotal,
+        totalAmount: totals.grandTotal + totals.balancePaymentTotal,
         balanceDue: paymentMethod === 'cod' ? totals.grandTotal : totals.balancePaymentTotal,
-        paidAmount: paymentMethod === 'cod' ? 0 : totals.grandTotal - totals.balancePaymentTotal,
+        paidAmount: paymentMethod === 'cod' ? 0 : totals.grandTotal,
         paymentMethod: paymentMethod,
         transactionId: paymentMethod === 'cod' ? null : 'PENDING'
       };
 
       if (paymentMethod === 'online') {
+        console.log(totals);
         const paymentResponse = await fetch(SummaryApi.payment.url, {
           method: SummaryApi.payment.method,
           headers: { "Content-Type": "application/json" },
@@ -176,8 +177,36 @@ const Checkout = () => {
             name: "Hridhayam",
             description: "Payment for your order",
             order_id: paymentData.id,
-            handler: async (response, error) => {
-              console.log(error)
+            modal: {
+              confirm_close: true, // this is set to true, if we want confirmation when clicked on cross button.
+              // This function is executed when checkout modal is closed
+              // There can be 3 reasons when this modal is closed.
+              ondismiss: async (reason) => {
+                const {
+                  reason: paymentReason, field, step, code,
+                } = reason && reason.error ? reason.error : {};
+                // Reason 1 - when payment is cancelled. It can happend when we click cross icon or cancel any payment explicitly. 
+                if (reason === undefined) {
+                  console.log('cancelled');
+                }
+                // Reason 2 - When modal is auto closed because of time out
+                else if (reason === 'timeout') {
+                  console.log('timedout');
+                }
+                // Reason 3 - When payment gets failed.
+                else {
+                  console.log('failed');
+                }
+              },
+            },
+            // This property allows to enble/disable retries.
+            // This is enabled true by default. 
+            retry: {
+              enabled: false,
+            },
+            timeout: 300, // Time limit in Seconds
+            handler: async (response) => {
+              console.log(response)
               setShowProcessingModal(true);
               try {
                 const verifyResponse = await fetch(SummaryApi.verifyPayment.url, {
@@ -218,12 +247,14 @@ const Checkout = () => {
           };
 
           const rzp = new Razorpay(options);
-          rzp.on("payment.failed", function (response) {
-            setShowProcessingModal(false);
-            toast.error("Payment failed");
+          rzp.on('payment.failed', function (response) {
+            if (options.modal?.ondismiss) {
+              options.modal.ondismiss();
+            }
+            toast.error("Payment verification failed");
+            console.error(response);
             navigate("/cart", { replace: true });
-          }
-          );
+          });
           rzp.open();
           return;
         } else {

@@ -143,6 +143,18 @@ const Sidebar = ({
                             In Stock
                         </label>
                     </div>
+                    <div className="mb-2 font-[cinzel] flex items-center md:text-base">
+                        <input
+                            type="checkbox"
+                            id="preorder"
+                            checked={selectedStatus.has('preorder')}
+                            onChange={() => handleStatusChange('preorder')}
+                            className="w-4 h-4 mr-2 accent-[#D4AF37] cursor-pointer"
+                        />
+                        <label htmlFor="preorder" className="text-black cursor-pointer hover:text-[#D4AF37]">
+                            Pre-order
+                        </label>
+                    </div>
                 </div>
 
                 {/* Categories */}

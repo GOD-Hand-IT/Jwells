@@ -260,6 +260,12 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                                         <p className="font-medium text-gray-900">{order.trackingNumber || 'Not Available'}</p>
                                     </div>
                                 </div>
+                                {order.transactionId && (
+                                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                        <p className="text-sm text-black mb-1">Transaction ID</p>
+                                        <p className="font-medium text-gray-900">{order.transactionId}</p>
+                                    </div>
+                                )}
                                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                                     <p className="text-sm text-black mb-1">Delivery Address</p>
                                     <p className="font-medium text-gray-900">{order.shippingAddress}</p>

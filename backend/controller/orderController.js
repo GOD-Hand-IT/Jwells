@@ -19,7 +19,8 @@ export default class OrderController {
                 totalAmount,
                 balanceDue,
                 paidAmount,
-                paymentMethod
+                paymentMethod,
+                transactionId
             } = req.body;
 
             if (!userId || !shippingAddress || !contactPhone || !paymentMethod) {
@@ -48,7 +49,7 @@ export default class OrderController {
             }));
 
 
-            // Create order with payment method
+            // Create order with payment method and transactionId
             const order = await Order.create({
                 userId,
                 items: orderItems,
@@ -58,7 +59,8 @@ export default class OrderController {
                 shippingAddress,
                 contactPhone,
                 paymentMethod,
-                paymentStatus: paymentMethod === 'cod' ? 'pending' : 'partial'
+                paymentStatus: paymentMethod === 'cod' ? 'pending' : 'partial',
+                transactionId: transactionId || null
             });
 
             // Call checkout from ContactController
@@ -68,7 +70,8 @@ export default class OrderController {
                     phoneNumber: contactPhone,
                     shippingAddress,
                     totalAmount,
-                    balanceDue
+                    balanceDue,
+                    transactionId
                 }
             }, {
                 status: () => ({
@@ -132,11 +135,8 @@ export default class OrderController {
         }
     }
 
-
-
     static async verifyPayment(req, res) {
         try {
-
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
             const sign = razorpay_order_id + '|' + razorpay_payment_id;
@@ -145,8 +145,14 @@ export default class OrderController {
                 .digest('hex');
 
             if (razorpay_signature === expectedSign) {
-                // Payment is verified
-                res.status(200).json({ success: true, message: 'Payment verified successfully' });
+                // Update order with transaction ID
+
+
+                res.status(200).json({
+                    success: true,
+                    message: 'Payment verified successfully',
+                    transactionId: razorpay_payment_id
+                });
             } else {
                 res.status(400).json({ success: false, error: 'Invalid payment signature' });
             }
