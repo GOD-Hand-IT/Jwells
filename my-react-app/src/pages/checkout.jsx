@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
 import SummaryApi from "../common/apiConfig";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { error, isLoading, Razorpay } = useRazorpay();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [userData, setUserData] = useState({
@@ -158,20 +160,79 @@ const Checkout = () => {
           method: SummaryApi.payment.method,
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ amount: totals.paidAmount })
+          body: JSON.stringify({ payAmount: orderData.paidAmount })
         });
 
-        const paymentData = await paymentResponse.json();
+        const response = await paymentResponse.json();
 
-        if (paymentResponse.ok  ) {
-            const rzp = new window.Razorpay(options);
-            rzp.open();        } else {
+        if (response.success) {
+          const paymentData = response.data;
+          console.log("Payment data:", paymentData.amount);
+          const options = {
+            key: "rzp_test_jw2Qi0BtmyvmdO",
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            name: "Your Store Name",
+            description: "Payment for your order",
+            order_id: paymentData.orderId,
+            handler: async (response) => {
+              try {
+                const verifyResponse = await fetch(SummaryApi.verifyPayment.url, {
+                  method: SummaryApi.verifyPayment.method,
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                  }),
+                });
+
+                const verifyData = await verifyResponse.json();
+                if (verifyData.success) {
+                  orderData.transactionId = response.razorpay_payment_id;
+                  await createOrder(orderData);
+                } else {
+                  toast.error("Payment verification failed");
+                }
+              } catch (error) {
+                toast.error("Payment verification failed");
+                console.error(error);
+              }
+            },
+            prefill: {
+              name: userData.name,
+              email: userData.email,
+              contact: userData.phone,
+            },
+            theme: {
+              color: "#C17112",
+            },
+          };
+
+          const rzp = new Razorpay(options);
+          rzp.open();
+          return;
+        } else {
           toast.error(paymentData.message || "Failed to initiate payment");
           setSubmitting(false);
           return;
         }
       }
 
+      // For COD, directly create order
+      await createOrder(orderData);
+
+    } catch (error) {
+      console.error("Order creation error:", error);
+      toast.error("Error processing your order");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const createOrder = async (orderData) => {
+    try {
       const response = await fetch(SummaryApi.createOrder.url, {
         method: SummaryApi.createOrder.method,
         headers: { "Content-Type": "application/json" },
@@ -183,7 +244,7 @@ const Checkout = () => {
 
       if (response.ok && data.orderId) {
         toast.success("Order created successfully!");
-        navigate("/", { replace: true }); // Replace current page in history
+        navigate("/", { replace: true });
       } else {
         toast.error(data.message || "Failed to create order");
       }
