@@ -205,7 +205,7 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                                                     type="text"
                                                     value={trackingNumber}
                                                     onChange={(e) => setTrackingNumber(e.target.value)}
-                                                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
                                                     placeholder="Enter tracking number"
                                                 />
                                             </div>
@@ -240,6 +240,14 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                         <div className="bg-white rounded-xl p-6 border border-amber-200">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Customer Details</h3>
                             <div className="space-y-4">
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-amber-800 mb-1">Name</p>
+                                    <p className="font-medium text-gray-900">{order.userId?.name || 'Not Available'}</p>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <p className="text-sm text-amber-800 mb-1">Email</p>
+                                    <p className="font-medium text-gray-900">{order.userId?.email || 'Not Available'}</p>
+                                </div>
                                 <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
                                     <p className="text-sm text-amber-800 mb-1">Phone</p>
                                     <p className="font-medium text-gray-900">{order.contactPhone}</p>

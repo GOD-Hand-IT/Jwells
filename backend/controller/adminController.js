@@ -191,15 +191,22 @@ export default class AdminController {
         }
     }
 
-    static getAllOrders = async (req, res) => {
+    static async getAllOrders(req, res) {
         try {
             const orders = await Order.find()
-                .populate('userId', 'name email') // populate user details
+                .populate('userId', 'email')
                 .sort({ createdAt: -1 });
+
+            const ordersWithPaymentStatus = orders.map(order => ({
+                ...order.toObject(),
+                paymentStatus: order.paymentMethod === 'cod' ?
+                    'Cash on Delivery' :
+                    (order.balanceAmount === 0 ? 'Paid' : 'Partially Paid')
+            }));
 
             return res.status(200).json({
                 success: true,
-                data: orders
+                data: ordersWithPaymentStatus
             });
         } catch (error) {
             console.error('Error in getAllOrders:', error);
