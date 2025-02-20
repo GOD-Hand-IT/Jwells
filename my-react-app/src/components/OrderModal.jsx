@@ -240,25 +240,29 @@ const OrderModal = ({ isOpen, onClose, orderId, isAdmin, onStatusUpdate }) => {
                         <div className="bg-white rounded-xl p-6 border border-gray-200">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Customer Details</h3>
                             <div className="space-y-4">
-                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                    <p className="text-sm text-black mb-1">Name</p>
-                                    <p className="font-medium text-gray-900">{order.userId?.name || 'Not Available'}</p>
+                                <div className="p-3 bg-gray-50 rounded-lg flex border border-gray-200 justify-between">
+                                    <div className="flex-1 ml-10 text-left">
+                                        <p className="text-sm text-black mb-1">Name</p>
+                                        <p className="font-medium text-gray-900">{order.userId?.name || 'Not Available'}</p>
+                                    </div>
+                                    <div className="flex-1 ml-10 text-left">
+                                        <p className="text-sm text-black mb-1">Email</p>
+                                        <p className="font-medium text-gray-900">{order.userId?.email || 'Not Available'}</p>
+                                    </div>
                                 </div>
-                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                    <p className="text-sm text-black mb-1">Email</p>
-                                    <p className="font-medium text-gray-900">{order.userId?.email || 'Not Available'}</p>
-                                </div>
-                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                    <p className="text-sm text-black mb-1">Phone</p>
-                                    <p className="font-medium text-gray-900">{order.contactPhone}</p>
+                                <div className="p-3 bg-gray-50 rounded-lg flex border border-gray-200 justify-between">
+                                    <div className="flex-1 ml-10 text-left">
+                                        <p className="text-sm text-black mb-1">Phone</p>
+                                        <p className="font-medium text-gray-900">{order.contactPhone}</p>
+                                    </div>
+                                    <div className="flex-1 ml-10 text-left">
+                                        <p className="text-sm text-black mb-1">Tracking Number</p>
+                                        <p className="font-medium text-gray-900">{order.trackingNumber || 'Not Available'}</p>
+                                    </div>
                                 </div>
                                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                                     <p className="text-sm text-black mb-1">Delivery Address</p>
                                     <p className="font-medium text-gray-900">{order.shippingAddress}</p>
-                                </div>
-                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                    <p className="text-sm text-black mb-1">Tracking Number</p>
-                                    <p className="font-medium text-gray-900">{order.trackingNumber || 'Not Available'}</p>
                                 </div>
                             </div>
                         </div>

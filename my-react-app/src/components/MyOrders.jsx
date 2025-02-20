@@ -53,7 +53,7 @@ const MyOrders = () => {
         <div className="max-w-4xl mx-auto p-4">
             <h2 className="text-3xl font-bold mb-6 flex items-center justify-between text-gray-900">
                 <span>My Orders</span>
-                <span className="text-sm text-gray-500">Total Orders: {orders.length}</span>
+                <span className="text-sm ml-10 text-gray-500">Total Orders: {orders.length}</span>
             </h2>
 
             {/* Simplified Search and Filters UI */}
