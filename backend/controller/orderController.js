@@ -2,6 +2,7 @@ import Razorpay from 'razorpay';
 import Order from '../model/order.js';
 import CartProduct from '../model/cartProduct.js';
 import ContactController from '../controllers/contactController.js';
+import mongoose from 'mongoose';
 
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -174,17 +175,31 @@ export default class OrderController {
         }
     }
 
+    static getPaymentStatus(order) {
+        if (order.paymentMethod === 'cod') {
+            return 'Cash on Delivery';
+        }
+        return order.balanceAmount === 0 ? 'Paid' : 'Partially Paid';
+    }
+
     static async getUserOrders(req, res) {
         try {
             const { userId } = req.body;
-            const orders = await Order.find({ userId })
+
+            const orders = await Order.find({ userId: userId })
                 .sort({ createdAt: -1 });
+
+            const ordersWithPaymentStatus = orders.map(order => ({
+                ...order.toObject(),
+                paymentStatus: OrderController.getPaymentStatus(order)
+            }));
 
             return res.status(200).json({
                 success: true,
-                data: orders
+                data: ordersWithPaymentStatus
             });
         } catch (error) {
+            console.error('Error in getUserOrders:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error fetching orders',
@@ -196,7 +211,9 @@ export default class OrderController {
     static async getOrderById(req, res) {
         try {
             const { orderId } = req.params;
-            const order = await Order.findById(orderId).populate('items.productId');
+            const order = await Order.findById(orderId)
+                .populate('items.productId')
+                .populate('userId', 'email name');  // Added 'name' to population
 
             if (!order) {
                 return res.status(404).json({
@@ -205,9 +222,14 @@ export default class OrderController {
                 });
             }
 
+            const orderWithPaymentStatus = {
+                ...order.toObject(),
+                paymentStatus: OrderController.getPaymentStatus(order)
+            };
+
             return res.status(200).json({
                 success: true,
-                data: order
+                data: orderWithPaymentStatus
             });
         } catch (error) {
             return res.status(500).json({
