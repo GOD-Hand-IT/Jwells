@@ -335,8 +335,8 @@ const ProductDetails = ({
         className="section5 mt-16"
         title="YOU MAY ALSO LIKE"
         images={[
-          '/src/assets/rectangle.jpeg',
-          '/src/assets/earrings.png',
+          '/src/assets/best-1.jpg',
+          '/src/assets/best-2.jpg',
           '/src/assets/neck.png',
           '/src/assets/necklace.jpeg'
         ]}
