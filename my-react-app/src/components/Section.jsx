@@ -6,9 +6,7 @@ function Section({ className, title, image, link }) {
       <div className="m-[0px]">
         <div className="font-[lato] font-medium text-white flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>
         <div className="flex">
-          <div className="frame">
-            <div className="text-wrapper"><a href={link}>EXPLORE</a></div>
-          </div>
+          
         </div>
       </div>
     </section>
