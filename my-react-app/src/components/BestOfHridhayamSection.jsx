@@ -53,7 +53,7 @@ function BestOfHridhayamSection({ className, title, images, link }) {
     <section className={`py-8 ${className}`}>
       <h2 className="text-3xl font-bold text-center mb-6">{title}</h2>
       <div className="max-w-7xl mx-auto px-4 overflow-hidden">
-        <div className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide" ref={carouselRef}>
+        <div className="flex space-x-6  pb-4" ref={carouselRef}>
           {images.map((image, index) => (
             <Link
               key={index}
