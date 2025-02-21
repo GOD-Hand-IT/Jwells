@@ -1,14 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import SummaryApi from '../common/apiConfig.js';
-
-
-
 
 function BestOfHridhayamSection({ className, title, images, link }) {
   const carouselRef = useRef(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getData() {
@@ -43,25 +41,29 @@ function BestOfHridhayamSection({ className, title, images, link }) {
     setSelectedCategory(newCategory); // Fixed variable name
   };
 
-  const handleImageClick = (category) => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+  const handleNavigate = (category, e) => {
+    e.preventDefault();
+    navigate('/collection', { state: { collectionName: category } });
+    window.scrollTo(0, 0);
+  };
+
+  const handleDiscountsNavigate = (e) => {
+    e.preventDefault();
+    navigate('/discounts');
+    window.scrollTo(0, 0);
   };
 
   return (
     <section className={`py-8 ${className}`}>
       <h2 className="text-3xl font-bold text-center mb-6">{title}</h2>
       <div className="max-w-7xl mx-auto px-4 overflow-hidden">
-        <div className="flex space-x-6  pb-4" ref={carouselRef}>
+        <div className="flex space-x-6 pb-4" ref={carouselRef}>
           {images.map((image, index) => (
-            <Link
+            <a
               key={index}
-              to="/collection"
-              state={{ collectionName: categories[index] }}
+              href="/collection"
+              onClick={(e) => handleNavigate(categories[index], e)}
               className="group relative"
-              onClick={() => handleImageClick(categories[index])}
             >
               <img
                 src={image}
@@ -75,13 +77,14 @@ function BestOfHridhayamSection({ className, title, images, link }) {
                   {categories[index]}
                 </div>
               )}
-            </Link>
+            </a>
           ))}
         </div>
       </div>
       <div className="text-center mt-8">
-        <Link
-          to="/discounts"
+        <a
+          href="/discounts"
+          onClick={handleDiscountsNavigate}
           className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 
                      text-white font-bold rounded-full shadow-lg 
                      hover:from-blue-600 hover:to-purple-700 
@@ -89,9 +92,9 @@ function BestOfHridhayamSection({ className, title, images, link }) {
                      uppercase tracking-wide"
         >
           Explore Collection
-        </Link>
+        </a>
       </div>
-    </section >
+    </section>
   );
 }
 
