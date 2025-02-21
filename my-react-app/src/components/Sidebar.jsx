@@ -126,7 +126,7 @@ const Sidebar = ({
             <div className={`fixed top-0 left-0 h-full w-64 p-4 bg-white transition-transform duration-300 ease-in-out transform z-5 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:block`}>
                 {/* Close Button for Mobile */}
                 <div className="md:hidden flex justify-end mb-4">
-                    <button onClick={() => setIsSidebarOpen(false)} className="text-black text-xl">&times;</button>
+                    <button onClick={() => setIsSidebarOpen(false)} className="text-black md:hidden text-xl">&times;</button>
                 </div>
                 {/* Status Filter Section */}
                 <div className="mb-6">

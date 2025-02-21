@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Section, InbetweenSection, CarouselSection } from '../components/section.jsx';
 import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
 import bgImage from '../assets/section-1.png';
@@ -8,6 +8,34 @@ import '../App.css'
 
 const home = () => {
   const [count, setCount] = useState(0)
+  const [apiData, setApiData] = useState([""]);
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await fetch(SummaryApi.category.url, {
+          method: SummaryApi.category.method
+        });
+        const data = await response.json();
+        if (Array.isArray(data.data)) {
+          setApiData(data.data);
+        } else {
+          console.error("API data is not an array of strings:", data);
+        }
+        console.log("API data fetched successfully:", data.data);
+      } catch (error) {
+        console.error("Error fetching API data:", error);
+      }
+    }
+    // Call the initialization functions
+    getData();
+  }, []);
+
+  const getRandomCollectionLink = () => {
+    if (apiData.length === 0) return '#';
+    const randomCollection = apiData.find(collection => collection.id === 12) || apiData[Math.floor(Math.random() * apiData.length)];
+    return `/collections/${randomCollection.id}`;
+  };
 
   return (
     <div>
@@ -16,7 +44,7 @@ const home = () => {
         <Section
           className="section1"
           title="SIMPLY STUNNING"
-          link="https://www.google.com"
+          link={getRandomCollectionLink()}
           image={bgImage}
         />
 

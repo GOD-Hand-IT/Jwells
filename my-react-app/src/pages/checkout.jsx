@@ -199,6 +199,7 @@ const Checkout = () => {
                 }
               },
             },
+            
             // This property allows to enble/disable retries.
             // This is enabled true by default. 
             retry: {
