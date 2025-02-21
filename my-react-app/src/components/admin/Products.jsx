@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SummaryApi from '../../common/apiConfig.js';
 import AlertDialog from '../AlertDialog';
 import ProductModal from './ProductModal';
+import LoadingModal from '../LoadingModal';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,7 @@ const Products = () => {
   const productsPerPage = 10;
   const userId = localStorage.getItem('userId');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
@@ -34,6 +36,7 @@ const Products = () => {
   }, [selectedCategory]);
 
   const fetchProducts = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(SummaryApi.fetchProducts.url, {
         method: SummaryApi.fetchProducts.method,
@@ -53,6 +56,8 @@ const Products = () => {
       }
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -152,205 +157,208 @@ const Products = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-8xl mx-auto bg-transparent">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      {/* Header with Filters, Search and Pagination */}
-      <div className="mb-8 flex justify-between items-center bg-white/30 backdrop-blur-sm p-4 rounded-lg">
-        <div className="flex items-center space-x-4">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Categories</option>
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
+    <>
+      {isLoading && <LoadingModal />}
+      <div className="p-6 max-w-8xl mx-auto bg-transparent">
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        {/* Header with Filters, Search and Pagination */}
+        <div className="mb-8 flex justify-between items-center bg-white/30 backdrop-blur-sm p-4 rounded-lg">
+          <div className="flex items-center space-x-4">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
 
-          {/* New Search Input */}
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 min-w-[300px]"
-          />
+            {/* New Search Input */}
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 min-w-[300px]"
+            />
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              Previous
+            </button>
+            <span className="text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === totalPages
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              Next
+            </button>
+          </div>
         </div>
 
-        {/* Pagination Controls */}
-        <div className="flex items-center space-x-2">
+        {/* Title Section */}
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-800">Products Management</h1>
           <button
-            onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === 1
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
+            onClick={handleAddNewProduct}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
-            Previous
-          </button>
-          <span className="text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${currentPage === totalPages
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-          >
-            Next
+            Add New Product
           </button>
         </div>
-      </div>
 
-      {/* Title Section */}
-      <div className="mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Products Management</h1>
-        <button
-          onClick={handleAddNewProduct}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          Add New Product
-        </button>
-      </div>
-
-      {/* Products Table */}
-      <div className="bg-white/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-200/50">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {/* Update table headers with proper text color */}
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Product Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Discount (%)
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Quantity
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {currentProducts.map((product) => (
-                <tr key={product._id}
-                  className={`hover:bg-gray-50 ${!product.inStock ? 'bg-red-50' :
-                    product.quantity <= 5 ? 'bg-yellow-50' : 'bg-white'
-                    }`}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <img
-                      src={product.image || ''}
-                      alt={product.name}
-                      className="h-16 w-16 object-cover rounded"
-                      onError={(e) => {
-                        e.target.src = 'placeholder-image-url'; // Add a placeholder image URL
-                        e.target.onerror = null;
-                      }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.name || 'N/A'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">Rs.{product.price || 0}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">
-                    {product.discountPercentage || 0}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">
-                    {product.quantity || 0}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${!product.inStock
-                      ? 'bg-red-100 text-red-800'
-                      : product.quantity <= 5
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
+        {/* Products Table */}
+        <div className="bg-white/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-200/50">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {/* Update table headers with proper text color */}
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Image
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Product Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Discount (%)
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Quantity
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {currentProducts.map((product) => (
+                  <tr key={product._id}
+                    className={`hover:bg-gray-50 ${!product.inStock ? 'bg-red-50' :
+                      product.quantity <= 5 ? 'bg-yellow-50' : 'bg-white'
                       }`}>
-                      {!product.inStock
-                        ? 'Out of Stock'
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <img
+                        src={product.image || ''}
+                        alt={product.name}
+                        className="h-16 w-16 object-cover rounded"
+                        onError={(e) => {
+                          e.target.src = 'placeholder-image-url'; // Add a placeholder image URL
+                          e.target.onerror = null;
+                        }}
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.name || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">Rs.{product.price || 0}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                      {product.discountPercentage || 0}%
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                      {product.quantity || 0}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${!product.inStock
+                        ? 'bg-red-100 text-red-800'
                         : product.quantity <= 5
-                          ? 'Low Stock'
-                          : 'In Stock'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.category}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                      >
-                        <FaEdit className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(product)}
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                      >
-                        <FaTrash className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {/* Add empty rows to maintain consistent height */}
-              {currentProducts.length < productsPerPage && Array(productsPerPage - currentProducts.length).fill(null).map((_, index) => (
-                <tr key={`empty-${index}`} className="h-[76px]"> {/* Match height of product rows */}
-                  <td colSpan="5"></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-green-100 text-green-800'
+                        }`}>
+                        {!product.inStock
+                          ? 'Out of Stock'
+                          : product.quantity <= 5
+                            ? 'Low Stock'
+                            : 'In Stock'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{product.category}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        >
+                          <FaEdit className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(product)}
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        >
+                          <FaTrash className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {/* Add empty rows to maintain consistent height */}
+                {currentProducts.length < productsPerPage && Array(productsPerPage - currentProducts.length).fill(null).map((_, index) => (
+                  <tr key={`empty-${index}`} className="h-[76px]"> {/* Match height of product rows */}
+                    <td colSpan="5"></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <ProductModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedProduct(null);
-          setPreviewImage(null);
-        }}
-        onSave={
-          handleUpdateProduct
-        }
-        product={selectedProduct}
-        title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
-        categories={categories}
-      />
+        <ProductModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+            setPreviewImage(null);
+          }}
+          onSave={
+            handleUpdateProduct
+          }
+          product={selectedProduct}
+          title={selectedProduct?.id ? "Edit Product" : "Add New Product"}
+          categories={categories}
+        />
 
-      <AlertDialog
-        isOpen={showDeleteDialog}
-        message="Are you sure you want to delete this product?"
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setShowDeleteDialog(false)}
-      />
-    </div >
+        <AlertDialog
+          isOpen={showDeleteDialog}
+          message="Are you sure you want to delete this product?"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeleteDialog(false)}
+        />
+      </div >
+    </>
   );
 };
 

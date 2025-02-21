@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import Sidebar from '../components/Sidebar';
 import NoProductsFound from '../components/NoProductsFound';
 import SummaryApi from "../common/apiConfig";
+import LoadingModal from '../components/LoadingModal';
 
 const Collection = () => {
   const { state: { collectionName } } = useLocation();
@@ -18,9 +19,11 @@ const Collection = () => {
     statusFilters: ['instock'] // Add default status filter
   });
   const [shouldResetFilters, setShouldResetFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
       try {
         // Fetch products for all selected categories
         const productPromises = state.selectedCategories.map(category =>
@@ -43,6 +46,8 @@ const Collection = () => {
         }));
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProducts();
@@ -130,37 +135,40 @@ const Collection = () => {
   };
 
   return (
-    <div className="contain flex">
-      <Sidebar
-        onPriceRangeChange={range => setState(prev => ({
-          ...prev,
-          priceRange: range,
-          currentPage: 1
-        }))}
-        onCategoryChange={categories => {
-          const updatedCategories = categories.includes(collectionName)
-            ? categories
-            : [collectionName, ...categories];
-          setState(prev => ({
+    <>
+      {isLoading && <LoadingModal />}
+      <div className="contain flex">
+        <Sidebar
+          onPriceRangeChange={range => setState(prev => ({
             ...prev,
-            selectedCategories: updatedCategories,
+            priceRange: range,
             currentPage: 1
-          }));
-        }}
-        onStatusChange={statusFilters => setState(prev => ({
-          ...prev,
-          statusFilters,
-          currentPage: 1
-        }))}
-        selectedCategory={collectionName}
-        maxPrice={state.maxPrice}
-        shouldReset={shouldResetFilters}
-        statusFilters={state.statusFilters}
-      />
-      <div className="flex-1 px-4">
-        {renderProducts()}
+          }))}
+          onCategoryChange={categories => {
+            const updatedCategories = categories.includes(collectionName)
+              ? categories
+              : [collectionName, ...categories];
+            setState(prev => ({
+              ...prev,
+              selectedCategories: updatedCategories,
+              currentPage: 1
+            }));
+          }}
+          onStatusChange={statusFilters => setState(prev => ({
+            ...prev,
+            statusFilters,
+            currentPage: 1
+          }))}
+          selectedCategory={collectionName}
+          maxPrice={state.maxPrice}
+          shouldReset={shouldResetFilters}
+          statusFilters={state.statusFilters}
+        />
+        <div className="flex-1 px-4">
+          {renderProducts()}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

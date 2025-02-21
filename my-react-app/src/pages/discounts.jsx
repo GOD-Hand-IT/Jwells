@@ -4,8 +4,10 @@ import Pagination from '../components/Pagination';
 import Sidebar from '../components/Sidebar';
 import NoProductsFound from '../components/NoProductsFound';
 import SummaryApi from "../common/apiConfig";
+import LoadingModal from '../components/LoadingModal';
 
 const Discounts = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [state, setState] = useState({
         products: [],
         allProducts: [],
@@ -48,6 +50,8 @@ const Discounts = () => {
                 }));
             } catch (error) {
                 console.error("Error fetching discounted products:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchDiscountedProducts();
@@ -122,52 +126,55 @@ const Discounts = () => {
     };
 
     return (
-        <div className="contain flex">
-            <Sidebar
-                onPriceRangeChange={range => setState(prev => ({
-                    ...prev,
-                    priceRange: range,
-                    products: filterProducts(
-                        prev.allProducts,
-                        range,
-                        prev.statusFilters,
-                        prev.selectedCategories
-                    ),
-                    currentPage: 1
-                }))}
-                onCategoryChange={categories => {
-                    console.log(categories);
-                    setState(prev => ({
+        <>
+            {isLoading && <LoadingModal />}
+            <div className="contain flex">
+                <Sidebar
+                    onPriceRangeChange={range => setState(prev => ({
                         ...prev,
-                        selectedCategories: categories,
+                        priceRange: range,
+                        products: filterProducts(
+                            prev.allProducts,
+                            range,
+                            prev.statusFilters,
+                            prev.selectedCategories
+                        ),
+                        currentPage: 1
+                    }))}
+                    onCategoryChange={categories => {
+                        console.log(categories);
+                        setState(prev => ({
+                            ...prev,
+                            selectedCategories: categories,
+                            products: filterProducts(
+                                prev.allProducts,
+                                prev.priceRange,
+                                prev.statusFilters,
+                                categories
+                            ),
+                            currentPage: 1
+                        }));
+                    }}
+                    onStatusChange={statusFilters => setState(prev => ({
+                        ...prev,
+                        statusFilters,
                         products: filterProducts(
                             prev.allProducts,
                             prev.priceRange,
-                            prev.statusFilters,
-                            categories
+                            statusFilters,
+                            prev.selectedCategories
                         ),
                         currentPage: 1
-                    }));
-                }}
-                onStatusChange={statusFilters => setState(prev => ({
-                    ...prev,
-                    statusFilters,
-                    products: filterProducts(
-                        prev.allProducts,
-                        prev.priceRange,
-                        statusFilters,
-                        prev.selectedCategories
-                    ),
-                    currentPage: 1
-                }))}
-                maxPrice={state.maxPrice}
-                shouldReset={shouldResetFilters}
-                statusFilters={state.statusFilters}
-            />
-            <div className="flex-1 px-4">
-                {renderProducts()}
+                    }))}
+                    maxPrice={state.maxPrice}
+                    shouldReset={shouldResetFilters}
+                    statusFilters={state.statusFilters}
+                />
+                <div className="flex-1 px-4">
+                    {renderProducts()}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
