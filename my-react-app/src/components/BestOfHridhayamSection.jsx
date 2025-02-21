@@ -51,10 +51,10 @@ function BestOfHridhayamSection({ className, title, images, link }) {
   };
 
   return (
-    <section className={`py-8 ${className}`}>
-      <h2 className="text-3xl font-bold text-center mb-6">{title}</h2>
+    <section className={`py-8 h-[100vh] ${className}`}>
+      <h2 className="text-3xl text-black font-[cinzel] font-regular text-center mb-6">{title}</h2>
       <div className="max-w-7xl mx-auto px-4 overflow-hidden">
-        <div className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide" ref={carouselRef}>
+        <div className="flex flex-wrap space-x-6 gap-x-10 overflow-hidden pb-4 scrollbar-hide" ref={carouselRef}>
           {images.map((image, index) => (
             <Link
               key={index}
@@ -82,8 +82,8 @@ function BestOfHridhayamSection({ className, title, images, link }) {
       <div className="text-center mt-8">
         <Link
           to="/discounts"
-          className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 
-                     text-white font-bold rounded-full shadow-lg 
+          className="inline-block text-2xl px-8 py-4 font-[lora]  
+                     text-black font-thin font-bold outline-solid border-black shadow-lg 
                      hover:from-blue-600 hover:to-purple-700 
                      transform hover:scale-105 transition-all duration-300
                      uppercase tracking-wide"

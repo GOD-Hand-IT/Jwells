@@ -337,8 +337,8 @@ const ProductDetails = ({
         images={[
           '/src/assets/best-1.jpg',
           '/src/assets/best-2.jpg',
-          '/src/assets/neck.png',
-          '/src/assets/necklace.jpeg'
+          '/src/assets/best-3.jpg',
+          '/src/assets/best-4.jpg'
         ]}
         link="https://www.google.com"
       />
