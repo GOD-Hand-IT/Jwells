@@ -61,8 +61,8 @@ function CarouselSection({ className, title, images, description, buttonText }) 
   return (
     <section className={`section ${className} px-4`}>
       {title && <div className="font-[lato] font-medium text-black flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>}
-      <div className="relative w-full h-[300px] overflow-x-auto">
-        <div className="flex gap-8 items-center absolute left-0 px-4">
+      <div className="relative w-full ml-20 h-[300px] overflow-x-scroll" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex gap-45 items-center absolute left-0 px-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {images.map((image, index) => (
             <a
               key={index}
