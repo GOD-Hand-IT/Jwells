@@ -41,7 +41,11 @@ function Footer() {
 
 
       {/* Footer Bottom Section */}
-      
+      <div className="border-t border-gray-700 pt-4 mt-4 text-center">
+        <p className="text-sm text-gray-400">
+          &copy; {new Date().getFullYear()} HRIDHAYAM. Designed and Developed by LAUFREL.
+        </p>
+      </div>
     </footer>
   );
 }

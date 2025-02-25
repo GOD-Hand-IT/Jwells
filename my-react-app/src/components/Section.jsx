@@ -2,15 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SummaryApi from '../common/apiConfig.js';
 
-function Section({ className, title, image, link }) {
+function Section({ className, title, image, link ,video}) {
   return (
     <section className={`section w-full relative bg-cover h-[100vh] ${className}`} style={{ backgroundImage: `url(${image})` }}>
-      <div className="m-[0px]">
-        <div className="font-[lato] font-medium text-white flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>
+      <div className="m-[0px] relative z-10">
+        <div className="font-[lato] font-medium text-white mb-10 flex-nowrap tracking-[12px] pb-[30px] sm:text-[20px] sm:tracking-[6px] lg:text-[40px] lg:tracking-[12px]">{title}</div>
         <div className="flex">
-
         </div>
       </div>
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+      >
+        <source src={video} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     </section>
   );
 }
