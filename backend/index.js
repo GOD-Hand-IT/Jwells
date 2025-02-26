@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 server.use(cookieParser());
 server.use(express.json());
 server.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend URL
+  origin: 'https://jwells-qfcn.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
