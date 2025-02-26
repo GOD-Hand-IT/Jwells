@@ -9,11 +9,11 @@ export const createToken = (userId) => {
 
 export const setAuthCookie = (res, token) => {
     res.cookie('token', token, {
-        httpOnly: true,
-        secure: false, // Changed to false for development
-        sameSite: 'lax', // Changed from 'strict' to 'lax'
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        path: '/'
+        httpOnly: true ,
+secure: true,
+sameSite: 'none',
+domain: 'jwells-qfcn.vercel.app',
+        maxAge: 24 * 60 * 60 * 1000
     });
 }
 
