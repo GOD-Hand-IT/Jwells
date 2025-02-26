@@ -10,10 +10,11 @@ export const createToken = (userId) => {
 export const setAuthCookie = (res, token) => {
     res.cookie('token', token, {
         httpOnly: true,
-        secure: false, // Changed to false for development
-        sameSite: 'lax', // Changed from 'strict' to 'lax'
+        secure: true, // Changed to false for development
+        sameSite: 'strict', // Changed from 'strict' to 'lax'
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        path: '/'
+        path: '/',
+        domain : 'https://jwells-qfcn.vercel.app'
     });
 }
 
