@@ -61,7 +61,6 @@ html, body {
 }
 .section1 {
   height: 80vh;
-  background-image: url('images/frame-6.png');
   background-position-y:30% ;
   background-size: cover;
 
@@ -97,7 +96,6 @@ html, body {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-image: url('path/to/image5.jpg');
 }
 
 .frame {
