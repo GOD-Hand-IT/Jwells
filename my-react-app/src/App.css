@@ -87,7 +87,6 @@ li {
 }
 .section1 {
   height: 80vh;
-  background-image: url('images/frame-6.png');
   background-size: cover;
 
 }
@@ -96,7 +95,6 @@ li {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  background-image: url('images/section-2.jpeg');
   background-size: cover;
 
 }
@@ -114,7 +112,6 @@ li {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  background-image: url('images/section4.jpeg');
   background-position-y:30% ;
   background-size: cover;
 }
@@ -124,7 +121,6 @@ li {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-image: url('path/to/image5.jpg');
 }
 
 .frame {
