@@ -12,7 +12,6 @@ export const setAuthCookie = (res, token) => {
         httpOnly: true ,
 secure: true,
 sameSite: 'none',
-domain: 'jwells-qfcn.vercel.app',
         maxAge: 24 * 60 * 60 * 1000
     });
 }
