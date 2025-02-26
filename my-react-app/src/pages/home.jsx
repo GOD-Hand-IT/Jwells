@@ -73,7 +73,7 @@ const Home = () => {
       <Section className="section4" title="ART OF CRAFTMANSHIP" link="https://www.google.com" image={bgImage3} />
 
       {/* Section 6 - Best Collection */}
-      <BestOfHridhayamSection className="section5" title="BEST OF HRIDHAYAM" images={[best1, best2, best3, best4]} link="https://www.google.com" />
+      <BestOfHridhayamSection className="section5" title="BEST OF HRIDHAYAM" images={[bgImage, best2, best3, best4]} link="https://www.google.com" />
     </div>
   );
 };
