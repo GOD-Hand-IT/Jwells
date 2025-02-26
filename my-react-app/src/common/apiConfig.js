@@ -1,4 +1,4 @@
-const backendDomain = "http://localhost:3000";
+const backendDomain = "https://jwells-3xuh.onrender.com";
 
 const SummaryApi = {
   category: {
