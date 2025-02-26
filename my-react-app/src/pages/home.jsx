@@ -68,12 +68,12 @@ const home = () => {
           className="section3"
           title="SPECIAL COLLECTION"
           images={[
-            '/src/assets/carousel-1.png',
-            '/src/assets/carousel-2.png',
-            '/src/assets/carousel-3.png',
-            '/src/assets/carousel-4.png',
-            '/src/assets/carousel-5.png',
-            '/src/assets/carousel-6.png'
+            '../assets/carousel-1.png',
+            '../assets/carousel-2.png',
+            '../assets/carousel-3.png',
+            '../assets/carousel-4.png',
+            '../assets/carousel-5.png',
+            '../assets/carousel-6.png'
           ]}
           description="Discover Hridhayam’s exquisite craftsmanship—timeless elegance, intricate designs, and pure sophistication. Elevate your style with our exclusive jewelry, crafted to shine as bright as you!"
         />
