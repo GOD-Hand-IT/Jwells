@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 server.use(cookieParser());
 server.use(express.json());
 server.use(cors({
-  origin: ["https://jwells-qfcn.vercel.app" , "https://jwells-1.onrender.com"],
+  origin: 'https://jwells-1.onrender.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
