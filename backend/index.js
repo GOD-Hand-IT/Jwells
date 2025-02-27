@@ -16,13 +16,25 @@ const server = express();
 const PORT = process.env.PORT || 3000;
 server.use(cookieParser());
 server.use(express.json());
+const allowedOrigins = [
+  'https://jwells-1.onrender.com',
+  'https://jwells-qfcn.vercel.app'
+];
+
 server.use(cors({
-  origin: 'https://jwells-qfcn.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   exposedHeaders: ['set-cookie']
 }));
+
 
 server.use("/user", userRouter)
 server.use("/product", productRouter)
