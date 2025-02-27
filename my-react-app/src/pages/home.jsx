@@ -4,6 +4,7 @@ import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
 import bgImage from '../assets/section-1.png';
 import bgImage2 from '../assets/section-2.png';
 import bgImage3 from '../assets/section-4.png';
+import video from '../assets/WEBSITE.mp4';
 import '../App.css'
 
 const home = () => {
@@ -59,7 +60,7 @@ const home = () => {
           className="section2"
           title="PREMIUM & ANTIQUE"
           link="https://www.google.com"
-          image={bgImage2}
+          video={video}
         />
 
         {/* Section 4 - Special Carousel */}
@@ -90,7 +91,7 @@ const home = () => {
           className="section5"
           title="BEST OF HRIDHAYAM"
           images={[
-            bgImage,
+            '/src/assets/best-1.jpg',
             '/src/assets/best-2.jpg',
             '/src/assets/best-3.jpg',
             '/src/assets/best-4.jpg'

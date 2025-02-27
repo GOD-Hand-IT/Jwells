@@ -57,31 +57,30 @@ function BestOfHridhayamSection({ className, title, images, link }) {
     <section className={`py-8 h-[100vh] ${className}`}>
       <h2 className="text-3xl text-black font-[cinzel] font-regular text-center mb-6">{title}</h2>
       <div className="max-w-7xl mx-auto px-4 overflow-hidden">
-  <div className="flex flex-wrap md:flex-nowrap gap-4 justify-center" ref={carouselRef}>
-    {images.map((image, index) => (
-      <a
-        key={index}
-        href="/collection"
-        onClick={(e) => handleNavigate(categories[index], e)}
-        className="group relative"
-      >
-        <img
-          src={image}
-          alt={`Best Carousel ${index + 1}`}
-          className="w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] md:w-[200px] md:h-64 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
-        />
-        {categories[index] && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 
-                          bg-black/70 text-white px-4 py-2 rounded-md text-sm
-                          transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-            {categories[index]}
-          </div>
-        )}
-      </a>
-    ))}
-  </div>
-</div>
-
+        <div className="flex flex-wrap md:flex-nowrap gap-4 justify-center" ref={carouselRef}>
+          {images.map((image, index) => (
+            <a
+              key={index}
+              href="/collection"
+              onClick={(e) => handleNavigate(categories[index], e)}
+              className="group relative"
+            >
+              <img
+                src={image}
+                alt={`Best Carousel ${index + 1}`}
+                className="w-full h-64 md:h-[100px] md:w-[100px] object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+              />
+              {categories[index] && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 
+                             bg-black/70 text-white px-4 py-2 rounded-md text-sm
+                             transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                  {categories[index]}
+                </div>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
       <div className="text-center mt-8">
         <a
           href="/discounts"
