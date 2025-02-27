@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Section, InbetweenSection, CarouselSection } from '../components/Section.jsx';
+import { Section, InbetweenSection, CarouselSection } from '../components/section.jsx';
 import BestOfHridhayamSection from '../components/BestOfHridhayamSection';
 import bgImage from '../assets/section-1.png';
 import bgImage2 from '../assets/section-2.png';
 import bgImage3 from '../assets/section-4.png';
-import video from '../assets/WEBSITE.mp4';
 import '../App.css'
 
 const home = () => {
@@ -60,7 +59,7 @@ const home = () => {
           className="section2"
           title="PREMIUM & ANTIQUE"
           link="https://www.google.com"
-          video={video}
+          image={bgImage2}
         />
 
         {/* Section 4 - Special Carousel */}
