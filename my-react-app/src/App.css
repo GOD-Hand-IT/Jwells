@@ -5,6 +5,7 @@
 html, body {
   margin: 0;
   overflow-x: hidden;
+  height: 100%;
 }
 
 .Header {
@@ -218,11 +219,7 @@ li {
 .explore-close-center{
   margin: 0;
 }
-.flex{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 
 .home-3{
   font-family: "Lato-Medium", Helvetica;

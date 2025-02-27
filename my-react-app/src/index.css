@@ -193,11 +193,7 @@ html, body {
 .explore-close-center{
   margin: 0;
 }
-.flex{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 .home{
   font-family: "Lato-Medium", Helvetica;
   font-weight: 500;
